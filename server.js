@@ -2,7 +2,7 @@ var express = require('express');
 var app = express();
 var config = require('./config.js');
 
-app.get('/signin', function(req, res){
+app.post('/signin', function(req, res){
   var body = 'Hello World';
   res.setHeader('Content-Length', body.length);
   res.send(body);
