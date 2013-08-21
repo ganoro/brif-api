@@ -1,11 +1,15 @@
 var express = require('express');
-var app = express();
 var config = require('./config.js');
+var Kaiseki = require('kaiseki');
+
+var app = express();
+var parse = new Kaiseki(kaiseki_app_id, kaiseki_rest_api_key);
+
+app.use(express.bodyParser());
 
 app.post('/signin', function(req, res){
-  var body = 'Hello World';
-  res.setHeader('Content-Length', body.length);
-  res.send(body);
+  	var email = req.body.email;
+  	res.send(name);
 });
 
 app.use(function(err, req, res, next){

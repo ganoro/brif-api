@@ -1,2 +1,3 @@
 exports.port = 80;
-exports.p = 90;
+exports.kaiseki_app_id = '<your-Parse-application-id>';
+exports.kaiseki_rest_api_key = '<your-Parse-REST-API-key>';
