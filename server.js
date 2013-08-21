@@ -27,12 +27,9 @@ app.post('/signin', function(req, res){
   	}
 
   	var body = ['code=' + code , 'client_id=' + config.google_client_id, 
-  		'client_secret=' + config.google_client_secret, 'redirect_uri=' + config.google_redirect_uri, 
+  		'client_secret=' + config.google_client_secret, 'redirect_uri=' + encodeURIComponent(config.google_redirect_uri), 
   		'grant_type=authorization_code'].join('&')
 
-
-  		debugger;
-  		
   	request({
 	    method: 'POST', 
 	    uri: 'https://accounts.google.com/o/oauth2/token',
