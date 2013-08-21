@@ -1,6 +1,7 @@
 var express = require('express');
 var config = require('./config.js');
 var Kaiseki = require('kaiseki');
+var request = require('request');
 
 /**
  * initialize express app
@@ -24,7 +25,15 @@ app.post('/signin', function(req, res){
   		return; 
   	}
 
-  	res.send(email);
+  	var body = ['code=' + code , 'client_id=' config.google_client_id, 
+  		'client_secret=' + config.google_client_secret, 'redirect_uri=' + config.google_redirect_uri, 
+  		'grant_type=authorization_code'].join('&')
+
+  	res.pipe(request({
+	    method: 'POST', 
+	    uri: 'https://accounts.google.com/o/oauth2/token',
+	    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+	    body: body}));
 });
 
 app.use(function(err, req, res, next){

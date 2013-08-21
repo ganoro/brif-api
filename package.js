@@ -5,6 +5,7 @@
   "private": true,
   "dependencies": {
     "express": "3.x",
+    "request": "*",
     "socket.io": "~0.9.x",
     "kaiseki": "*"
   }
