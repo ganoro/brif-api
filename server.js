@@ -16,7 +16,6 @@ var parse = new Kaiseki(config.kaiseki_app_id, config.kaiseki_rest_api_key);
 app.use(express.bodyParser());
 
 app.post('/signin', function(req, res){
-	debugger;
 
   	var email = req.body.email;
   	var name = req.body.name;
@@ -32,13 +31,13 @@ app.post('/signin', function(req, res){
   		'grant_type=authorization_code'].join('&')
 
 
-  	res.pipe(request({
+  		debugger;
+  		
+  	request({
 	    method: 'POST', 
 	    uri: 'https://accounts.google.com/o/oauth2/token',
 	    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-	    body: body}));
-
-  	res.end();
+	    body: body}).pipe(res);
 });
 
 app.use(function(err, req, res, next){
