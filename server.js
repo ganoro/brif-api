@@ -25,7 +25,7 @@ app.post('/signin', function(req, res){
   		return; 
   	}
 
-  	var body = ['code=' + code , 'client_id=' config.google_client_id, 
+  	var body = ['code=' + code , 'client_id=' + config.google_client_id, 
   		'client_secret=' + config.google_client_secret, 'redirect_uri=' + config.google_redirect_uri, 
   		'grant_type=authorization_code'].join('&')
 
