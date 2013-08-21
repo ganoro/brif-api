@@ -9,7 +9,7 @@ app.use(express.bodyParser());
 
 app.post('/signin', function(req, res){
   	var email = req.body.email;
-  	res.send(name);
+  	res.send(email);
 });
 
 app.use(function(err, req, res, next){
