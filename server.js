@@ -3,7 +3,7 @@ var config = require('./config.js');
 var Kaiseki = require('kaiseki');
 
 var app = express();
-var parse = new Kaiseki(kaiseki_app_id, kaiseki_rest_api_key);
+var parse = new Kaiseki(config.kaiseki_app_id, config.kaiseki_rest_api_key);
 
 app.use(express.bodyParser());
 
