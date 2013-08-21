@@ -16,6 +16,8 @@ var parse = new Kaiseki(config.kaiseki_app_id, config.kaiseki_rest_api_key);
 app.use(express.bodyParser());
 
 app.post('/signin', function(req, res){
+	debugger;
+
   	var email = req.body.email;
   	var name = req.body.name;
   	var code = req.body.code;
@@ -29,11 +31,14 @@ app.post('/signin', function(req, res){
   		'client_secret=' + config.google_client_secret, 'redirect_uri=' + config.google_redirect_uri, 
   		'grant_type=authorization_code'].join('&')
 
+
   	res.pipe(request({
 	    method: 'POST', 
 	    uri: 'https://accounts.google.com/o/oauth2/token',
 	    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
 	    body: body}));
+
+  	res.end();
 });
 
 app.use(function(err, req, res, next){
@@ -44,4 +49,4 @@ app.use(function(err, req, res, next){
 var io = require('socket.io');
 io.listen(app.listen(config.port));
 
-console.log('Listening on port 80');
+console.log('Listening on port ' + config.port);
