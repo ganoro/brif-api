@@ -19,7 +19,7 @@ app.use(express.bodyParser());
 app.get('/signin', function(req, res){
 
 	// error handling
-	var error = parameters.error;
+	var error = req.query.error;
   	if (error != null ) {
   		res.redirect('/?error_code=google_error&error=' + error);
   		return;
