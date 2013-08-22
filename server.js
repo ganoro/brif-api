@@ -26,7 +26,7 @@ app.get('/signin', function(req, res){
 	}
 
   	// validation check
-  	var code = req.body.code;
+  	var code = req.query.code;
   	if (code == null) {
 		res.redirect('/?error_code=internal_error&error=' + encodeURIComponent("missing parameters - code"));
   		return; 
