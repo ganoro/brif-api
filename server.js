@@ -16,7 +16,7 @@ var parse = new Kaiseki(config.kaiseki_app_id, config.kaiseki_rest_api_key);
 
 app.use(express.bodyParser());
 
-app.get('/signin', function(req, res){
+app.post('/signin', function(req, res){
 
 	// error handling
 	var error = req.query.error;
@@ -27,12 +27,9 @@ app.get('/signin', function(req, res){
 
   	// validation check
   	var code = req.query.code;
-  	var access_token = req.query.access_token;
   	var expires_in = req.query.expires_in;
-  	if (code == null || access_token == null || expires_in == null) {
-		res.redirect('/?error_code=internal_error&error=' + 
-			encodeURIComponent("missing parameter - code " + code + 
-			", access token " + access_token + " or expires_in" + expires_in));
+  	if (code == null || expires_in == null) {
+		res.redirect('/?error_code=internal_error&error=' + encodeURIComponent("missing parameters - code and expires_in");
   		return; 
   	}
 
@@ -45,7 +42,6 @@ app.get('/signin', function(req, res){
 	    	code: code, 
 	    	client_id : config.google_client_id,
 	    	client_secret : config.google_client_secret,
-	    	redirect_uri : config.google_redirect_uri,
 	    	grant_type : 'authorization_code'
 	    }}).pipe(res);
 });
