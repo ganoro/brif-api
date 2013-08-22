@@ -10,7 +10,6 @@ var app = express();
 
 /**
  * initialize parse app
- http://staging.brif.us/signin#state=signin&access_token=ya29.AHES6ZS8bRLukPLSxMFBkLsib4cKf39Yle1Dcl_oJNcn9CRNKw&token_type=Bearer&expires_in=3600&code=4/_S2L0Nmy749ZW-yhUkb1a3jJZjRI.sjJRRKwHVOsTOl05ti8ZT3YnnNJKgQI
  */ 
 var parse = new Kaiseki(config.kaiseki_app_id, config.kaiseki_rest_api_key);
 
