@@ -18,16 +18,9 @@ app.use(express.bodyParser());
 
 app.post('/signin', function(req, res){
 
-	// error handling
-	var error = req.query.error;
-  	if (error != null ) {
-  		res.redirect('/?error_code=google_error&error=' + error);
-  		return;
-  	}
-
   	// validation check
-  	var code = req.query.code;
-  	var expires_in = req.query.expires_in;
+  	var code = req.body.code;
+  	var expires_in = req.body.expires_in;
   	if (code == null || expires_in == null) {
 		res.redirect('/?error_code=internal_error&error=' + encodeURIComponent("missing parameters - code and expires_in"));
   		return; 
