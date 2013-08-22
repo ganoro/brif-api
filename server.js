@@ -27,16 +27,22 @@ app.post('/signin', function(req, res){
   	}
 
   	// exchange code for (a refreshable) token
+  	var form = {
+	    	code: code, 
+	    	client_id : config.google_client_id,
+	    	client_secret : config.google_client_secret,
+	    	redirect_uri : 'http://staging.brif.us/oauth2callback.html',
+	    	grant_type : 'authorization_code'
+    };
+
+    console.log(form);
+
   	request({
 	    method: 'POST', 
 	    uri: 'https://accounts.google.com/o/oauth2/token',
 	    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-	    form : {
-	    	code: code, 
-	    	client_id : config.google_client_id,
-	    	client_secret : config.google_client_secret,
-	    	grant_type : 'authorization_code'
-	    }}).pipe(res);
+	    form : form
+	}).pipe(res);
 });
 
 app.use(function(err, req, res, next){
