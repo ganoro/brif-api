@@ -31,7 +31,7 @@ app.post('/signin', function(req, res){
 	    	code: code, 
 	    	client_id : config.google_client_id,
 	    	client_secret : config.google_client_secret,
-	    	redirect_uri : 'urn:ietf:wg:oauth:2.0:oob',
+	    	redirect_uri : config.google_redirect_uri,
 	    	grant_type : 'authorization_code'
     };
 
