@@ -29,7 +29,7 @@ app.post('/signin', function(req, res){
   	var code = req.query.code;
   	var expires_in = req.query.expires_in;
   	if (code == null || expires_in == null) {
-		res.redirect('/?error_code=internal_error&error=' + encodeURIComponent("missing parameters - code and expires_in");
+		res.redirect('/?error_code=internal_error&error=' + encodeURIComponent("missing parameters - code and expires_in"));
   		return; 
   	}
 
