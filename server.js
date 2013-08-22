@@ -16,13 +16,19 @@ var parse = new Kaiseki(config.kaiseki_app_id, config.kaiseki_rest_api_key);
 
 app.use(express.bodyParser());
 
-app.post('/signin', function(req, res){
+app.get('/signin', function(req, res){
+
+	// error handling
+	var error = req.query.error;
+	if (error != null) {
+		res.redirect('staging.brif.us/why');
+		return;
+	}
 
   	// validation check
   	var code = req.body.code;
-  	var expires_in = req.body.expires_in;
-  	if (code == null || expires_in == null) {
-		res.redirect('/?error_code=internal_error&error=' + encodeURIComponent("missing parameters - code and expires_in"));
+  	if (code == null) {
+		res.redirect('/?error_code=internal_error&error=' + encodeURIComponent("missing parameters - code"));
   		return; 
   	}
 
