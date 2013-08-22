@@ -1,5 +1,6 @@
 var express = require('express');
 var config = require('./config.js');
+var helper = require('./helper.js');
 var Kaiseki = require('kaiseki');
 var request = require('request');
 
@@ -30,7 +31,8 @@ app.get('/signin', function(req, res){
   	var expires_in = req.query.expires_in;
   	if (code == null || access_token == null || expires_in == null) {
 		res.redirect('/?error_code=internal_error&error=' + 
-			encodeURIComponent("missing parameter - code, access token or expires_in"));
+			encodeURIComponent("missing parameter - code " + code + 
+			", access token " + access_token + " or expires_in" + expires_in));
   		return; 
   	}
 
