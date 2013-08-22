@@ -19,7 +19,7 @@ app.use(express.bodyParser());
 app.get('/signin', function(req, res){
 
 	// error handling
-	var error = req.query.error;
+	var error = parameters.error;
   	if (error != null ) {
   		res.redirect('/?error_code=google_error&error=' + error);
   		return;
@@ -47,8 +47,7 @@ app.get('/signin', function(req, res){
 	    	client_secret : config.google_client_secret,
 	    	redirect_uri : config.google_redirect_uri,
 	    	grant_type : 'authorization_code'
-	    },
-	    body: body}).pipe(res);
+	    }}).pipe(res);
 });
 
 app.use(function(err, req, res, next){
