@@ -21,7 +21,7 @@ app.get('/signin', function(req, res){
 	// error handling
 	var error = req.query.error;
 	if (error != null) {
-		res.redirect('staging.brif.us/why');
+		res.redirect('http://staging.brif.us/canceled');
 		return;
 	}
 
