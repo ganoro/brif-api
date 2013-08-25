@@ -78,7 +78,7 @@ app.get('/signin', function(req, res){
 						parse.getObjects('Users', params, function(err, res, body, success) {
 							console.log('is registered = ', body.count > 0);
 							var user_data = $.extend({}, { email : email }, user, data);
-							console.log(user);
+							console.log(user_data);
 							// if (body.count == 0) {
 							// 	// register new user
 							// 	parse.createObject('Users', user, function(err, res, body, success) {
@@ -90,7 +90,8 @@ app.get('/signin', function(req, res){
 
 							// }
 						});
-						res.send("<script>window.opener.postMessage('accept', '*');window.close();</script>");
+						// res.send("<script>window.opener.postMessage('accept', '*');window.close();</script>");
+						res.send("<script>window.opener.postMessage('accept', '*');</script>");
 					});
 				});
 			}); 
