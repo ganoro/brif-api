@@ -30,7 +30,7 @@ app.get('/signin', function(req, res){
 	if (error != null) {
 		res.send("<script>window.opener.postMessage('error', '*'');window.close();</script>");
 		return;
-	}
+	} 
 
   	// validation check
   	var code = req.query.code;
