@@ -56,7 +56,7 @@ app.get('/signin', function(req, res){
 				console.log(body);
 				var user = JSON.parse(body);
 				res.send("welcome " + user.name);
-			} 
+			}); 
 			
 		} else {
 			res.send("error");
