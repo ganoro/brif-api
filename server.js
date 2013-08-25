@@ -54,13 +54,15 @@ app.get('/signin', function(req, res){
 		var data = JSON.parse(body);
 		if (data.access_token != null && data.expires_in != null && data.refresh_token != null) {
 			request.get('https://www.googleapis.com/oauth2/v2/userinfo?access_token=' + data.access_token, function(e, r, body) {
+				// TODO error handling
 				console.log(body);
 				var user = JSON.parse(body);
 				request.get('https://www.google.com/m8/feeds/contacts/default/full/?max-results=1&access_token=' + data.access_token, function(e, r, body) {
-					console.log(body);
-					// var contacts = xml2js(body, function() {
-					res.send("welcome " + user.name);	
-					// });
+					xml2js(body, function(error, result) {
+						// TODO error handling
+						console.log(result);
+						res.send("welcome " + user.name);	
+					});
 				});
 			}); 
 		} else {
