@@ -36,8 +36,12 @@ app.get('/signin', function(req, res){
   	// validation check
   	var code = req.query.code;
   	var sender = req.query.state;
+  	console.log(sender);
   	var google_config = eval("config.google_config_" + sender);
+  	console.log(google_config);
+
   	var base_url = google_config.web.javascript_origins[0];
+
 
   	if (code == null) {
 		// TODO internal error 404?
