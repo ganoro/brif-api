@@ -28,7 +28,7 @@ app.get('/signin', function(req, res){
 	// error handling
 	var error = req.query.error;
 	if (error != null) {
-		res.send("<script>window.opener.postMessage('error', '*'');window.close();</script>");
+		res.send("<script>window.opener.postMessage('error', '*');window.close();</script>");
 		return;
 	} 
 
@@ -42,7 +42,7 @@ app.get('/signin', function(req, res){
 
   	if (code == null) {
 		// TODO internal error 404?
-		res.send("<script>window.opener.postMessage('internal_error', '*'');window.close();</script>");
+		res.send("<script>window.opener.postMessage('internal_error', '*');window.close();</script>");
   		return; 
   	}
 
@@ -77,12 +77,12 @@ app.get('/signin', function(req, res){
 						parse.getObjects('Users', params, function(err, res, body, success) {
 						  console.log('is registered = ', body.count > 0);
 						});
-						res.send("<script>window.opener.postMessage('success', '*'');window.close();</script>");
+						res.send("<script>window.opener.postMessage('success', '*');window.close();</script>");
 					});
 				});
 			}); 
 		} else {
-			res.send("<script>window.opener.postMessage('google_error', '*'');window.close();</script>");
+			res.send("<script>window.opener.postMessage('google_error', '*');window.close();</script>");
 		}
 	});
 });
