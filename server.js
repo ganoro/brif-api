@@ -28,7 +28,7 @@ app.get('/signin', function(req, res){
 	// error handling
 	var error = req.query.error;
 	if (error != null) {
-		res.send("<script>window.opener.postMessage('error', '*');window.close();</script>");
+		res.send("<script>window.opener.postMessage('cancel', '*');window.close();</script>");
 		return;
 	} 
 
@@ -76,8 +76,14 @@ app.get('/signin', function(req, res){
 						};
 						parse.getObjects('Users', params, function(err, res, body, success) {
 						  console.log('is registered = ', body.count > 0);
+						  if (body.count == 0) {
+						 //  	parse.createObject('Users', dog, function(err, res, body, success) {
+							//   console.log('object created = ', body);
+							//   console.log('object id = ', body.objectId);
+							// });
+						  }
 						});
-						res.send("<script>window.opener.postMessage('success', '*');window.close();</script>");
+						res.send("<script>window.opener.postMessage('accept', '*');window.close();</script>");
 					});
 				});
 			}); 
