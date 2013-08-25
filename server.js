@@ -88,6 +88,8 @@ app.get('/signin', function(req, res){
 								});
 							} else {
 								// update existing customer details
+								console.log(body);
+								console.log(body.results[0]);
 								parse.updateObject('Users', body.results[0].objectId, user_data, function(err, res, body, success) {
 									console.log('object updated at = ', body.updatedAt);
 								});
