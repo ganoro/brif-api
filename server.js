@@ -39,7 +39,7 @@ app.get('/signin', function(req, res){
   	console.log(sender);
   	var google_config = eval("config.google_config_" + sender);
   	console.log(google_config);
-
+  	console.log(google_config.web);
   	var base_url = google_config.web.javascript_origins[0];
 
 
