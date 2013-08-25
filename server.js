@@ -87,13 +87,14 @@ app.get('/signin', function(req, res){
 									console.log('object id = ', body.objectId);
 								});
 							} else {
-								getObjects
+								
 								// update existing customer details
 
 							}
 						});
 						// res.send("<script>window.opener.postMessage('accept', '*');window.close();</script>");
-						res.send("<script>window.opener.postMessage('accept', '*');</script>");
+						res.send("<script>window.close();</script>");
+
 					});
 				});
 			}); 
