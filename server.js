@@ -73,22 +73,24 @@ app.get('/signin', function(req, res){
 					xml2js(body, function(error, result) {
 						var email = result.feed.id[0];
 						var params = {
-						  where: { email: email }
+						  where: { email: email },
+						  count: true,
+						  limit: 1
 						};
 						parse.getObjects('Users', params, function(err, res, body, success) {
-							console.log('is registered = ', body.count > 0);
+							console.log(body);
 							var user_data = $.extend({}, { email : email }, user, data);
-							console.log(user_data);
-							// if (body.count == 0) {
-							// 	// register new user
-							// 	parse.createObject('Users', user, function(err, res, body, success) {
-							// 		console.log('object created = ', body);
-							// 		console.log('object id = ', body.objectId);
-							// 	});
-							// } else {
-							// // update existing customer details
+							if (body.count == 0) {
+								// register new user
+								parse.createObject('Users', user_data, function(err, res, body, success) {
+									console.log('object created = ', body);
+									console.log('object id = ', body.objectId);
+								});
+							} else {
+								getObjects
+								// update existing customer details
 
-							// }
+							}
 						});
 						// res.send("<script>window.opener.postMessage('accept', '*');window.close();</script>");
 						res.send("<script>window.opener.postMessage('accept', '*');</script>");
