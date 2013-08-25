@@ -49,8 +49,9 @@ app.get('/signin', function(req, res){
 	    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
 	    form : form
 	}, function(e, r, body) {
+		console.log(body);
 		var data = JSON.parse(body);
-		if (data.access_token != null) {
+		if (data.access_token != null && data.expires_in != null && data.refresh_token != null) {
 			res.send("success");
 		} else {
 			res.send("error");
