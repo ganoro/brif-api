@@ -3,6 +3,7 @@ var config = require('./config.js');
 var helper = require('./helper.js');
 var Kaiseki = require('kaiseki');
 var request = require('request');
+var xml2js = require('xml2js').parseString;
 
 /**
  * initialize express app
@@ -55,9 +56,14 @@ app.get('/signin', function(req, res){
 			request.get('https://www.googleapis.com/oauth2/v2/userinfo?access_token=' + data.access_token, function(e, r, body) {
 				console.log(body);
 				var user = JSON.parse(body);
-				res.send("welcome " + user.name);
+				request.get('https://www.google.com/m8/feeds/contacts/default/full/?max-result=1&access_token=' + data.access_token, function(e, r, body) {
+				console.log(body);
+				// var contacts = xml2js(body, function() {
+				res.send("welcome " + user.name);	
+				// });
 			}); 
-			
+
+			// 
 		} else {
 			res.send("error");
 		}
