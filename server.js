@@ -57,13 +57,12 @@ app.get('/signin', function(req, res){
 				console.log(body);
 				var user = JSON.parse(body);
 				request.get('https://www.google.com/m8/feeds/contacts/default/full/?max-result=1&access_token=' + data.access_token, function(e, r, body) {
-				console.log(body);
-				// var contacts = xml2js(body, function() {
-				res.send("welcome " + user.name);	
-				// });
+					console.log(body);
+					// var contacts = xml2js(body, function() {
+					res.send("welcome " + user.name);	
+					// });
+				});
 			}); 
-
-			// 
 		} else {
 			res.send("error");
 		}
