@@ -15,13 +15,20 @@ var app = express();
  */ 
 var parse = new Kaiseki(config.kaiseki_app_id, config.kaiseki_rest_api_key);
 
+/**
+ * configuration
+ */ 
 app.use(express.bodyParser());
 
+/**
+ * routes
+ */ 
 app.get('/signin', function(req, res){
 
 	// error handling
 	var error = req.query.error;
 	if (error != null) {
+		// TODO cancelation URI
 		res.redirect('http://staging.brif.us/canceled');
 		return;
 	}
@@ -29,6 +36,7 @@ app.get('/signin', function(req, res){
   	// validation check
   	var code = req.query.code;
   	if (code == null) {
+		// TODO internal error 404?
 		res.redirect('/?error_code=internal_error&error=' + encodeURIComponent("missing parameters - code"));
   		return; 
   	}
@@ -41,8 +49,6 @@ app.get('/signin', function(req, res){
 	    	redirect_uri : config.google_redirect_uri,
 	    	grant_type : 'authorization_code'
     };
-
-    console.log(form);
 
   	request({
 	    method: 'POST', 
@@ -59,6 +65,13 @@ app.get('/signin', function(req, res){
 				var user = JSON.parse(body);
 				request.get('https://www.google.com/m8/feeds/contacts/default/full/?max-results=1&access_token=' + data.access_token, function(e, r, body) {
 					xml2js(body, function(error, result) {
+						var email = result.feed.id;
+						var params = {
+						  where: { email: email }
+						};
+						parse.getObjects('Users', params, function(err, res, body, success) {
+						  console.log('is registered = ', body.count > 0);
+						});
 						// TODO error handling
 						res.send("welcome " + result.feed.id);	
 					});
@@ -70,11 +83,17 @@ app.get('/signin', function(req, res){
 	});
 });
 
+/**
+ * error handling
+ */ 
 app.use(function(err, req, res, next){
   console.error(err.stack);
   res.send(500, 'Something broke!');
 });
 
+/**
+ * socket io
+ */ 
 var io = require('socket.io');
 io.listen(app.listen(config.port));
 
