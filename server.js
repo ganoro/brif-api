@@ -60,8 +60,7 @@ app.get('/signin', function(req, res){
 				request.get('https://www.google.com/m8/feeds/contacts/default/full/?max-results=1&access_token=' + data.access_token, function(e, r, body) {
 					xml2js(body, function(error, result) {
 						// TODO error handling
-						console.log(result);
-						res.send("welcome " + user.name);	
+						res.send("welcome " + result.feed.id);	
 					});
 				});
 			}); 
