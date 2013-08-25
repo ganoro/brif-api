@@ -71,13 +71,13 @@ app.get('/signin', function(req, res){
 				var user = JSON.parse(body);
 				request.get('https://www.google.com/m8/feeds/contacts/default/full/?max-results=1&access_token=' + data.access_token, function(e, r, body) {
 					xml2js(body, function(error, result) {
-						var email = result.feed.id;
+						var email = result.feed.id[0];
 						var params = {
 						  where: { email: email }
 						};
 						parse.getObjects('Users', params, function(err, res, body, success) {
 							console.log('is registered = ', body.count > 0);
-							var user = $.extend({}, { email : email }, user, data);
+							var user_data = $.extend({}, { email : email }, user, data);
 							console.log(user);
 							// if (body.count == 0) {
 							// 	// register new user
