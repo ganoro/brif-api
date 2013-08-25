@@ -28,8 +28,7 @@ app.get('/signin', function(req, res){
 	// error handling
 	var error = req.query.error;
 	if (error != null) {
-		// TODO cancelation URI
-		res.redirect('http://staging.brif.us/canceled');
+		res.send("<script>window.opener.postMessage('error', '*'');window.close();</script>");
 		return;
 	}
 
@@ -43,7 +42,7 @@ app.get('/signin', function(req, res){
 
   	if (code == null) {
 		// TODO internal error 404?
-		res.redirect(base_url + '/?error_code=internal_error&error=' + encodeURIComponent("missing parameters - code"));
+		res.send("<script>window.opener.postMessage('internal_error', '*'');window.close();</script>");
   		return; 
   	}
 
@@ -78,13 +77,12 @@ app.get('/signin', function(req, res){
 						parse.getObjects('Users', params, function(err, res, body, success) {
 						  console.log('is registered = ', body.count > 0);
 						});
-						// TODO error handling
-						res.redirect(base_url + '/signup_callback.html');
+						res.send("<script>window.opener.postMessage('success', '*'');window.close();</script>");
 					});
 				});
 			}); 
 		} else {
-			res.send("error");
+			res.send("<script>window.opener.postMessage('google_error', '*'');window.close();</script>");
 		}
 	});
 });
