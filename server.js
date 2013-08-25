@@ -87,9 +87,10 @@ app.get('/signin', function(req, res){
 									console.log('object id = ', body.objectId);
 								});
 							} else {
-								
 								// update existing customer details
-
+								parse.updateObject('Users', body.results[0].objectId, user_data, function(err, res, body, success) {
+									console.log('object updated at = ', body.updatedAt);
+								});
 							}
 						});
 						// res.send("<script>window.opener.postMessage('accept', '*');window.close();</script>");
