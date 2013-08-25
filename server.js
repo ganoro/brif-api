@@ -4,6 +4,7 @@ var helper = require('./helper.js');
 var Kaiseki = require('kaiseki');
 var request = require('request');
 var xml2js = require('xml2js').parseString;
+var $ = require('jquery').create();
 
 /**
  * initialize express app
@@ -75,13 +76,19 @@ app.get('/signin', function(req, res){
 						  where: { email: email }
 						};
 						parse.getObjects('Users', params, function(err, res, body, success) {
-						  console.log('is registered = ', body.count > 0);
-						  if (body.count == 0) {
-						 //  	parse.createObject('Users', dog, function(err, res, body, success) {
-							//   console.log('object created = ', body);
-							//   console.log('object id = ', body.objectId);
-							// });
-						  }
+							console.log('is registered = ', body.count > 0);
+							var user = $.extend({}, { email : email }, user, data);
+							console.log(user);
+							// if (body.count == 0) {
+							// 	// register new user
+							// 	parse.createObject('Users', user, function(err, res, body, success) {
+							// 		console.log('object created = ', body);
+							// 		console.log('object id = ', body.objectId);
+							// 	});
+							// } else {
+							// // update existing customer details
+
+							// }
 						});
 						res.send("<script>window.opener.postMessage('accept', '*');window.close();</script>");
 					});

@@ -6,6 +6,7 @@
   "dependencies": {
     "express": "3.x",
     "xml2js" : "*",
+    "jquery" : "*",
     "request": "*",
     "socket.io": "~0.9.x",
     "kaiseki": "*"
