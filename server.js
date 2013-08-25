@@ -38,10 +38,6 @@ app.get('/signin', function(req, res){
   	var sender = req.query.state;
   	console.log(sender);
   	var google_config = eval("config.google_config_" + sender);
-  	console.log(google_config);
-  	console.log(google_config.web);
-  	console.log(google_config.web.javascript_origins);
-
   	var base_url = google_config.web.javascript_origins[0];
 
 
@@ -56,7 +52,7 @@ app.get('/signin', function(req, res){
 	    	code: code, 
 	    	client_id : google_config.web.client_id,
 	    	client_secret : google_config.web.client_secret,
-	    	redirect_uri : google_config.web.redirect_uri[0],
+	    	redirect_uri : google_config.web.redirect_uris[0],
 	    	grant_type : 'authorization_code'
     };
 
