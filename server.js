@@ -52,7 +52,12 @@ app.get('/signin', function(req, res){
 		console.log(body);
 		var data = JSON.parse(body);
 		if (data.access_token != null && data.expires_in != null && data.refresh_token != null) {
-			res.send("success");
+			request.get('https://www.googleapis.com/oauth2/v2/userinfo?access_token=' + data.access_token, function(e, r, body) {
+				console.log(body);
+				var user = JSON.parse(body);
+				res.send("welcome " + user.name);
+			} 
+			
 		} else {
 			res.send("error");
 		}
