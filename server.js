@@ -35,18 +35,22 @@ app.get('/signin', function(req, res){
 
   	// validation check
   	var code = req.query.code;
+  	var sender = req.query.state;
+  	var google_config = eval("config.google_config_" + sender);
+  	var base_url = google_config.web.javascript_origins[0];
+
   	if (code == null) {
 		// TODO internal error 404?
-		res.redirect('/?error_code=internal_error&error=' + encodeURIComponent("missing parameters - code"));
+		res.redirect(base_url + '/?error_code=internal_error&error=' + encodeURIComponent("missing parameters - code"));
   		return; 
   	}
 
   	// exchange code for (a refreshable) token
   	var form = {
 	    	code: code, 
-	    	client_id : config.google_client_id,
-	    	client_secret : config.google_client_secret,
-	    	redirect_uri : config.google_redirect_uri,
+	    	client_id : google_config.web.client_id,
+	    	client_secret : google_config.web.client_secret,
+	    	redirect_uri : google_config.web.redirect_uri[0],
 	    	grant_type : 'authorization_code'
     };
 
@@ -73,7 +77,7 @@ app.get('/signin', function(req, res){
 						  console.log('is registered = ', body.count > 0);
 						});
 						// TODO error handling
-						res.send("welcome " + result.feed.id);	
+						res.redirect(base_url + '/signup_callback.html');
 					});
 				});
 			}); 
