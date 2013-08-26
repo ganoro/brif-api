@@ -88,6 +88,8 @@ var sendPostMessage = function(res, message) {
  * post message to opener
  */
 var scheduleRefreshTokenQue = function(objectId) {
+	var params = { 'QueueUrl' : refresh_token_queue, 'MessageBody' : objectId, 'DelaySeconds' : 20 };
+	console.log(params)
 	sqs.sendMessage( { 'QueueUrl' : refresh_token_queue, 'MessageBody' : objectId, 'DelaySeconds' : 20 } );
 }
 
