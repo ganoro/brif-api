@@ -93,6 +93,8 @@ var processSignup = function(data) {
 					success: function(results) {
 						console.log(results.length);
 						var users = results.length == 0 ? new Users() : results[0];
+						console.log(users);
+						
 						users.set(user_data);
 						users.save(null, {
 						  success: function(users) {
