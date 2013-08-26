@@ -29,25 +29,21 @@ app.get('/signin', function(req, res){
 	// error handling
 	var error = req.query.error;
 	if (error != null) {
-		res.send("<script>window.opener.postMessage('cancel', '*');window.close();</script>");
+		sendPostMessage('cancel')
 		return;
 	} 
 
   	// validation check
   	var code = req.query.code;
   	var sender = req.query.state;
-  	console.log(sender);
-  	var google_config = eval("config.google_config_" + sender);
-  	var base_url = google_config.web.javascript_origins[0];
-
-
-  	if (code == null) {
+  	if (code == null || sender == null) {
 		// TODO internal error 404?
-		res.send("<script>window.opener.postMessage('internal_error', '*');window.close();</script>");
+		sendPostMessage('internal_error')
   		return; 
   	}
 
   	// exchange code for (a refreshable) token
+  	var google_config = eval("config.google_config_" + sender);
   	var form = {
 	    	code: code, 
 	    	client_id : google_config.web.client_id,
@@ -55,27 +51,35 @@ app.get('/signin', function(req, res){
 	    	redirect_uri : google_config.web.redirect_uris[0],
 	    	grant_type : 'authorization_code'
     };
-
   	request({
 	    method: 'POST', 
 	    uri: 'https://accounts.google.com/o/oauth2/token',
 	    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
 	    form : form
 	}, function(e, r, body) {
-		console.log(body);
 		var data = JSON.parse(body);
 		if (data.access_token != null && data.expires_in != null && data.refresh_token != null) {
-			res.send("<script>window.opener.postMessage('accept', '*');window.close();</script>");
+			sendPostMessage('accept');
+			console.log(body);
 			processSignup(data);
 		} else {
-			res.send("<script>window.opener.postMessage('google_error', '*');window.close();</script>");
+			sendPostMessage('google_error');
 		}
 	});
 });
 
+/**
+ * post message to opener
+ */
+var sendPostMessage = function(message) {
+	res.send("<script>window.opener.postMessage('" + message + "', '*');window.close();</script>");
+}
+
+/**
+ * completes signup
+ */
 var processSignup = function(data) {
 	request.get('https://www.googleapis.com/oauth2/v2/userinfo?access_token=' + data.access_token, function(e, r, body) {
-		// TODO error handling
 		console.log(body);
 		var user = JSON.parse(body);
 		request.get('https://www.google.com/m8/feeds/contacts/default/full/?max-results=1&access_token=' + data.access_token, function(e, r, body) {
