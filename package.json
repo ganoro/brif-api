@@ -10,6 +10,6 @@
     "aws-sdk" : "*",
     "request": "*",
     "socket.io": "~0.9.x",
-    "kaiseki": "*"
+    "parse": "*"
   }
 }

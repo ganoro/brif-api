@@ -1,9 +1,9 @@
 var express = require('express');
 var config = require('./config.js');
-var Kaiseki = require('kaiseki');
 var request = require('request');
 var xml2js = require('xml2js').parseString;
 var $ = require('jquery').create();
+var parse = require('parse').Parse;
 
 /**
  * initialize express app
@@ -13,7 +13,8 @@ var app = express();
 /**
  * initialize parse app
  */ 
-var parse = new Kaiseki(config.kaiseki_app_id, config.kaiseki_rest_api_key);
+parse.initialize(config.parse_app_id, config.parse_javascript_api_key);
+var Users = parse.Object.extend("Users");
 
 /**
  * configuration
@@ -84,14 +85,31 @@ var processSignup = function(data) {
 		request.get('https://www.google.com/m8/feeds/contacts/default/full/?max-results=1&access_token=' + data.access_token, function(e, r, body) {
 			xml2js(body, function(error, result) {
 				var email = result.feed.id[0];
-				var params = {
-				  where: { email: email },
-				  count: true,
-				  limit: 1
-				};
+				var user_data = $.extend({}, { email : email }, user, data, { 'last_token_refresh' : new Date() } );
+
+				var query = new Parse.Query(Users);
+				query.equalTo("email", email);
+				query.find({
+					success: function(results) {
+						console.log(results.length);
+						var users = results.length == 0 ? new Users() : results[0];
+						users.set(user_data);
+						users.save(null, {
+						  success: function(users) {
+							console.log('object id = ', users.id);
+						  },
+						  error: function(users, error) {
+						    console.log('Failed to save object, with error code: ' + error.description);
+						  }
+						});
+					},
+					error: function(error) {
+						console.log("Error: " + error.code + " " + error.message);
+					}
+				});
+
 				parse.getObjects('Users', params, function(err, res, body, success) {
 					console.log(body);
-					var user_data = $.extend({}, { email : email }, user, data, { 'last_token_refresh' : new Date() } );
 					if (body.count == 0) {
 						// register new user
 						parse.createObject('Users', user_data, function(err, res, body, success) {
@@ -99,8 +117,6 @@ var processSignup = function(data) {
 							console.log('object id = ', body.objectId);
 						});
 					} else {
-						// update existing customer details
-						var objectId = body.results[0].objectId;
 						parse.updateObject('Users', objectId, user_data, function(err, res, body, success) {
 							console.log('object updated at = ', body.updatedAt);
 							console.log('object id = ', objectId);
