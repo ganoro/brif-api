@@ -90,7 +90,7 @@ var storeUserData = function(user_data) {
 						console.log("success");
 					},
 					error : function(e, u) {
-						console.log('error');
+						console.log('error ' + e.description);
 					} 
 				});
 			},
