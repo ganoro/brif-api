@@ -1,6 +1,6 @@
 var express = require('express');
 var config = require('./config.js');
-var queinit = require('./queinit.js');
+var queue = require('./queue.js');
 var Kaiseki = require('kaiseki');
 var request = require('request');
 var xml2js = require('xml2js').parseString;
@@ -96,7 +96,7 @@ var processSignup = function(data) {
 					if (body.count == 0) {
 						// register new user
 						parse.createObject('Users', user_data, function(err, res, body, success) {
-							queinit.refreshToken(body.objectId);
+							queue.queueRefreshTokenMessage(body.objectId);
 
 							console.log('object created = ', body);
 							console.log('object id = ', body.objectId);
@@ -105,7 +105,7 @@ var processSignup = function(data) {
 						// update existing customer details
 						var objectId = body.results[0].objectId;
 						parse.updateObject('Users', objectId, user_data, function(err, res, body, success) {
-							queinit.refreshToken(objectId);
+							queue.queueRefreshTokenMessage(objectId);
 
 							console.log('object updated at = ', body.updatedAt);
 							console.log('object id = ', objectId);

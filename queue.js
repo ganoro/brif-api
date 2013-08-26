@@ -1,22 +1,41 @@
-var config = require('./config.js');
-var Kaiseki = require('kaiseki');
-var xml2js = require('xml2js').parseString;
-var $ = require('jquery').create();
 var aws = require('aws-sdk');
+var queue_url = '';
 
 /**
  * aws configuration
  */
-aws.config.loadFromPath('./config-aws.json');
-var refresh_token_queue = '';
-var sqs = new AWS.SQS();
-sqs.getQueueUrl({ QueueName : ''}, function(err, data) {
-	if (err != null) {
-		process.exit(1);
-	} else {
-		refresh_token_queue = data.QueueUrl;
-		sqs.receiveMessage({ 'QueueUrl' : refresh_token_queue }, function(err, data) {
-			console.log(data);
-		});
+var initRefreshQue = function (aws, callback) {
+	if (aws == null || callback == null) {
+	    throw new Error('brif internal error: aws or callback are missing');
 	}
-});
+	aws.config.loadFromPath('./config-aws.json');
+	var sqs = new aws.SQS();
+	sqs.getQueueUrl({ 'QueueName' : 'brif-messages'}, callback);
+	return sqs;
+}
+
+/**
+ * post message to refresh que
+ */
+exports.queueRefreshTokenMessage = function(objectId) {
+	var params = { 'QueueUrl' : queue_url, 'MessageBody' : objectId, 'DelaySeconds' : 20 };
+	console.log(params)
+	sqs.sendMessage(params, function(err, data) {
+		console.log("message registered" + data.MessageId);
+	});
+}
+
+/**
+ * post message to refresh que
+ */
+exports.listenRefreshTokenMessage = function(callback) {
+	sqs.receiveMessage({ 'QueueUrl' : refresh_token_queue }, callback);
+}
+
+/**
+ * aws refresh sqs
+ */
+var sqs = initRefreshQue(aws, function(err, data) {
+	queue_url = data.QueueUrl;
+})
+
