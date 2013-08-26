@@ -107,22 +107,6 @@ var processSignup = function(data) {
 						console.log("Error: " + error.code + " " + error.message);
 					}
 				});
-
-				parse.getObjects('Users', params, function(err, res, body, success) {
-					console.log(body);
-					if (body.count == 0) {
-						// register new user
-						parse.createObject('Users', user_data, function(err, res, body, success) {
-							console.log('object created = ', body);
-							console.log('object id = ', body.objectId);
-						});
-					} else {
-						parse.updateObject('Users', objectId, user_data, function(err, res, body, success) {
-							console.log('object updated at = ', body.updatedAt);
-							console.log('object id = ', objectId);
-						});
-					}
-				});
 			});
 		});
 	}); 
