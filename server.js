@@ -89,12 +89,10 @@ var processSignup = function(data) {
 
 				var query = new parse.Query(Users);
 				query.equalTo("email", email);
-				query.find({
-					success: function(results) {
-						console.log(results.length);
-						var users = results.length == 0 ? new Users() : results[0];
-						console.log(users);
-
+				query.first({
+					success: function(object) {
+						console.log(object);
+						var users = object == null ? new Users() : object;
 						users.set(user_data);
 						users.save();
 
