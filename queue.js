@@ -29,7 +29,7 @@ exports.queueRefreshTokenMessage = function(objectId) {
  * post message to refresh que
  */
 exports.listenRefreshTokenMessage = function(callback) {
-	sqs.receiveMessage({ 'QueueUrl' : refresh_token_queue }, callback);
+	sqs.receiveMessage({ 'QueueUrl' : queue_url }, callback);
 }
 
 /**
