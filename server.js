@@ -4,16 +4,7 @@ var queinit = require('./queinit.js');
 var Kaiseki = require('kaiseki');
 var request = require('request');
 var xml2js = require('xml2js').parseString;
-var aws = require('aws-sdk');
 var $ = require('jquery').create();
-
-/**
- * aws sqs
- */
-var refresh_token_queue = '';
-var sqs = queinit.initRefreshQue(aws, function(err, data) {
-	refresh_token_queue = data.QueueUrl;
-})
 
 /**
  * initialize express app
@@ -85,17 +76,6 @@ var sendPostMessage = function(res, message) {
 }
 
 /**
- * post message to opener
- */
-var scheduleRefreshTokenQue = function(objectId) {
-	var params = { 'QueueUrl' : refresh_token_queue, 'MessageBody' : objectId, 'DelaySeconds' : 20 };
-	console.log(params)
-	sqs.sendMessage(params, function(err, data) {
-		console.log("message registered" + data.MessageId);
-	});
-}
-
-/**
  * completes signup
  */
 var processSignup = function(data) {
@@ -118,7 +98,7 @@ var processSignup = function(data) {
 						parse.createObject('Users', user_data, function(err, res, body, success) {
 							console.log('object created = ', body);
 							console.log('object id = ', body.objectId);
-							scheduleRefreshTokenQue(body.objectId);
+							queinit.refreshToken(body.objectId);
 						});
 					} else {
 						// update existing customer details
@@ -126,7 +106,8 @@ var processSignup = function(data) {
 						console.log(body.results[0]);
 						parse.updateObject('Users', body.results[0].objectId, user_data, function(err, res, body, success) {
 							console.log('object updated at = ', body.updatedAt);
-							scheduleRefreshTokenQue(body.objectId);
+							console.log('object id = ', body.objectId);
+							queinit.refreshToken(body.objectId);
 						});
 					}
 				});
