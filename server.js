@@ -87,7 +87,7 @@ var processSignup = function(data) {
 				var email = result.feed.id[0];
 				var user_data = $.extend({}, { email : email }, user, data, { 'last_token_refresh' : new Date() } );
 
-				var query = new Parse.Query(Users);
+				var query = new parse.Query(Users);
 				query.equalTo("email", email);
 				query.find({
 					success: function(results) {
