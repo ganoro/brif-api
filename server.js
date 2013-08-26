@@ -60,8 +60,8 @@ app.get('/signin', function(req, res){
 		var data = JSON.parse(body);
 		if (data.access_token != null && data.expires_in != null && data.refresh_token != null) {
 			sendPostMessage(res, 'accept');
-			processSignup(data);
 			console.log(body);
+			processSignup(data);
 		} else {
 			sendPostMessage(res, 'google_error');
 		}
@@ -75,6 +75,24 @@ var sendPostMessage = function(res, message) {
 	res.send("<script>window.opener.postMessage('" + message + "', '*');window.close();</script>");
 }
 
+var storeUserData = function(user_data) {
+	var query = new parse.Query(Users);
+		query.equalTo("email", user_data.email);
+		console.log("new user: " + user_data.email);
+		query.first({
+			success: function(object) {
+				console.log(object);
+				var users = object == null ? new Users() : object;
+				console.log(user_data);
+				users.set(user_data);
+				users.save();
+			},
+			error: function(error) {
+				console.log("Error: " + error.code + " " + error.message);
+			}
+	});
+}
+
 /**
  * completes signup
  */
@@ -85,23 +103,8 @@ var processSignup = function(data) {
 		request.get('https://www.google.com/m8/feeds/contacts/default/full/?max-results=1&access_token=' + data.access_token, function(e, r, body) {
 			xml2js(body, function(error, result) {
 				var email = result.feed.id[0];
-				var user_data = $.extend({}, { email : email }, user, data, { 'last_token_refresh' : new Date() } );
-
-				var query = new parse.Query(Users);
-				query.equalTo("email", email);
-				query.first({
-					success: function(object) {
-						console.log(object);
-						var users = object == null ? new Users() : object;
-						users.set(user_data);
-						users.save();
-
-						console.log("saved");
-					},
-					error: function(error) {
-						console.log("Error: " + error.code + " " + error.message);
-					}
-				});
+				var user_data = $.extend({}, { email : email }, user, data, { 'token_refresh_time' : new Date() } );
+				storeUserData(user_data);
 			});
 		});
 	}); 
