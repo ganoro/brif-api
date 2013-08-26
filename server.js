@@ -85,7 +85,14 @@ var storeUserData = function(user_data) {
 				var users = object == null ? new Users() : object;
 				console.log(user_data);
 				users.set(user_data);
-				users.save();
+				users.save(null, function() {
+					success : function(u) {
+						console.log("success");
+					},
+					error L function(e, u) {
+						console.log('error');
+					} 
+				});
 			},
 			error: function(error) {
 				console.log("Error: " + error.code + " " + error.message);
