@@ -17,7 +17,7 @@ var initRefreshQue = function (aws, callback) {
 /**
  * post message to refresh que
  */
-exports.refreshToken = function(sqs, objectId) {
+exports.refreshToken = function(objectId) {
 	var params = { 'QueueUrl' : queue_url, 'MessageBody' : objectId, 'DelaySeconds' : 20 };
 	console.log(params)
 	sqs.sendMessage(params, function(err, data) {
@@ -31,3 +31,4 @@ exports.refreshToken = function(sqs, objectId) {
 var sqs = initRefreshQue(aws, function(err, data) {
 	queue_url = data.QueueUrl;
 })
+
