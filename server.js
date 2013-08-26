@@ -96,20 +96,19 @@ var processSignup = function(data) {
 					if (body.count == 0) {
 						// register new user
 						parse.createObject('Users', user_data, function(err, res, body, success) {
+							queinit.refreshToken(body.objectId);
+
 							console.log('object created = ', body);
 							console.log('object id = ', body.objectId);
-							queinit.refreshToken(body.objectId);
 						});
 					} else {
 						// update existing customer details
-						console.log(body);
-						console.log(body.results[0]);
-						parse.updateObject('Users', body.results[0].objectId, user_data, function(err, res, body, success) {
+						var objectId = body.results[0].objectId;
+						parse.updateObject('Users', objectId, user_data, function(err, res, body, success) {
+							queinit.refreshToken(objectId);
+
 							console.log('object updated at = ', body.updatedAt);
-							console.log('object id = ', body.objectId);
-							console.log('res = ', res);
-							console.log('body = ', res);
-							queinit.refreshToken(body.objectId);
+							console.log('object id = ', objectId);
 						});
 					}
 				});
