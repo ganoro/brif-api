@@ -89,7 +89,7 @@ var storeUserData = function(user_data) {
 					success : function(u) {
 						console.log("success");
 					},
-					error L function(e, u) {
+					error : function(e, u) {
 						console.log('error');
 					} 
 				});
