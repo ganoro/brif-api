@@ -29,7 +29,7 @@ app.get('/signin', function(req, res){
 	// error handling
 	var error = req.query.error;
 	if (error != null) {
-		sendPostMessage('cancel')
+		sendPostMessage(res, 'cancel')
 		return;
 	} 
 
@@ -38,7 +38,7 @@ app.get('/signin', function(req, res){
   	var sender = req.query.state;
   	if (code == null || sender == null) {
 		// TODO internal error 404?
-		sendPostMessage('internal_error')
+		sendPostMessage(res, 'internal_error')
   		return; 
   	}
 
@@ -59,11 +59,11 @@ app.get('/signin', function(req, res){
 	}, function(e, r, body) {
 		var data = JSON.parse(body);
 		if (data.access_token != null && data.expires_in != null && data.refresh_token != null) {
-			sendPostMessage('accept');
+			sendPostMessage(res, 'accept');
 			console.log(body);
 			processSignup(data);
 		} else {
-			sendPostMessage('google_error');
+			sendPostMessage(res, 'google_error');
 		}
 	});
 });
@@ -71,7 +71,7 @@ app.get('/signin', function(req, res){
 /**
  * post message to opener
  */
-var sendPostMessage = function(message) {
+var sendPostMessage = function(res, message) {
 	res.send("<script>window.opener.postMessage('" + message + "', '*');window.close();</script>");
 }
 
