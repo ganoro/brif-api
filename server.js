@@ -90,7 +90,9 @@ var sendPostMessage = function(res, message) {
 var scheduleRefreshTokenQue = function(objectId) {
 	var params = { 'QueueUrl' : refresh_token_queue, 'MessageBody' : objectId, 'DelaySeconds' : 20 };
 	console.log(params)
-	sqs.sendMessage( params, function(err, data) { });
+	sqs.sendMessage(params, function(err, data) {
+		console.log("message registered" + data.MessageId);
+	});
 }
 
 /**
