@@ -95,9 +95,7 @@ app.get('/signin', function(req, res){
 								});
 							}
 						});
-						// res.send("<script>window.opener.postMessage('accept', '*');window.close();</script>");
-						res.send("<script>window.close();</script>");
-
+						res.send("<script>window.opener.postMessage('accept', '*');window.close();</script>");
 					});
 				});
 			}); 
