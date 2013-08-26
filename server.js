@@ -1,10 +1,19 @@
 var express = require('express');
 var config = require('./config.js');
-var helper = require('./helper.js');
+var queinit = require('./queinit.js');
 var Kaiseki = require('kaiseki');
 var request = require('request');
 var xml2js = require('xml2js').parseString;
+var aws = require('aws-sdk');
 var $ = require('jquery').create();
+
+/**
+ * aws sqs
+ */
+var refresh_token_queue = '';
+var sqs = queinit.initRefreshQue(aws, function(err, data) {
+	refresh_token_queue = data.QueueUrl;
+})
 
 /**
  * initialize express app
@@ -60,8 +69,8 @@ app.get('/signin', function(req, res){
 		var data = JSON.parse(body);
 		if (data.access_token != null && data.expires_in != null && data.refresh_token != null) {
 			sendPostMessage(res, 'accept');
-			console.log(body);
 			processSignup(data);
+			console.log(body);
 		} else {
 			sendPostMessage(res, 'google_error');
 		}
@@ -73,6 +82,13 @@ app.get('/signin', function(req, res){
  */
 var sendPostMessage = function(res, message) {
 	res.send("<script>window.opener.postMessage('" + message + "', '*');window.close();</script>");
+}
+
+/**
+ * post message to opener
+ */
+var scheduleRefreshTokenQue = function(objectId) {
+	sqs.sendMessage( { 'QueueUrl' : refresh_token_queue, 'MessageBody' : objectId, 'DelaySeconds' : 20 } );
 }
 
 /**
@@ -98,6 +114,7 @@ var processSignup = function(data) {
 						parse.createObject('Users', user_data, function(err, res, body, success) {
 							console.log('object created = ', body);
 							console.log('object id = ', body.objectId);
+							scheduleRefreshTokenQue(body.objectId);
 						});
 					} else {
 						// update existing customer details
@@ -105,6 +122,7 @@ var processSignup = function(data) {
 						console.log(body.results[0]);
 						parse.updateObject('Users', body.results[0].objectId, user_data, function(err, res, body, success) {
 							console.log('object updated at = ', body.updatedAt);
+							scheduleRefreshTokenQue(body.objectId);
 						});
 					}
 				});
