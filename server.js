@@ -94,16 +94,11 @@ var processSignup = function(data) {
 						console.log(results.length);
 						var users = results.length == 0 ? new Users() : results[0];
 						console.log(users);
-						
+
 						users.set(user_data);
-						users.save(null, {
-						  success: function(users) {
-							console.log('object id = ', users.id);
-						  },
-						  error: function(users, error) {
-						    console.log('Failed to save object, with error code: ' + error.description);
-						  }
-						});
+						users.save();
+
+						console.log("saved");
 					},
 					error: function(error) {
 						console.log("Error: " + error.code + " " + error.message);
