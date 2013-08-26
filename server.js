@@ -1,6 +1,5 @@
 var express = require('express');
 var config = require('./config.js');
-var queue = require('./queue.js');
 var Kaiseki = require('kaiseki');
 var request = require('request');
 var xml2js = require('xml2js').parseString;
@@ -92,12 +91,10 @@ var processSignup = function(data) {
 				};
 				parse.getObjects('Users', params, function(err, res, body, success) {
 					console.log(body);
-					var user_data = $.extend({}, { email : email }, user, data);
+					var user_data = $.extend({}, { email : email }, user, data, { 'last_token_refresh' : new Date() } );
 					if (body.count == 0) {
 						// register new user
 						parse.createObject('Users', user_data, function(err, res, body, success) {
-							queue.queueRefreshTokenMessage(body.objectId);
-
 							console.log('object created = ', body);
 							console.log('object id = ', body.objectId);
 						});
@@ -105,8 +102,6 @@ var processSignup = function(data) {
 						// update existing customer details
 						var objectId = body.results[0].objectId;
 						parse.updateObject('Users', objectId, user_data, function(err, res, body, success) {
-							queue.queueRefreshTokenMessage(objectId);
-
 							console.log('object updated at = ', body.updatedAt);
 							console.log('object id = ', objectId);
 						});
