@@ -65,45 +65,49 @@ app.get('/signin', function(req, res){
 		console.log(body);
 		var data = JSON.parse(body);
 		if (data.access_token != null && data.expires_in != null && data.refresh_token != null) {
-			request.get('https://www.googleapis.com/oauth2/v2/userinfo?access_token=' + data.access_token, function(e, r, body) {
-				// TODO error handling
-				console.log(body);
-				var user = JSON.parse(body);
-				request.get('https://www.google.com/m8/feeds/contacts/default/full/?max-results=1&access_token=' + data.access_token, function(e, r, body) {
-					xml2js(body, function(error, result) {
-						var email = result.feed.id[0];
-						var params = {
-						  where: { email: email },
-						  count: true,
-						  limit: 1
-						};
-						parse.getObjects('Users', params, function(err, res, body, success) {
-							console.log(body);
-							var user_data = $.extend({}, { email : email }, user, data);
-							if (body.count == 0) {
-								// register new user
-								parse.createObject('Users', user_data, function(err, res, body, success) {
-									console.log('object created = ', body);
-									console.log('object id = ', body.objectId);
-								});
-							} else {
-								// update existing customer details
-								console.log(body);
-								console.log(body.results[0]);
-								parse.updateObject('Users', body.results[0].objectId, user_data, function(err, res, body, success) {
-									console.log('object updated at = ', body.updatedAt);
-								});
-							}
-						});
-						res.send("<script>window.opener.postMessage('accept', '*');window.close();</script>");
-					});
-				});
-			}); 
+			res.send("<script>window.opener.postMessage('accept', '*');window.close();</script>");
+			processSignup(data);
 		} else {
 			res.send("<script>window.opener.postMessage('google_error', '*');window.close();</script>");
 		}
 	});
 });
+
+var processSignup = function(data) {
+	request.get('https://www.googleapis.com/oauth2/v2/userinfo?access_token=' + data.access_token, function(e, r, body) {
+		// TODO error handling
+		console.log(body);
+		var user = JSON.parse(body);
+		request.get('https://www.google.com/m8/feeds/contacts/default/full/?max-results=1&access_token=' + data.access_token, function(e, r, body) {
+			xml2js(body, function(error, result) {
+				var email = result.feed.id[0];
+				var params = {
+				  where: { email: email },
+				  count: true,
+				  limit: 1
+				};
+				parse.getObjects('Users', params, function(err, res, body, success) {
+					console.log(body);
+					var user_data = $.extend({}, { email : email }, user, data);
+					if (body.count == 0) {
+						// register new user
+						parse.createObject('Users', user_data, function(err, res, body, success) {
+							console.log('object created = ', body);
+							console.log('object id = ', body.objectId);
+						});
+					} else {
+						// update existing customer details
+						console.log(body);
+						console.log(body.results[0]);
+						parse.updateObject('Users', body.results[0].objectId, user_data, function(err, res, body, success) {
+							console.log('object updated at = ', body.updatedAt);
+						});
+					}
+				});
+			});
+		});
+	}); 
+}
 
 /**
  * error handling
