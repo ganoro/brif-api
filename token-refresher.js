@@ -1,20 +1,9 @@
-var queue = require('./queue.js');
 var config = require('./config.js');
-var Kaiseki = require('kaiseki');
-var xml2js = require('xml2js').parseString;
-var $ = require('jquery').create();
+var parse = require('parse').Parse;
 
-var parse = new Kaiseki(config.kaiseki_app_id, config.kaiseki_rest_api_key);
+parse.initialize(config.parse_app_id, config.parse_javascript_api_key);
+var Users = parse.Object.extend("Users");
 
-var params = {
-	where: { email: email },
-	count: true,
-	limit: 1
-};
-parse.getObjects('Users', params, function(err, res, body, success) {
-	
-
-});
 
 
 

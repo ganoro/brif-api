@@ -77,20 +77,15 @@ var sendPostMessage = function(res, message) {
 
 var storeUserData = function(user_data) {
 	delete user_data.id;
-	
+
 	var query = new parse.Query(Users);
 		query.equalTo("email", user_data.email);
 		console.log("new user: " + user_data.email);
 		query.first({
 			success: function(object) {				
 				console.log(object);
-				var u = null;
-				if (object) {
-					u = object;
-					u.set(user_data);
-				} else {
-					u = new Users(user_data);
-				}
+				var u = (object ? object : new Users());
+				u.set(user_data);
 				u.save(null, {
 					success : function(o) {
 						console.log("success");
