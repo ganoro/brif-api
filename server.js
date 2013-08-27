@@ -80,9 +80,9 @@ var storeUserData = function(user_data) {
 		query.equalTo("email", user_data.email);
 		console.log("new user: " + user_data.email);
 		query.first({
-			success: function(object) {
+			success: function(object) {				
 				console.log(object);
-				var users = object == null ? new Users() : object;
+				var users = (object == null ? new Users() : object);
 				console.log(user_data);
 				users.set(user_data);
 				users.save(null, {
@@ -90,7 +90,8 @@ var storeUserData = function(user_data) {
 						console.log("success");
 					},
 					error : function(e, u) {
-						console.log('error ' + e.description);
+						console.log('error');
+						console.log(e);
 					} 
 				});
 			},
