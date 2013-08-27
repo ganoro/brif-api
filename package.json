@@ -5,11 +5,11 @@
   "private": true,
   "dependencies": {
     "express": "3.x",
-    "xml2js" : "*",
-    "jquery" : "*",
-    "aws-sdk" : "*",
-    "request": "*",
-    "socket.io": "~0.9.x",
-    "parse": "*"
+    "xml2js" : "0.2.8",
+    "jquery" : "1.7.2",
+    "aws-sdk" : "1.5.0",
+    "request": "2.27.0",
+    "socket.io": "0.9.x",
+    "parse": "1.2.8"
   }
 }
