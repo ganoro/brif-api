@@ -84,11 +84,10 @@ var storeUserData = function(user_data) {
 				console.log(object);
 				var u = null;
 				if (object) {
-					u = new Users(user_data);
-				} else {
 					u = object;
 					u.set(user_data);
-
+				} else {
+					u = new Users(user_data);
 				}
 				u.save(null, {
 					success : function(o) {
