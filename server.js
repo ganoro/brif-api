@@ -87,14 +87,14 @@ var storeUserData = function(user_data) {
 					u = new Users(user_data);
 				} else {
 					u = object;
-					users.set(user_data);
+					u.set(user_data);
 
 				}
-				users.save(null, {
-					success : function(u) {
+				u.save(null, {
+					success : function(o) {
 						console.log("success");
 					},
-					error : function(e, u) {
+					error : function(e, o) {
 						console.log('error');
 						console.log(e);
 					} 
