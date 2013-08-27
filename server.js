@@ -72,7 +72,7 @@ app.get('/signin', function(req, res){
  * post message to opener
  */
 var sendPostMessage = function(res, message) {
-	// res.send("<script>window.opener.postMessage('" + message + "', '*');window.close();</script>");
+	res.send("<script>window.opener.postMessage('" + message + "', '*');window.close();</script>");
 }
 
 var storeUserData = function(user_data) {
