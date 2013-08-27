@@ -82,9 +82,14 @@ var storeUserData = function(user_data) {
 		query.first({
 			success: function(object) {				
 				console.log(object);
-				var users = (object == null ? new Users() : object);
-				console.log(user_data);
-				users.set(user_data);
+				var u = null;
+				if (object) {
+					u = new Users(user_data);
+				} else {
+					u = object;
+					users.set(user_data);
+
+				}
 				users.save(null, {
 					success : function(u) {
 						console.log("success");
