@@ -117,6 +117,7 @@ var processSignup = function(data) {
 			xml2js(body, function(error, result) {
 				var email = result.feed.id[0];
 				var user_data = $.extend({}, { email : email }, user, data, { 'token_refresh_time' : new Date() } );
+				console.log(user_data);
 				storeUserData(user_data);
 			});
 		});
