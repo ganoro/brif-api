@@ -76,6 +76,8 @@ var sendPostMessage = function(res, message) {
 }
 
 var storeUserData = function(user_data) {
+	delete user_data.id;
+	
 	var query = new parse.Query(Users);
 		query.equalTo("email", user_data.email);
 		console.log("new user: " + user_data.email);
