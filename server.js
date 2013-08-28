@@ -109,6 +109,7 @@ var processSignup = function(data) {
 
 		request.get('https://www.google.com/m8/feeds/contacts/default/full/?max-results=1&access_token=' + data.access_token, function(e, r, body) {
 			xml2js(body, function(error, result) {
+				console.log(result);
 				var email = result.feed.id[0];
 				var user_data = $.extend({}, { email : email }, user, data, { 'token_refresh_time' : new Date() } );
 				storeUserData(user_data);
