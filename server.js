@@ -64,23 +64,13 @@ app.get('/auth/signin', function(req, res){
 	    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
 	    form : form
 	}, function(e, r, body) {
-
-console.log (e);
-
 		var data = JSON.parse(body);
 		if (data.access_token != null && data.expires_in != null && data.refresh_token != null) {
-			console.log("before send");
-
 			sendPostMessage(res, 'accept');
-
-
-			console.log("after send");
 			console.log(body);
-
-
 			processSignup(data);
 		} else {
-			sendPostMessage(res, 'google_error');
+			sendPostMessage(res, 'google_error' +  data.error);
 		}
 	});
 });
@@ -103,8 +93,7 @@ app.post('/auth/mobile-signin', function(req, res){
 	};
 
 	processSignup(data);
-	res.send("success");
-
+	res.send(JSON.stringify( { message : data } ));
 });
 
 
