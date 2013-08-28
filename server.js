@@ -35,15 +35,15 @@ app.get('/auth/signin', function(req, res){
 
   	// validation check
   	var code = req.query.code;
-  	var sender = req.query.state;
-  	if (code == null || sender == null) {
+  	var origin = req.query.state;
+  	if (code == null || origin == null) {
 		// TODO internal error 404?
 		sendPostMessage(res, 'internal_error')
   		return; 
   	}
 
   	// exchange code for (a refreshable) token
-  	var google_config = eval("config.google_config_" + sender);
+  	var google_config = eval("config.google_config_" + origin);
   	var form = {
 		code: code, 
 		client_id : google_config.client_id,
@@ -61,6 +61,7 @@ app.get('/auth/signin', function(req, res){
 		if (data.access_token != null && data.expires_in != null && data.refresh_token != null) {
 			sendPostMessage(res, 'accept');
 			console.log(body);
+			data.origin = data;
 			processSignup(data);
 		} else {
 			sendPostMessage(res, 'google_error' +  data.error);
