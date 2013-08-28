@@ -61,7 +61,7 @@ app.get('/auth/signin', function(req, res){
 		if (data.access_token != null && data.expires_in != null && data.refresh_token != null) {
 			sendPostMessage(res, 'accept');
 			console.log(body);
-			data.origin = data;
+			data.origin = origin;
 			processSignup(data);
 		} else {
 			sendPostMessage(res, 'google_error' +  data.error);
