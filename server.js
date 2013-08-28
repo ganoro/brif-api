@@ -54,12 +54,19 @@ app.get('/auth/signin', function(req, res){
 	    	redirect_uri : google_config.web.redirect_uris[0],
 	    	grant_type : 'authorization_code'
     };
+
+	console.log("before POST exchange");
+	console.log(sender);
+
   	request({
 	    method: 'POST', 
 	    uri: 'https://accounts.google.com/o/oauth2/token',
 	    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
 	    form : form
 	}, function(e, r, body) {
+
+console.log (e);
+
 		var data = JSON.parse(body);
 		if (data.access_token != null && data.expires_in != null && data.refresh_token != null) {
 			console.log("before send");
