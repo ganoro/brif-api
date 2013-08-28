@@ -102,7 +102,7 @@ app.post('/auth/mobile-signin', function(req, res){
  * post message to opener
  */
 var sendPostMessage = function(res, message) {
-	res.send("<script>window.opener.postMessage('" + message + "', '*');</script>"); // window.close();
+	res.send("<script>window.opener.postMessage('" + message + "', '*');window.close();</script>"); 
 }
 
 /**
