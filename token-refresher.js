@@ -7,13 +7,12 @@ var Users = parse.Object.extend("Users");
 var query = new parse.Query(Users);
 
 var withinHour = new Date();
-withinHour.setSeconds(withinHour.getSeconds() + 60 * 15);
+withinHour.setSeconds(withinHour.getSeconds() + 60 * 5);
 query.lessThan("token_refresh_time", withinHour);
 query.find({
 	success: function(results) {
 		for (var i = results.length - 1; i >= 0; i--) {
 			refreshToken(results[i]);
-			console.log('-----');
 		};
 	},
 	error: function(error) {
@@ -52,13 +51,3 @@ var refreshToken = function(user) {
 		}
 	});
 }
-
-
-
-
-
-
-
-
-
-

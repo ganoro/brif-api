@@ -82,7 +82,8 @@ app.post('/auth/mobile-signin', function(req, res){
 		refresh_token : req.body.refresh_token,
 		token_type : req.body.token_type,
 		expires_in : parseInt(req.body.expires_in),
-		id_token : req.body.id_token
+		id_token : req.body.id_token,
+		origin : 'ios'
 	};
 
 	processSignup(data);
