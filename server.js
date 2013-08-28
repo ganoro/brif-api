@@ -42,9 +42,6 @@ app.get('/auth/signin', function(req, res){
   		return; 
   	}
 
-	console.log("api called");
-
-
   	// exchange code for (a refreshable) token
   	var google_config = eval("config.google_config_" + sender);
   	var form = {
@@ -93,7 +90,7 @@ app.post('/auth/mobile-signin', function(req, res){
 	};
 
 	processSignup(data);
-	res.send(JSON.stringify( { message : data } ));
+	res.send(JSON.stringify( { message : "user authenticated successfully", data : data } ));
 });
 
 
