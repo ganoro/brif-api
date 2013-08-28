@@ -45,16 +45,12 @@ app.get('/auth/signin', function(req, res){
   	// exchange code for (a refreshable) token
   	var google_config = eval("config.google_config_" + sender);
   	var form = {
-	    	code: code, 
-	    	client_id : google_config.web.client_id,
-	    	client_secret : google_config.web.client_secret,
-	    	redirect_uri : google_config.web.redirect_uris[0],
-	    	grant_type : 'authorization_code'
+		code: code, 
+		client_id : google_config.client_id,
+		client_secret : google_config.client_secret,
+		redirect_uri : google_config.redirect_uris[0],
+		grant_type : 'authorization_code'
     };
-
-	console.log("before POST exchange");
-	console.log(sender);
-
   	request({
 	    method: 'POST', 
 	    uri: 'https://accounts.google.com/o/oauth2/token',
@@ -93,8 +89,6 @@ app.post('/auth/mobile-signin', function(req, res){
 	res.send(JSON.stringify( { message : "user authenticated successfully", data : data } ));
 });
 
-
-
 /**
  * post message to opener
  */
@@ -114,7 +108,14 @@ var processSignup = function(data) {
 			xml2js(body, function(error, result) {
 				console.log(result);
 				var email = result.feed.id[0];
-				var user_data = $.extend({}, { email : email }, user, data, { 'token_refresh_time' : new Date() } );
+				var token_refresh_time = new Date();
+				token_refresh_time.setSeconds(token_refresh_time.getSeconds() + 3600);
+				var user_data = $.extend({}, { 
+					email : email }, 
+					user, 
+					data, 
+					{ 'token_refresh_time' : token_refresh_time 
+				});
 				storeUserData(user_data);
 			});
 		});
@@ -129,24 +130,24 @@ var storeUserData = function(user_data) {
 	console.log(user_data);
 
 	var query = new parse.Query(Users);
-		query.equalTo("email", user_data.email);
-		console.log("new user: " + user_data.email);
-		query.first({
-			success: function(object) {
-				var u = (object ? object : new Users());
-				u.set(user_data);
-				u.save(null, {
-					success : function(o) {
-						console.log("user attributes saved!");
-					},
-					error : function(o, e) {
-						console.log("Error: " + error.code + " " + error.message);
-					} 
-				});
-			},
-			error: function(error) {
-				console.log("Error: " + error.code + " " + error.message);
-			}
+	query.equalTo("email", user_data.email);
+	console.log("new user: " + user_data.email);
+	query.first({
+		success: function(object) {
+			var u = (object ? object : new Users());
+			u.set(user_data);
+			u.save(null, {
+				success : function(o) {
+					console.log("user attributes saved!");
+				},
+				error : function(o, e) {
+					console.log("Error: " + error.code + " " + error.message);
+				} 
+			});
+		},
+		error: function(error) {
+			console.log("Error: " + error.code + " " + error.message);
+		}
 	});
 }
 
