@@ -164,8 +164,7 @@ app.use(function(err, req, res, next){
 /**
  * socket io
  */ 
-var io = require('socket.io');
-io.listen(app.listen(config.port));
+var io = require('socket.io').listen(app.listen(config.port));
 
 io.sockets.on('connection', function (socket) {
   socket.emit('news', { hello: 'world' });
