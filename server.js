@@ -100,7 +100,7 @@ app.post('/auth/refresh-token', function(req, res) {
   	}
 
   	var query = new parse.Query(Users);
-  	query.equalsTo("email", email);
+  	query.equalTo("email", email);
 	query.first({
 		success: function(user) {
 			if (user) {
