@@ -95,7 +95,7 @@ app.post('/auth/refresh-token', function(req, res) {
 
 	// validate params
   	var email = req.body.email;
-  	if (email) {
+  	if (email == null) {
 		res.send(400, 'missing parameter (email)');
   	}
 
