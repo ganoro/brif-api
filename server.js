@@ -91,7 +91,7 @@ app.post('/auth/mobile-signin', function(req, res){
 	res.send(JSON.stringify( { message : "user authenticated successfully", data : data } ));
 });
 
-app.post('/auth/refresh-token', function() {
+app.post('/auth/refresh-token', function(req, res) {
 
 	// validate params
   	var email = req.body.email;
