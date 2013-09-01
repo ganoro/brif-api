@@ -91,6 +91,53 @@ app.post('/auth/mobile-signin', function(req, res){
 	res.send(JSON.stringify( { message : "user authenticated successfully", data : data } ));
 });
 
+app.post('/auth/refresh-token', function() {
+
+	// validate params
+  	var email = req.body.email;
+  	if (email) {
+		res.send(400, 'missing parameter (email)');
+  	}
+
+  	var query = new parse.Query(Users);
+  	query.equalsTo("email", email);
+	query.first({
+		success: function(user) {
+			if (user) {
+				return refreshToken(user, res);
+			} else {
+				res.send(400, 'email not found ' + email);
+			}	
+		},
+		error: function(error) {
+			res.send(400, error.message);
+			console.log("Error: " + error.code + " " + error.message);
+		}
+	});
+});
+
+/**
+ * post message to opener
+ */
+ var refreshToken = function(user, res) {
+	var origin = user.get("origin");
+	var refresh_token = user.get("refresh_token");
+	var google_config = eval("config.google_config_" + origin);
+
+	var form = {
+		refresh_token : refresh_token,
+		client_id : google_config.client_id,
+		client_secret : google_config.client_secret,
+		grant_type : 'refresh_token',
+	};
+	request({
+	    method: 'POST', 
+	    uri: 'https://accounts.google.com/o/oauth2/token',
+	    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+	    form : form
+	}).pipe(res);
+}
+
 /**
  * post message to opener
  */
