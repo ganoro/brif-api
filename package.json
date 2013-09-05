@@ -8,6 +8,7 @@
     "xml2js" : "0.2.8",
     "jquery" : "1.7.2",
     "aws-sdk" : "1.5.0",
+    "minpubsub" : "0.0.1",
     "request": "2.27.0",
     "socket.io": "0.9.x",
     "parse": "1.2.8"
