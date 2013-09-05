@@ -1,4 +1,7 @@
 var config = require('./config.js');
+var request = require('request');
+var xml2js = require('xml2js').parseString;
+var $ = require('jquery').create();
 
 /**
  * Load model
