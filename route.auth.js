@@ -1,3 +1,11 @@
+var config = require('./config.js');
+
+/**
+ * Load model
+ */
+var model = {};
+model['users'] = require('./model.users.js');
+
 /**
  * Sign in route
  */
@@ -76,9 +84,7 @@ exports.refresh_token = function(req, res) {
 		res.send(400, 'missing parameter (email)');
   	}
 
-  	var query = new parse.Query(Users);
-  	query.equalTo("email", email);
-	query.first({
+  	model['users'].findByEmail({
 		success: function(user) {
 			if (user) {
 				return refreshToken(user, res);
@@ -90,7 +96,7 @@ exports.refresh_token = function(req, res) {
 			res.send(400, error.message);
 			console.log("Error: " + error.code + " " + error.message);
 		}
-	});
+	})
 };
 
 
@@ -156,10 +162,7 @@ var storeUserData = function(user_data) {
 	delete user_data.id;
 	console.log(user_data);
 
-	var query = new parse.Query(Users);
-	query.equalTo("email", user_data.email);
-	console.log("new user: " + user_data.email);
-	query.first({
+  	model['users'].findByEmail({
 		success: function(object) {
 			var u = (object ? object : new Users());
 			u.set(user_data);

@@ -6,7 +6,6 @@ var config = require('./config.js');
 var request = require('request');
 var xml2js = require('xml2js').parseString;
 var $ = require('jquery').create();
-var parse = require('parse').Parse;
 var minpubsub = require('minpubsub/minpubsub');
 
 /**
@@ -20,12 +19,6 @@ routes['notifications'] = require('./route.notifications.js');
  * initialize express app
  */ 
 var app = express();
-
-/**
- * initialize parse app
- */ 
-parse.initialize(config.parse_app_id, config.parse_javascript_api_key);
-var Users = parse.Object.extend("Users");
 
 /**
  * configuration
