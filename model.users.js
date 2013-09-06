@@ -9,7 +9,7 @@ var Users = model.parse.Object.extend("Users");
  * Find by email
  * success() and error() functions required in opts
  */ 
-exports.findByEmail = function(opts) {
+exports.findByEmail = function(email, opts) {
   	var query = new model.parse.Query(Users);
   	query.equalTo("email", email);
 	query.first(opts);

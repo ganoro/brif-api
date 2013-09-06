@@ -87,10 +87,11 @@ exports.refresh_token = function(req, res) {
 		res.send(400, 'missing parameter (email)');
   	}
 
-  	model['users'].findByEmail({
+  	model['users'].findByEmail(email, {
+  		res : res, 
 		success: function(user) {
 			if (user) {
-				return refreshToken(user, res);
+				return refreshToken(user, this.res);
 			} else {
 				res.send(400, 'email not found ' + email);
 			}	
@@ -165,10 +166,11 @@ var storeUserData = function(user_data) {
 	delete user_data.id;
 	console.log(user_data);
 
-  	model['users'].findByEmail({
+  	model['users'].findByEmail(user_data.email, {
+  		user_data : user_data,
 		success: function(object) {
 			var u = (object ? object : new Users());
-			u.set(user_data);
+			u.set(this.user_data);
 			u.save(null, {
 				success : function(o) {
 					console.log("user attributes saved!");
