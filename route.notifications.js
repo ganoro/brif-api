@@ -10,22 +10,36 @@ var notify = function(req, res){
 	// notification params
 	var email = req.body.email;
 	var type = req.body.type;
-	var params = req.body.params;
 
-	if (type == null || email == null || params == null) {
-		res.status(400).send(JSON.stringify({ message : "unsupported operation"}));
+	if (type == null || email == null) {
+		sendUnsupportedOperation("missing type and email fields");
 		return;
 	}
 
-	var opts = JSON.parse(params);
 	if (type == "messages") {
-		notifyMessagesListsners(email, opts.group_id, opts.message);
-	} else {
-		notifyGroupListsners(email, opts.message);
+		var group_id = req.body.group_id;
+		var message = req.body.message;
+		if (group_id == null || message == null) {
+			sendUnsupportedOperation("missing group_id and message fields");
+			return;
+		}
+		notifyMessagesListsners(email, group_id, message);
+
+	} else if (type == "groups") {
+		var message = req.body.message;
+		if (message == null) {
+			sendUnsupportedOperation("missing message field");
+			return;
+		}
+		notifyGroupListsners(email, message);
 	}
 
 	res.send("fuck ya!");
 };
+
+var sendUnsupportedOperation = function(msg) {
+	res.status(400).send(JSON.stringify({ error: "Unsupported operation", message : msg}));		
+}
 
 var setupClient = function(email, client_id) {
 	nots[email] = nots[email] || { clients : {} };
