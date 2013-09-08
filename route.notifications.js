@@ -14,6 +14,7 @@ var notify = function(req, res){
 
 	if (type == null || email == null || params == null) {
 		res.status(400).send(JSON.stringify({ message : "unsupported operation"}));
+		return;
 	}
 
 	var opts = JSON.parse(params);
