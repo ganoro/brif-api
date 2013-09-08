@@ -12,7 +12,7 @@ var notify = function(req, res){
 	var type = req.body.type;
 
 	if (type == null || email == null) {
-		sendUnsupportedOperation("missing type and email fields");
+		sendUnsupportedOperation(res, "missing type and email fields");
 		return;
 	}
 
@@ -20,7 +20,7 @@ var notify = function(req, res){
 		var group_id = req.body.group_id;
 		var message = req.body.message;
 		if (group_id == null || message == null) {
-			sendUnsupportedOperation("missing group_id and message fields");
+			sendUnsupportedOperation(res, "missing group_id and message fields");
 			return;
 		}
 		notifyMessagesListsners(email, group_id, message);
@@ -28,7 +28,7 @@ var notify = function(req, res){
 	} else if (type == "groups") {
 		var message = req.body.message;
 		if (message == null) {
-			sendUnsupportedOperation("missing message field");
+			sendUnsupportedOperation(res, "missing message field");
 			return;
 		}
 		notifyGroupListsners(email, message);
@@ -37,7 +37,7 @@ var notify = function(req, res){
 	res.send("fuck ya!");
 };
 
-var sendUnsupportedOperation = function(msg) {
+var sendUnsupportedOperation = function(res, msg) {
 	res.status(400).send(JSON.stringify({ error: "Unsupported operation", message : msg}));		
 }
 
