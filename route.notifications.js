@@ -95,6 +95,10 @@ var notifyGroupListsners = function(email, msg) {
 }
 
 var notifyMessagesListsners = function(email, group_id, msg) {
+	if (typeof nots[email] === "undefined") {
+		return;
+	}
+
 	for (var client_id in nots[email].clients) {
 		var topic = messagesTopicName(client_id, email, group_id);
 		minpubsub.publish(topic, msg);
