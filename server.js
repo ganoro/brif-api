@@ -6,7 +6,6 @@ var config = require('./config.js');
 var request = require('request');
 var xml2js = require('xml2js').parseString;
 var $ = require('jquery').create();
-var minpubsub = require('minpubsub/minpubsub');
 
 /**
  * Load routes
@@ -37,8 +36,7 @@ app.all('*', function(req, res, next) {
 app.get ('/auth/signin'          , routes['auth'].signin);
 app.post('/auth/mobile-signin'   , routes['auth'].mobile_signin);
 app.post('/auth/refresh-token'   , routes['auth'].refresh_token);
-app.post('/notification/group'   , routes['notifications'].groups);
-app.post('/notification/messages', routes['notifications'].messages);
+app.post('/notification/notify'   , routes['notifications'].notify);
 
 /**
  * error handling
