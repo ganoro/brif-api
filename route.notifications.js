@@ -103,6 +103,10 @@ var unsubscribeAllTopicsToClient = function(email, client_id) {
 }
 
 var notifyGroupListsners = function(email, msg) {
+	if (typeof nots[email] === "undefined") {
+		return;
+	}
+		
 	for (var client_id in nots[email].clients) {
 		var topic = groupsTopicName(client_id, email);
 		minpubsub.publish(topic, msg);
