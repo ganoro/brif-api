@@ -13,7 +13,7 @@ var notify = function(req, res){
 	var params = req.body.params;
 
 	if (type == null || email == null || params == null) {
-		res.status(400).send("unsupported event");
+		res.status(400).send(JSON.stringify({ message : "unsupported operation"}));
 	}
 
 	var opts = JSON.parse(params);
@@ -104,7 +104,6 @@ var notifyMessagesListsners = function(email, group_id, msg) {
 		minpubsub.publish(topic, msg);
 	}
 }
-
 
 /**
  * Exports
