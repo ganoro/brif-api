@@ -52,12 +52,22 @@ app.use(function(err, req, res, next){
 var io = require('socket.io').listen(app.listen(config.port));
 
 io.sockets.on('connection', function (socket) {
+	console.log("connected to: " + socket.id);
+
 	var route = require('./route.notifications.js');
-	route.setSocket(socket);
+	route.onSocketConnect(socket);
+
 	socket.on('groups listener subscribe', route.onSocketSubscribeGroupsListener);
 	socket.on('groups listener unsubscribe', route.onSocketUnsubscribeGroupsListener);
+	socket.on('groups insert', route.onSocketGroupsInsert);
+	socket.on('groups search', route.onSocketGroupsSearch);
+
 	socket.on('messages listener subscribe', route.onSocketSubscribeMessagesListener);
 	socket.on('messages listener unsubscribe', route.onSocketUnsubscribeMessagesListener);
+	socket.on('messages insert', route.onSocketMessagesInsert);
+	socket.on('messages search', route.onSocketMessagesSearch);
+
+	socket.on('disconnect', route.onSocketDisconnect);
 });
 
 console.log('Listening on port ' + config.port);

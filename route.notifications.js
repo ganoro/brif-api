@@ -2,6 +2,7 @@ var minpubsub = require('minpubsub/minpubsub');
 var $ = require('jquery').create();
 
 var nots = {};
+var socket = null;
 
 /**
  * Notify events
@@ -37,14 +38,17 @@ var notify = function(req, res){
 	res.send("fuck ya!");
 };
 
+var onSocketConnect = function(_socket) {
+	socket = _socket;
+}
+
 var onSocketSubscribeGroupsListener = function(data) {
 	if (data.email == null || data.client_id == null) {
 		// TODO internal error 
 	}
 	console.log(arguments.callee.name);
   	console.log(data.email);	
-  	console.log(data.client_id);
-  	subscribeGroupsListener(data.client_id, data.email, function() {
+  	subscribeGroupsListener(socket.id, data.email, function() {
 		socket.emit('notification', { type : "group event", data : data });
 	});
 }
@@ -56,7 +60,7 @@ var onSocketUnsubscribeGroupsListener = function(data) {
 	console.log(arguments.callee.name);
   	console.log(data.email);	
   	console.log(data.client_id);
-  	unsubscribeGroupsListener(data.client_id, data.email);
+  	unsubscribeGroupsListener(socket.id, data.email);
 }
 
 var onSocketSubscribeMessagesListener = function(data) {
@@ -66,7 +70,7 @@ var onSocketSubscribeMessagesListener = function(data) {
 	console.log(arguments.callee.name);
   	console.log(data.email);	
   	console.log(data.client_id);
-  	subscribeMessagesListener(data.client_id, data.email, data.group_id, function() {
+  	subscribeMessagesListener(socket.id, data.email, data.group_id, function() {
 		socket.emit('notification', { type : "message event", data : data });
 	});
 }
@@ -78,7 +82,12 @@ var onSocketUnsubscribeMessagesListener = function(data) {
 	console.log(arguments.callee.name);
   	console.log(data.email);	
   	console.log(data.client_id);
-  	subscribeGroupsListener(data.client_id, data.email, data.group_id);
+  	subscribeGroupsListener(socket.id, data.email, data.group_id);
+}
+
+var onSocketDisconnect = function() {
+	unsubscribeAllTopicsToClient(socket.id)
+	
 }
 
 var sendUnsupportedOperation = function(res, msg) {
@@ -170,10 +179,6 @@ var notifyMessagesListsners = function(email, group_id, msg) {
 	}
 }
 
-var socket = null;
-var setSocket = function(_socket) {
-	socket = _socket;
-}
 
 /**
  * Exports
@@ -183,4 +188,5 @@ exports.onSocketSubscribeGroupsListener = onSocketSubscribeGroupsListener;
 exports.onSocketUnsubscribeGroupsListener = onSocketUnsubscribeGroupsListener;
 exports.onSocketSubscribeMessagesListener = onSocketSubscribeMessagesListener;
 exports.onSocketUnsubscribeMessagesListener = onSocketUnsubscribeMessagesListener;
-exports.setSocket = setSocket;
+exports.onSocketDisconnect = onSocketDisconnect;
+exports.onSocketConnect = onSocketConnect;
