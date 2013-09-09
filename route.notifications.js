@@ -44,14 +44,15 @@ var onSocketConnect = function(_socket) {
 
 var onSocketSetup = function(data) {
 	var email = data.email;
-	var client_id = data.client_id;
-	
+
 	nots[email] = nots[email] || { clients : {} };
-	nots[email].clients[client_id] = nots[email].clients[client_id] || { topics : [] };
+	nots[email].clients[socket.id] = nots[email].clients[socket.id] || { topics : [] };
+
+	console.log(nots[email].clients[socket.id]);
 }
 
 var onSocketSubscribeGroupsListener = function(data) {
-	if (data.email == null || data.client_id == null) {
+	if (data.email == null) {
 		// TODO internal error 
 	}
 	console.log(arguments.callee.name);
@@ -62,34 +63,31 @@ var onSocketSubscribeGroupsListener = function(data) {
 }
 
 var onSocketUnsubscribeGroupsListener = function(data) {
-	if (data.email == null || data.client_id == null) {
+	if (data.email == null) {
 		// TODO internal error 
 	}
 	console.log(arguments.callee.name);
   	console.log(data.email);	
-  	console.log(data.client_id);
   	unsubscribeGroupsListener(socket.id, data.email);
 }
 
 var onSocketSubscribeMessagesListener = function(data) {
-	if (data.email == null || data.client_id == null || data.group_id == null) {
+	if (data.email == null || data.group_id == null) {
 		// TODO internal error 
 	}
 	console.log(arguments.callee.name);
   	console.log(data.email);	
-  	console.log(data.client_id);
   	subscribeMessagesListener(socket.id, data.email, data.group_id, function() {
 		socket.emit('notification', { type : "message event", data : data });
 	});
 }
 
 var onSocketUnsubscribeMessagesListener = function(data) {
-	if (data.email == null || data.client_id == null) {
+	if (data.email == null) {
 		// TODO internal error 
 	}
 	console.log(arguments.callee.name);
   	console.log(data.email);	
-  	console.log(data.client_id);
   	subscribeGroupsListener(socket.id, data.email, data.group_id);
 }
 
