@@ -40,6 +40,7 @@ var notify = function(req, res){
 
 var onSocketConnect = function(_socket) {
 	socket = _socket;
+	console.log("connected to : " + socket.id);
 }
 
 var onSocketSetup = function(data) {
