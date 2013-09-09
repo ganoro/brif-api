@@ -42,19 +42,11 @@ var onSocketConnect = function(_socket) {
 	socket = _socket;
 	console.log("connected to : " + socket.id);
 }
-
-var onSocketSetup = function(data) {
-	var email = data.email;
-	console.log(socket.id);
-	console.log(email);
-	console.log(nots[email]);
-	console.log(nots[email].clients[socket.id]);
-
-	nots[email] = nots[email] || { clients : {} };
-	nots[email].clients[socket.id] = nots[email].clients[socket.id] || { topics : [] };
-}
-
 var onSocketSubscribeGroupsListener = function(data) {
+	console.log("onSocketSubscribeGroupsListener")
+  	console.log(data.email);
+  	console.log(socket.id);
+	
 	if (data.email == null) {
 		// TODO internal error 
 	}
@@ -66,11 +58,13 @@ var onSocketSubscribeGroupsListener = function(data) {
 }
 
 var onSocketUnsubscribeGroupsListener = function(data) {
+	console.log("onSocketUnsubscribeGroupsListener")
+  	console.log(data.email);
+  	console.log(socket.id);
+
 	if (data.email == null) {
 		// TODO internal error 
 	}
-	console.log(arguments.callee.name);
-  	console.log(data.email);	
   	unsubscribeGroupsListener(socket.id, data.email);
 }
 
@@ -89,8 +83,8 @@ var onSocketUnsubscribeMessagesListener = function(data) {
 	if (data.email == null) {
 		// TODO internal error 
 	}
-	console.log(arguments.callee.name);
-  	console.log(data.email);	
+  	console.log(data.email);
+  	console.log(socket.id);	
   	subscribeGroupsListener(socket.id, data.email, data.group_id);
 }
 
@@ -116,6 +110,11 @@ var registerHandler = function(email, client_id, topic, handler) {
 
 var resolveHandler = function(email, client_id, topic) {
 	return nots[email].clients[client_id].topics[topic];
+}
+
+var setupClient = function(client_id, email) {
+	nots[email] = nots[email] || { clients : {} };
+	nots[email].clients[socket.id] = nots[email].clients[socket.id] || { topics : [] };
 }
 
 var subscribeGroupsListener = function(client_id, email, callback) {	
