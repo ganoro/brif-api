@@ -46,7 +46,7 @@ var onSocketSubscribeGroupsListener = function(data) {
 	console.log("onSocketSubscribeGroupsListener")
   	console.log(data.email);
   	console.log(socket.id);
-	
+
 	if (data.email == null) {
 		// TODO internal error 
 	}
@@ -185,7 +185,6 @@ var notifyMessagesListsners = function(email, group_id, msg) {
  * Exports
  */
 exports.notify = notify;
-exports.onSocketSetup = onSocketSetup;
 exports.onSocketSubscribeGroupsListener = onSocketSubscribeGroupsListener;
 exports.onSocketUnsubscribeGroupsListener = onSocketUnsubscribeGroupsListener;
 exports.onSocketSubscribeMessagesListener = onSocketSubscribeMessagesListener;
