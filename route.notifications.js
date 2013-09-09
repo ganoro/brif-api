@@ -86,8 +86,7 @@ var onSocketUnsubscribeMessagesListener = function(data) {
 }
 
 var onSocketDisconnect = function() {
-	unsubscribeAllTopicsToClient(socket.id)
-	
+	unsubscribeAllTopicsToClient(socket.id);
 }
 
 var sendUnsupportedOperation = function(res, msg) {

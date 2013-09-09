@@ -59,13 +59,13 @@ io.sockets.on('connection', function (socket) {
 
 	socket.on('groups listener subscribe', route.onSocketSubscribeGroupsListener);
 	socket.on('groups listener unsubscribe', route.onSocketUnsubscribeGroupsListener);
-	socket.on('groups insert', route.onSocketGroupsInsert);
-	socket.on('groups search', route.onSocketGroupsSearch);
+	// socket.on('groups insert', route.onSocketGroupsInsert);
+	// socket.on('groups search', route.onSocketGroupsSearch);
 
 	socket.on('messages listener subscribe', route.onSocketSubscribeMessagesListener);
 	socket.on('messages listener unsubscribe', route.onSocketUnsubscribeMessagesListener);
-	socket.on('messages insert', route.onSocketMessagesInsert);
-	socket.on('messages search', route.onSocketMessagesSearch);
+	// socket.on('messages insert', route.onSocketMessagesInsert);
+	// socket.on('messages search', route.onSocketMessagesSearch);
 
 	socket.on('disconnect', route.onSocketDisconnect);
 });
