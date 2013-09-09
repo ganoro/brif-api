@@ -54,7 +54,7 @@ var onSocketSubscribeGroupsListener = function(socket, data) {
 		// TODO internal error
 	}
   	subscribeGroupsListener(socket.id, data.email, function() {
-		socket.emit('group:change', { type : "group", data : data });
+		socket.emit('groups:change', { type : "group", data : data });
 	});
 }
 
@@ -85,7 +85,7 @@ var onSocketUnsubscribeMessagesListener = function(socket, data) {
 	}
   	console.log(data.email);
   	console.log(socket.id);	
-  	subscribeGroupsListener(socket.id, data.email, data.group_id);
+  	unsubscribeMessagesListener(socket.id, data.email, data.group_id);
 }
 
 var onSocketDisconnect = function(socket) {
