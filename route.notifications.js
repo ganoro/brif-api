@@ -42,6 +42,14 @@ var onSocketConnect = function(_socket) {
 	socket = _socket;
 }
 
+var onSocketSetup = function(data) {
+	var email = data.email;
+	var client_id = data.client_id;
+	
+	nots[email] = nots[email] || { clients : {} };
+	nots[email].clients[client_id] = nots[email].clients[client_id] || { topics : [] };
+}
+
 var onSocketSubscribeGroupsListener = function(data) {
 	if (data.email == null || data.client_id == null) {
 		// TODO internal error 
@@ -93,11 +101,6 @@ var sendUnsupportedOperation = function(res, msg) {
 	res.status(400).send(JSON.stringify({ error: "Unsupported operation", message : msg}));		
 }
 
-var setupClient = function(email, client_id) {
-	nots[email] = nots[email] || { clients : {} };
-	nots[email].clients[client_id] = nots[email].clients[client_id] || { topics : [] };
-}
-
 var groupsTopicName = function(client_id, email) {
 	return email + "/" + client_id + "/g";
 }
@@ -107,7 +110,6 @@ var messagesTopicName = function(client_id, email, group_id) {
 }
 
 var registerHandler = function(email, client_id, topic, handler) {
-	setupClient(email, client_id);
 	nots[email].clients[client_id].topics[topic] = handler;
 }
 
@@ -183,6 +185,7 @@ var notifyMessagesListsners = function(email, group_id, msg) {
  * Exports
  */
 exports.notify = notify;
+exports.onSocketSetup = onSocketSetup;
 exports.onSocketSubscribeGroupsListener = onSocketSubscribeGroupsListener;
 exports.onSocketUnsubscribeGroupsListener = onSocketUnsubscribeGroupsListener;
 exports.onSocketSubscribeMessagesListener = onSocketSubscribeMessagesListener;
