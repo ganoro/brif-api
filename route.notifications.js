@@ -48,6 +48,9 @@ var onSocketSetup = function(data) {
 	nots[email] = nots[email] || { clients : {} };
 	nots[email].clients[socket.id] = nots[email].clients[socket.id] || { topics : [] };
 
+	console.log(socket.id);
+	console.log(email);
+	console.log(nots[email]);
 	console.log(nots[email].clients[socket.id]);
 }
 
