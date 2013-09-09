@@ -135,7 +135,10 @@ var subscribeGroupsListener = function(client_id, email, callback) {
 var unsubscribeGroupsListener = function(client_id, email) {
 	var topic = groupsTopicName(client_id, email);
 	var handler = resolveHandler(client_id, email, topic);
-	minpubsub.unsubscribe(handler);
+	if (handler) {
+		minpubsub.unsubscribe(handler);	
+	}
+	
 };
 
 var subscribeMessagesListener = function(client_id, email, group_id, callback) {	
@@ -150,7 +153,9 @@ var subscribeMessagesListener = function(client_id, email, group_id, callback) {
 var unsubscribeMessagesListener = function(client_id, email, group_id) {
 	var topic = messagesTopicName(client_id, email, group_id);
 	var handler = resolveHandler(client_id, email, topic);
-	minpubsub.unsubscribe(handler);
+	if (handler) {
+		minpubsub.unsubscribe(handler);
+	}
 };
 
 var unsubscribeAllTopicsToClient = function(email, client_id) {
