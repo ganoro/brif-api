@@ -57,7 +57,7 @@ var onSocketSubscribeGroupsListener = function(data) {
 		// TODO internal error
 	}
   	subscribeGroupsListener(socket.id, data.email, function() {
-		socket.emit('notification', { type : "group event", data : data });
+		socket.emit('notification', { type : "group change", data : data });
 	});
 }
 
