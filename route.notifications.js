@@ -114,7 +114,7 @@ var registerHandler = function(email, client_id, topic, handler) {
 	nots[email].clients[client_id].topics[topic] = handler;
 }
 
-var resolveHandler = function(email, client_id, topic) {
+var resolveHandler = function(client_id, email, topic) {
 	return nots[email].clients[client_id].topics[topic];
 }
 
