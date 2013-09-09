@@ -42,6 +42,11 @@ var onSocketConnect = function(_socket) {
 	socket = _socket;
 	console.log("connected to : " + socket.id);
 }
+
+var onSocketSetup = function(data) {
+	setupClient(socket.id, data.email);
+}
+
 var onSocketSubscribeGroupsListener = function(data) {
 	console.log("onSocketSubscribeGroupsListener")
   	console.log(data.email);
@@ -185,6 +190,7 @@ var notifyMessagesListsners = function(email, group_id, msg) {
  * Exports
  */
 exports.notify = notify;
+exports.onSocketSetup = onSocketSetup;
 exports.onSocketSubscribeGroupsListener = onSocketSubscribeGroupsListener;
 exports.onSocketUnsubscribeGroupsListener = onSocketUnsubscribeGroupsListener;
 exports.onSocketSubscribeMessagesListener = onSocketSubscribeMessagesListener;
