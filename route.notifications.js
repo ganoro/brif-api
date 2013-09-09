@@ -54,10 +54,8 @@ var onSocketSubscribeGroupsListener = function(data) {
   	console.log(socket.id);
 
 	if (data.email == null) {
-		// TODO internal error 
+		// TODO internal error
 	}
-	console.log(arguments.callee.name);
-  	console.log(data.email);	
   	subscribeGroupsListener(socket.id, data.email, function() {
 		socket.emit('notification', { type : "group event", data : data });
 	});
@@ -78,7 +76,6 @@ var onSocketSubscribeMessagesListener = function(data) {
 	if (data.email == null || data.group_id == null) {
 		// TODO internal error 
 	}
-	console.log(arguments.callee.name);
   	console.log(data.email);	
   	subscribeMessagesListener(socket.id, data.email, data.group_id, function() {
 		socket.emit('notification', { type : "message event", data : data });
@@ -168,10 +165,13 @@ var unsubscribeAllTopicsToClient = function(email, client_id) {
 }
 
 var notifyGroupListsners = function(email, msg) {
+	console.log("notifyGroupListsners");
+
 	if (typeof nots[email] === "undefined") {
 		return;
 	}
 
+	console.log(nots[email].clients);
 	for (var client_id in nots[email].clients) {
 		var topic = groupsTopicName(client_id, email);
 		console.log(topic);
