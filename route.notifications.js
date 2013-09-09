@@ -2,10 +2,10 @@ var minpubsub = require('minpubsub/minpubsub');
 var $ = require('jquery').create();
 
 var nots = {};
-var socket = null;
 
 /**
- * Notify events
+ * @api POST /notification/notify 
+ * Enables Nix to notify clients about change events 
  */
 var notify = function(req, res){
 	// notification params
@@ -38,30 +38,27 @@ var notify = function(req, res){
 	res.send("fuck ya!");
 };
 
-var onSocketConnect = function(_socket) {
-	socket = _socket;
+var sendUnsupportedOperation = function(res, msg) {
+	res.status(400).send(JSON.stringify({ error: "Unsupported operation", message : msg}));		
 }
 
-var onSocketSetup = function(data) {
+var onSocketSetup = function(socket, data) {
 	console.log("connected to : " + socket.id);
 	console.log("email : " + data.email);
 	setupClient(socket.id, data.email);
 }
 
-var onSocketSubscribeGroupsListener = function(data) {
+var onSocketSubscribeGroupsListener = function(socket, data) {
 	console.log("onSocketSubscribeGroupsListener")
-  	console.log(data.email);
-  	console.log(socket.id);
-
 	if (data.email == null) {
 		// TODO internal error
 	}
   	subscribeGroupsListener(socket.id, data.email, function() {
-		socket.emit('group change', { type : "group", data : data });
+		socket.emit('group:change', { type : "group", data : data });
 	});
 }
 
-var onSocketUnsubscribeGroupsListener = function(data) {
+var onSocketUnsubscribeGroupsListener = function(socket, data) {
 	console.log("onSocketUnsubscribeGroupsListener")
   	console.log(data.email);
   	console.log(socket.id);
@@ -72,17 +69,17 @@ var onSocketUnsubscribeGroupsListener = function(data) {
   	unsubscribeGroupsListener(socket.id, data.email);
 }
 
-var onSocketSubscribeMessagesListener = function(data) {
+var onSocketSubscribeMessagesListener = function(socket, data) {
 	if (data.email == null || data.group_id == null) {
 		// TODO internal error 
 	}
   	console.log(data.email);	
   	subscribeMessagesListener(socket.id, data.email, data.group_id, function() {
-		socket.emit('notification', { type : "message event", data : data });
+		socket.emit('messages:change', { type : "message", data : data });
 	});
 }
 
-var onSocketUnsubscribeMessagesListener = function(data) {
+var onSocketUnsubscribeMessagesListener = function(socket, data) {
 	if (data.email == null) {
 		// TODO internal error 
 	}
@@ -91,12 +88,8 @@ var onSocketUnsubscribeMessagesListener = function(data) {
   	subscribeGroupsListener(socket.id, data.email, data.group_id);
 }
 
-var onSocketDisconnect = function() {
+var onSocketDisconnect = function(socket) {
 	unsubscribeAllTopicsToClient(socket.id);
-}
-
-var sendUnsupportedOperation = function(res, msg) {
-	res.status(400).send(JSON.stringify({ error: "Unsupported operation", message : msg}));		
 }
 
 var groupsTopicName = function(client_id, email) {
@@ -117,7 +110,7 @@ var resolveHandler = function(client_id, email, topic) {
 
 var setupClient = function(client_id, email) {
 	nots[email] = nots[email] || { clients : {} };
-	nots[email].clients[socket.id] = nots[email].clients[socket.id] || { topics : [] };
+	nots[email].clients[client_id] = nots[email].clients[client_id] || { topics : [] };
 }
 
 var subscribeGroupsListener = function(client_id, email, callback) {	
@@ -202,4 +195,3 @@ exports.onSocketUnsubscribeGroupsListener = onSocketUnsubscribeGroupsListener;
 exports.onSocketSubscribeMessagesListener = onSocketSubscribeMessagesListener;
 exports.onSocketUnsubscribeMessagesListener = onSocketUnsubscribeMessagesListener;
 exports.onSocketDisconnect = onSocketDisconnect;
-exports.onSocketConnect = onSocketConnect;

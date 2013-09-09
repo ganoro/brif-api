@@ -55,21 +55,35 @@ io.sockets.on('connection', function (socket) {
 	console.log("connected to: " + socket.id);
 
 	var route = require('./route.notifications.js');
-	route.onSocketConnect(socket);
 
-	socket.on('setup', route.onSocketSetup);
+	socket.on('setup', function(data) { 
+		route.onSocketSetup(socket, data);
+	});
 
-	socket.on('groups listener subscribe', route.onSocketSubscribeGroupsListener);
-	socket.on('groups listener unsubscribe', route.onSocketUnsubscribeGroupsListener);
+	socket.on('groups:subscribe', function(data) { 
+		route.onSocketSubscribeGroupsListener(socket, data);
+	});
+		
+	socket.on('groups:unsubscribe', function(data) { 
+		route.onSocketUnsubscribeGroupsListener(socket, data);
+	});
+
 	// socket.on('groups insert', route.onSocketGroupsInsert);
 	// socket.on('groups search', route.onSocketGroupsSearch);
 
-	socket.on('messages listener subscribe', route.onSocketSubscribeMessagesListener);
-	socket.on('messages listener unsubscribe', route.onSocketUnsubscribeMessagesListener);
+	socket.on('messages:subscribe', function(data) { 
+		route.onSocketSubscribeMessagesListener(socket, data);
+	});
+		
+	socket.on('messages:unsubscribe', function(data) { 
+		route.onSocketUnsubscribeMessagesListener(socket, data);
+	});
 	// socket.on('messages insert', route.onSocketMessagesInsert);
 	// socket.on('messages search', route.onSocketMessagesSearch);
 
-	socket.on('disconnect', route.onSocketDisconnect);
+	socket.on('disconnect', function() { 
+		route.onSocketDisconnect(socket);
+	});
 });
 
 console.log('Listening on port ' + config.port);
