@@ -37,6 +37,50 @@ var notify = function(req, res){
 	res.send("fuck ya!");
 };
 
+var onSocketSubscribeGroupsListener = function(data) {
+	if (data.email == null || data.client_id == null) {
+		// TODO internal error 
+	}
+	console.log(arguments.callee.name);
+  	console.log(data.email);	
+  	console.log(data.client_id);
+  	subscribeGroupsListener(data.client_id, data.email, function() {
+		socket.emit('notification', { type : "group event", data : data });
+	});
+}
+
+var onSocketUnsubscribeGroupsListener = function(data) {
+	if (data.email == null || data.client_id == null) {
+		// TODO internal error 
+	}
+	console.log(arguments.callee.name);
+  	console.log(data.email);	
+  	console.log(data.client_id);
+  	unsubscribeGroupsListener(data.client_id, data.email);
+}
+
+var onSocketSubscribeMessagesListener = function(data) {
+	if (data.email == null || data.client_id == null || data.group_id == null) {
+		// TODO internal error 
+	}
+	console.log(arguments.callee.name);
+  	console.log(data.email);	
+  	console.log(data.client_id);
+  	subscribeMessagesListener(data.client_id, data.email, data.group_id, function() {
+		socket.emit('notification', { type : "message event", data : data });
+	});
+}
+
+var onSocketUnsubscribeMessagesListener = function(data) {
+	if (data.email == null || data.client_id == null) {
+		// TODO internal error 
+	}
+	console.log(arguments.callee.name);
+  	console.log(data.email);	
+  	console.log(data.client_id);
+  	subscribeGroupsListener(data.client_id, data.email, data.group_id);
+}
+
 var sendUnsupportedOperation = function(res, msg) {
 	res.status(400).send(JSON.stringify({ error: "Unsupported operation", message : msg}));		
 }
@@ -78,7 +122,7 @@ var unsubscribeGroupsListener = function(client_id, email) {
 	minpubsub.unsubscribe(handler);
 };
 
-var subscribeMessageListener = function(client_id, email, group_id, callback) {	
+var subscribeMessagesListener = function(client_id, email, group_id, callback) {	
 	var topic = messagesTopicName(client_id, email, group_id);
 	var handler = minpubsub.subscribe(topic, function(msg){
 		console.log("[" + topic + "] is executing with message " + msg);
@@ -87,7 +131,7 @@ var subscribeMessageListener = function(client_id, email, group_id, callback) {
 	registerHandler(email, client_id, topic, handler);
 }
 
-var unsubscribeMessageListener = function(client_id, email, group_id) {
+var unsubscribeMessagesListener = function(client_id, email, group_id) {
 	var topic = messagesTopicName(client_id, email, group_id);
 	var handler = resolveHandler(client_id, email, topic);
 	minpubsub.unsubscribe(handler);
@@ -109,7 +153,9 @@ var notifyGroupListsners = function(email, msg) {
 
 	for (var client_id in nots[email].clients) {
 		var topic = groupsTopicName(client_id, email);
-		minpubsub.publish(topic, msg);
+		console.log(topic);
+		console.log(msg);
+		minpubsub.publish(topic, [ msg ]);
 	}
 }
 
@@ -124,13 +170,17 @@ var notifyMessagesListsners = function(email, group_id, msg) {
 	}
 }
 
+var socket = null;
+var setSocket = function(_socket) {
+	socket = _socket;
+}
+
 /**
  * Exports
  */
-exports.unsubscribeGroupsListener = unsubscribeGroupsListener;
-exports.subscribeGroupsListener = subscribeGroupsListener;
-exports.unsubscribeMessageListener = unsubscribeMessageListener;
-exports.subscribeMessageListener = subscribeMessageListener;
-exports.unsubscribeAllTopicsToClient = unsubscribeAllTopicsToClient;
 exports.notify = notify;
-
+exports.onSocketSubscribeGroupsListener = onSocketSubscribeGroupsListener;
+exports.onSocketUnsubscribeGroupsListener = onSocketUnsubscribeGroupsListener;
+exports.onSocketSubscribeMessagesListener = onSocketSubscribeMessagesListener;
+exports.onSocketUnsubscribeMessagesListener = onSocketUnsubscribeMessagesListener;
+exports.setSocket = setSocket;

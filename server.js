@@ -36,7 +36,7 @@ app.all('*', function(req, res, next) {
 app.get ('/auth/signin'          , routes['auth'].signin);
 app.post('/auth/mobile-signin'   , routes['auth'].mobile_signin);
 app.post('/auth/refresh-token'   , routes['auth'].refresh_token);
-app.post('/notification/notify'   , routes['notifications'].notify);
+app.post('/notification/notify'  , routes['notifications'].notify);
 
 /**
  * error handling
@@ -52,11 +52,12 @@ app.use(function(err, req, res, next){
 var io = require('socket.io').listen(app.listen(config.port));
 
 io.sockets.on('connection', function (socket) {
-  socket.emit('news', { hello: 'world' });
-  socket.on('subscribe_group_listener', function (data) {
-    console.log(data);
-  });
+	var route = require('./route.notifications.js');
+	route.setSocket(socket);
+	socket.on('groups listener subscribe', route.onSocketSubscribeGroupsListener);
+	socket.on('groups listener unsubscribe', route.onSocketUnsubscribeGroupsListener);
+	socket.on('messages listener subscribe', route.onSocketSubscribeMessagesListener);
+	socket.on('messages listener unsubscribe', route.onSocketUnsubscribeMessagesListener);
 });
-
 
 console.log('Listening on port ' + config.port);
