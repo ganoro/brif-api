@@ -57,6 +57,7 @@ io.sockets.on('connection', function (socket) {
 	var route = require('./route.notifications.js');
 	route.onSocketConnect(socket);
 
+	socket.emit('setup', {});
 	socket.on('setup', route.onSocketSetup);
 
 	socket.on('groups listener subscribe', route.onSocketSubscribeGroupsListener);

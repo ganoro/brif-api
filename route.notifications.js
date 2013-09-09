@@ -45,14 +45,13 @@ var onSocketConnect = function(_socket) {
 
 var onSocketSetup = function(data) {
 	var email = data.email;
-
-	nots[email] = nots[email] || { clients : {} };
-	nots[email].clients[socket.id] = nots[email].clients[socket.id] || { topics : [] };
-
 	console.log(socket.id);
 	console.log(email);
 	console.log(nots[email]);
 	console.log(nots[email].clients[socket.id]);
+
+	nots[email] = nots[email] || { clients : {} };
+	nots[email].clients[socket.id] = nots[email].clients[socket.id] || { topics : [] };
 }
 
 var onSocketSubscribeGroupsListener = function(data) {
