@@ -53,8 +53,8 @@ var onSocketSubscribeGroupsListener = function(socket, data) {
 	if (data.email == null) {
 		// TODO internal error
 	}
-  	subscribeGroupsListener(socket.id, data.email, function() {
-		socket.emit('groups:change', { type : "group", data : data });
+  	subscribeGroupsListener(socket.id, data.email, function(msg) {
+		socket.emit('groups:change', { type : "group", data : data, message : msg });
 	});
 }
 
