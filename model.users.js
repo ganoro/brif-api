@@ -19,7 +19,7 @@ var findByEmail = function(email, opts) {
 var getUserId = function(email, callback) {
 	findByEmail(email, {
 		success : function(user) {
-			callback(user.objectId);
+			callback(user.id);
 		}
 	});
 }
