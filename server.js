@@ -65,7 +65,7 @@ io.sockets.on('connection', function (socket) {
 
 	// setup
 	socket.on('setup', proxy(route.onSocketSetup));
-	socket.on('disconnect', proxy(route.onSocketDisconnect(socket));
+	socket.on('disconnect', proxy(route.onSocketDisconnect));
 
 	// groups
 	socket.on('groups:subscribe', proxy(route.onSocketSubscribeGroupsListener));
