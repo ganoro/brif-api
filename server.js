@@ -53,37 +53,32 @@ var io = require('socket.io').listen(app.listen(config.port));
 
 io.sockets.on('connection', function (socket) {
 	console.log("connected to: " + socket.id);
+	
+	// proxy, enables socket as parameter
+	var proxy = function(callback) {
+		return function(data) {
+			callback(socket, data);
+		}
+	}
 
 	var route = require('./route.notifications.js');
 
-	socket.on('setup', function(data) { 
-		route.onSocketSetup(socket, data);
-	});
+	// setup
+	socket.on('setup', proxy(route.onSocketSetup));
+	socket.on('disconnect', proxy(route.onSocketDisconnect(socket));
 
-	socket.on('groups:subscribe', function(data) { 
-		route.onSocketSubscribeGroupsListener(socket, data);
-	});
-		
-	socket.on('groups:unsubscribe', function(data) { 
-		route.onSocketUnsubscribeGroupsListener(socket, data);
-	});
+	// groups
+	socket.on('groups:subscribe', proxy(route.onSocketSubscribeGroupsListener));
+	socket.on('groups:unsubscribe', proxy(route.onSocketUnsubscribeGroupsListener));
+	socket.on('groups:insert', proxy(route.onSocketGroupsInsert));
+	socket.on('groups:fetch', proxy(route.onSocketGroupsSearch));
 
-	// socket.on('groups insert', route.onSocketGroupsInsert);
-	// socket.on('groups search', route.onSocketGroupsSearch);
+	// messages
+	socket.on('messages:subscribe', proxy(route.onSocketSubscribeMessagesListener));
+	socket.on('messages:unsubscribe', proxy(route.onSocketUnsubscribeMessagesListener));
+	socket.on('messages:insert', proxy(route.onSocketMessagesInsert));
+	socket.on('messages:fetch', proxy(route.onSocketMessagesSearch));
 
-	socket.on('messages:subscribe', function(data) { 
-		route.onSocketSubscribeMessagesListener(socket, data);
-	});
-		
-	socket.on('messages:unsubscribe', function(data) { 
-		route.onSocketUnsubscribeMessagesListener(socket, data);
-	});
-	// socket.on('messages insert', route.onSocketMessagesInsert);
-	// socket.on('messages search', route.onSocketMessagesSearch);
-
-	socket.on('disconnect', function() { 
-		route.onSocketDisconnect(socket);
-	});
 });
 
 console.log('Listening on port ' + config.port);

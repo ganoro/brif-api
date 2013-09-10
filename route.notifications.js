@@ -88,6 +88,22 @@ var onSocketUnsubscribeMessagesListener = function(socket, data) {
   	unsubscribeMessagesListener(socket.id, data.email, data.group_id);
 }
 
+var onSocketGroupsInsert = function(socket, data) {
+
+}
+
+var onSocketGroupsSearch = function(socket, data) {
+
+}
+
+var onSocketMessagesInsert = function(socket, data) {
+
+}
+
+var onSocketMessagesSearch = function(socket, data) {
+
+}
+
 var onSocketDisconnect = function(socket) {
 	unsubscribeAllTopicsToClient(socket.id);
 }
@@ -189,9 +205,18 @@ var notifyMessagesListsners = function(email, group_id, msg) {
  * Exports
  */
 exports.notify = notify;
+
 exports.onSocketSetup = onSocketSetup;
+exports.onSocketDisconnect = onSocketDisconnect;
+
 exports.onSocketSubscribeGroupsListener = onSocketSubscribeGroupsListener;
 exports.onSocketUnsubscribeGroupsListener = onSocketUnsubscribeGroupsListener;
+exports.onSocketGroupsInsert = onSocketGroupsInsert;
+exports.onSocketGroupsSearch = onSocketGroupsSearch;
+
 exports.onSocketSubscribeMessagesListener = onSocketSubscribeMessagesListener;
 exports.onSocketUnsubscribeMessagesListener = onSocketUnsubscribeMessagesListener;
-exports.onSocketDisconnect = onSocketDisconnect;
+exports.onSocketMessagesInsert = onSocketMessagesInsert;
+exports.onSocketMessagesSearch = onSocketMessagesSearch;
+
+
