@@ -9,10 +9,11 @@ var Users = model.parse.Object.extend("Groups");
  * Find by email
  * success() and error() functions required in opts
  */ 
-exports.findByEmail = function(email, opts) {
+exports.findByUser = function(user_id, opts) {
   	var query = new model.parse.Query(Users);
-  	query.equalTo("email", email);
-	query.first(opts);
+  	query.equalTo("user", user_id);
+  	query.limit(opts.per_page).skip((opts.page - 1)*opts.per_page);
+	query.find(opts);
 }
 
 

@@ -120,10 +120,8 @@ var onSocketGroupsSearch = function(socket, data) {
 		// TODO internal error
 	}
 
-	groupsSearch(socket.id, data);
+	groupsSearch(socket.get("userId"), data);
 }
-
-
 
 var onSocketSubscribeMessagesListener = function(socket, data) {
 	if (data.email == null || data.group_id == null) {
@@ -193,8 +191,18 @@ var groupsInsert = function(client_id, data) {
 	// TODO
 }
 
-var groupsSearch = function(client_id, data) {
-	// TODO
+var groupsSearch = function(user_id, data) {
+	var per_page = data.per_page;
+	var page = data.page;
+
+
+	model['groups'].findByUser(user_id, {
+		per_page : per_page, 
+		page : page, 
+		success : function(data) {
+			socket.emit('groups:fetch', { data : data });
+		}
+	});
 }
 
 var subscribeMessagesListener = function(client_id, email, group_id, callback) {	
