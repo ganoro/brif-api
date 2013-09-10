@@ -123,7 +123,7 @@ var onSocketGroupsSearch = function(socket, data) {
 		// TODO internal error
 	}
 
-	socket.get("userId", function(id) {
+	socket.get("userId", function(err, id) {
 		console.log("user - " + id);
 		groupsSearch(socket, id, data);
 	});
