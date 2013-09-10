@@ -3,7 +3,7 @@ var model = require('./model.base.js');
 /**
  * initialize parse app
  */ 
-var Users = model.parse.Object.extend("Users");
+var Users = model.parse.Object.extend("Groups");
 
 /**
  * Find by email
@@ -15,14 +15,7 @@ exports.findByEmail = function(email, opts) {
 	query.first(opts);
 }
 
-// returns the user id to the callback(objectId)
-exports.getUserId = function(email, callback) {
-	findByEmail(email, function() {
-		success : function(user) {
-			callback(user.objectId);
-		}
-	})
-}
+
 
 
  

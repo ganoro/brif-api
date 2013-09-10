@@ -2,6 +2,9 @@ var minpubsub = require('minpubsub/minpubsub');
 var $ = require('jquery').create();
 
 var nots = {};
+var model = {};
+model['users'] = require('./model.users.js');
+model['groups'] = require('./model.groups.js');
 
 /**
  * @api POST /notification/notify 
@@ -75,6 +78,10 @@ var notifyMessagesListsners = function(email, group_id, msg) {
 var onSocketSetup = function(socket, data) {
 	console.log("connected to : " + socket.id + ", with email : " + data.email);
 	setupClient(socket.id, data.email);
+	model['users'].getUserId(data.email, function(objectId) {
+		console.log("objectId: " + objectId);
+		socket.set('userId', objectId); 
+	})
 }
 
 var onSocketDisconnect = function(socket) {
@@ -100,6 +107,24 @@ var onSocketUnsubscribeGroupsListener = function(socket, data) {
   	unsubscribeGroupsListener(socket.id, data.email);
 }
 
+var onSocketGroupsInsert = function(socket, data) {
+	if (data.info == null) {
+		// TODO internal error
+	}
+
+	groupsInsert(socket.id, data);
+}
+
+var onSocketGroupsSearch = function(socket, data) {
+	if (data.info == null) {
+		// TODO internal error
+	}
+
+	groupsSearch(socket.id, data);
+}
+
+
+
 var onSocketSubscribeMessagesListener = function(socket, data) {
 	if (data.email == null || data.group_id == null) {
 		// TODO internal error 
@@ -115,22 +140,6 @@ var onSocketUnsubscribeMessagesListener = function(socket, data) {
 		// TODO internal error 
 	}
   	unsubscribeMessagesListener(socket.id, data.email, data.group_id);
-}
-
-var onSocketGroupsInsert = function(socket, data) {
-	if (data.info == null) {
-		// TODO internal error
-	}
-
-	groupsInsert(socket.id, data);
-}
-
-var onSocketGroupsSearch = function(socket, data) {
-	if (data.info == null) {
-		// TODO internal error
-	}
-
-	groupsSearch(socket.id, data);
 }
 
 var onSocketMessagesInsert = function(socket, data) {

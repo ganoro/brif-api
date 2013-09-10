@@ -3,9 +3,6 @@ var request = require('request');
 var xml2js = require('xml2js').parseString;
 var $ = require('jquery').create();
 
-/**
- * Load model
- */
 var model = {};
 model['users'] = require('./model.users.js');
 
