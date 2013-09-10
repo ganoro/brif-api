@@ -127,7 +127,6 @@ var onSocketGroupsSearch = function(socket, data) {
 		console.log("user - " + id);
 		groupsSearch(socket, id, data);
 	});
-	
 }
 
 var onSocketSubscribeMessagesListener = function(socket, data) {
