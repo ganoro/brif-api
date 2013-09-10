@@ -42,10 +42,43 @@ var sendUnsupportedOperation = function(res, msg) {
 	res.status(400).send(JSON.stringify({ error: "Unsupported operation", message : msg}));		
 }
 
+var notifyGroupListsners = function(email, msg) {
+	console.log("notifyGroupListsners");
+
+	if (typeof nots[email] === "undefined") {
+		return;
+	}
+
+	console.log(nots[email].clients);
+	for (var client_id in nots[email].clients) {
+		var topic = groupsTopicName(client_id, email);
+		console.log(topic);
+		console.log(msg);
+		minpubsub.publish(topic, [ msg ]);
+	}
+}
+
+var notifyMessagesListsners = function(email, group_id, msg) {
+	if (typeof nots[email] === "undefined") {
+		return;
+	}
+
+	for (var client_id in nots[email].clients) {
+		var topic = messagesTopicName(client_id, email, group_id);
+		minpubsub.publish(topic, msg);
+	}
+}
+
+/**
+ * On Socket messages
+ */
 var onSocketSetup = function(socket, data) {
-	console.log("connected to : " + socket.id);
-	console.log("email : " + data.email);
+	console.log("connected to : " + socket.id + ", with email : " + data.email);
 	setupClient(socket.id, data.email);
+}
+
+var onSocketDisconnect = function(socket) {
+	unsubscribeAllTopicsToClient(socket.id);
 }
 
 var onSocketSubscribeGroupsListener = function(socket, data) {
@@ -60,8 +93,6 @@ var onSocketSubscribeGroupsListener = function(socket, data) {
 
 var onSocketUnsubscribeGroupsListener = function(socket, data) {
 	console.log("onSocketUnsubscribeGroupsListener")
-  	console.log(data.email);
-  	console.log(socket.id);
 
 	if (data.email == null) {
 		// TODO internal error 
@@ -83,17 +114,23 @@ var onSocketUnsubscribeMessagesListener = function(socket, data) {
 	if (data.email == null) {
 		// TODO internal error 
 	}
-  	console.log(data.email);
-  	console.log(socket.id);	
   	unsubscribeMessagesListener(socket.id, data.email, data.group_id);
 }
 
 var onSocketGroupsInsert = function(socket, data) {
+	if (data.info == null) {
+		// TODO internal error
+	}
 
+	groupsInsert(socket.id, data);
 }
 
 var onSocketGroupsSearch = function(socket, data) {
+	if (data.info == null) {
+		// TODO internal error
+	}
 
+	groupsSearch(socket.id, data);
 }
 
 var onSocketMessagesInsert = function(socket, data) {
@@ -102,10 +139,6 @@ var onSocketMessagesInsert = function(socket, data) {
 
 var onSocketMessagesSearch = function(socket, data) {
 
-}
-
-var onSocketDisconnect = function(socket) {
-	unsubscribeAllTopicsToClient(socket.id);
 }
 
 var groupsTopicName = function(client_id, email) {
@@ -147,6 +180,14 @@ var unsubscribeGroupsListener = function(client_id, email) {
 	
 };
 
+var groupsInsert = function(client_id, data) {
+	// TODO
+}
+
+var groupsSearch = function(client_id, data) {
+	// TODO
+}
+
 var subscribeMessagesListener = function(client_id, email, group_id, callback) {	
 	var topic = messagesTopicName(client_id, email, group_id);
 	var handler = minpubsub.subscribe(topic, function(msg){
@@ -164,6 +205,14 @@ var unsubscribeMessagesListener = function(client_id, email, group_id) {
 	}
 };
 
+var messagesInsert = function(client_id, data) {
+	// TODO
+}
+
+var messagesSearch = function(client_id, data) {
+	// TODO
+}
+
 var unsubscribeAllTopicsToClient = function(email, client_id) {
 	for (var topic in nots[email].clients[client_id].topics) {
 		var handler = resolveHandler(client_id, email, topic);
@@ -172,34 +221,6 @@ var unsubscribeAllTopicsToClient = function(email, client_id) {
 
 	delete nots[email].clients[client_id];
 }
-
-var notifyGroupListsners = function(email, msg) {
-	console.log("notifyGroupListsners");
-
-	if (typeof nots[email] === "undefined") {
-		return;
-	}
-
-	console.log(nots[email].clients);
-	for (var client_id in nots[email].clients) {
-		var topic = groupsTopicName(client_id, email);
-		console.log(topic);
-		console.log(msg);
-		minpubsub.publish(topic, [ msg ]);
-	}
-}
-
-var notifyMessagesListsners = function(email, group_id, msg) {
-	if (typeof nots[email] === "undefined") {
-		return;
-	}
-
-	for (var client_id in nots[email].clients) {
-		var topic = messagesTopicName(client_id, email, group_id);
-		minpubsub.publish(topic, msg);
-	}
-}
-
 
 /**
  * Exports
@@ -218,5 +239,3 @@ exports.onSocketSubscribeMessagesListener = onSocketSubscribeMessagesListener;
 exports.onSocketUnsubscribeMessagesListener = onSocketUnsubscribeMessagesListener;
 exports.onSocketMessagesInsert = onSocketMessagesInsert;
 exports.onSocketMessagesSearch = onSocketMessagesSearch;
-
-
