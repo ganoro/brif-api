@@ -120,7 +120,10 @@ var onSocketGroupsSearch = function(socket, data) {
 		// TODO internal error
 	}
 
-	groupsSearch(socket.get("userId"), data);
+	socket.get("userId", function(id) {
+		groupsSearch(id, data);
+	});
+	
 }
 
 var onSocketSubscribeMessagesListener = function(socket, data) {
