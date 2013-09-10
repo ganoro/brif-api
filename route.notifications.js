@@ -116,11 +116,15 @@ var onSocketGroupsInsert = function(socket, data) {
 }
 
 var onSocketGroupsSearch = function(socket, data) {
-	if (data.info == null) {
+	console.log("onSocketGroupsSearch")
+	console.log(data);
+
+	if (data.per_page == null) {
 		// TODO internal error
 	}
 
 	socket.get("userId", function(id) {
+		console.log("user - " + id);
 		groupsSearch(socket, id, data);
 	});
 	
