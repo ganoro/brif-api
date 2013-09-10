@@ -234,6 +234,10 @@ var messagesSearch = function(client_id, data) {
 }
 
 var unsubscribeAllTopicsToClient = function(email, client_id) {
+	if (!nots[email] || !nots[email].clients) {
+		console.log("client is missing in notifications array");
+		return;
+	}
 	for (var topic in nots[email].clients[client_id].topics) {
 		var handler = resolveHandler(client_id, email, topic);
 		minpubsub.unsubscribe(handler);
