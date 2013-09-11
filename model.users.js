@@ -20,7 +20,8 @@ var findByEmail = function(email, opts) {
  * success() and error() functions required in opts
  */ 
 var storeUserDetails = function(user_data, opts) {
-
+	console.log("storeUserDetails");
+	console.log (user_data);
 	findByEmail(user_data.email, {
   		user_data : user_data,
 		success: function(object) {
