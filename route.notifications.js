@@ -8,7 +8,7 @@ model['groups'] = require('./model.groups.js');
 
 /**
  * @api POST /notification/notify 
- * Enables Nix to notify clients about change events 
+ * Enables Nix to notify sockets about change events 
  */
 var notify = function(req, res){
 	// notification params
@@ -147,7 +147,7 @@ var resolveHandler = function(client_id, email, topic) {
 }
 
 var setupClient = function(client_id, email) {
-	nots[email] = nots[email] || { clients : {} };
+	nots[email] = nots[email] || { sockets : {} };
 	nots[email].sockets[client_id] = nots[email].sockets[client_id] || { topics : [] };
 }
 
