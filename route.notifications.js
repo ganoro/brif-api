@@ -60,12 +60,12 @@ var notifyMessagesListsners = function(email, group_id, msg) {
 /**
  * On Socket messages
  */
-var onSocketSetup = function(socket, data) {
+var onSocketSetup = function(socket, data, user) {
 	console.log("connected to : " + socket.id + ", with email : " + data.email);
 	setupClient(socket.id, data.email);
 	model['users'].getUserId(data.email, function(objectId) {
 		console.log("objectId: " + objectId);
-		socket.set('userId', objectId); 
+		socket.set('user', JSON.stringify({ "objectId" : objectId, "email" : data.email })); 
 	})
 }
 
@@ -73,10 +73,10 @@ var onSocketDisconnect = function(socket) {
 	unsubscribeAllTopicsToClient(socket.id);
 }
 
-var onSocketSubscribeGroupsListener = function(socket, data) {
+var onSocketSubscribeGroupsListener = function(socket, data, user) {
 	console.log("onSocketSubscribeGroupsListener")
-  	subscribeGroupsListener(socket.id, data.email, function(msg) {
-		socket.emit('groups:change', { entity : "group", data : data, message : msg });
+  	subscribeGroupsListener(socket.id, user.email, function(message) {
+		socket.emit('groups:change', { entity : "group", data : data, message : message });
 	});
 }
 

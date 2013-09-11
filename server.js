@@ -54,10 +54,13 @@ var io = require('socket.io').listen(app.listen(config.port));
 io.sockets.on('connection', function (socket) {
 	console.log("connected to: " + socket.id);
 	
-	// proxy, enables socket as parameter
+	// proxy, enables socket and user details as parameters
 	var proxy = function(callback) {
 		return function(data) {
-			callback(socket, data);
+			socket.get('user', function(err, result) {
+				var user = JSON.parse(result);
+				callback(socket, data, user);
+			});
 		}
 	}
 
