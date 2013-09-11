@@ -23,7 +23,6 @@ var storeUserDetails = function(opts) {
 	console.log("storeUserDetails");
 	findByEmail(opts.user_data.email, {
 		success: function(object) {
-			debugger;
 			var u = (object ? object : new Users());
 			u.set(opts.user_data);
 			u.save(null, opts);
