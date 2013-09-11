@@ -143,7 +143,11 @@ var registerHandler = function(email, client_id, topic, handler) {
 }
 
 var resolveHandler = function(client_id, email, topic) {
-	return nots[email].sockets[client_id].topics[topic];
+	if (nots[email].sockets) {
+		return nots[email].sockets[client_id].topics[topic];	
+	} else {
+		return null;
+	}
 }
 
 var setupClient = function(client_id, email) {
