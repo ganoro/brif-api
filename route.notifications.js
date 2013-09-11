@@ -90,9 +90,6 @@ var onSocketDisconnect = function(socket) {
 
 var onSocketSubscribeGroupsListener = function(socket, data) {
 	console.log("onSocketSubscribeGroupsListener")
-	if (data.email == null) {
-		// TODO internal error
-	}
   	subscribeGroupsListener(socket.id, data.email, function(msg) {
 		socket.emit('groups:change', { type : "group", data : data, message : msg });
 	});
@@ -100,10 +97,6 @@ var onSocketSubscribeGroupsListener = function(socket, data) {
 
 var onSocketUnsubscribeGroupsListener = function(socket, data) {
 	console.log("onSocketUnsubscribeGroupsListener")
-
-	if (data.email == null) {
-		// TODO internal error 
-	}
   	unsubscribeGroupsListener(socket.id, data.email);
 }
 
@@ -117,9 +110,7 @@ var onSocketGroupsInsert = function(socket, data) {
 
 var onSocketGroupsSearch = function(socket, data) {
 	console.log("onSocketGroupsSearch")
-	console.log(data);
-
-	if (data.per_page == null) {
+	if (data.per_page == null || data.page == null) {
 		// TODO internal error
 	}
 
@@ -190,7 +181,6 @@ var unsubscribeGroupsListener = function(client_id, email) {
 	if (handler) {
 		minpubsub.unsubscribe(handler);	
 	}
-	
 };
 
 var groupsInsert = function(client_id, data) {

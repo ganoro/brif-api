@@ -36,7 +36,7 @@ app.all('*', function(req, res, next) {
 app.get ('/auth/signin'          , routes['auth'].signin);
 app.post('/auth/mobile-signin'   , routes['auth'].mobile_signin);
 app.post('/auth/refresh-token'   , routes['auth'].refresh_token);
-app.post('/notification/notify'  , routes['notifications'].notify);
+app.post('/notifications/trigger', routes['notifications'].notify); 
 
 /**
  * error handling
