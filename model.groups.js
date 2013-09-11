@@ -10,9 +10,9 @@ var Groups = model.parse.Object.extend("Groups");
  * success() and error() functions required in opts
  */ 
 exports.findByUser = function(user_id, opts) {
-  	var query = new model.parse.Query(Users);
+  	var query = new model.parse.Query(Groups);
   	query.equalTo("user", user_id);
-  	query.limit(opts.per_page).skip((opts.page - 1)*opts.per_page);
+  	query.limit(opts.per_page).skip(opts.page*opts.per_page);
 	query.find(opts);
 }
 
