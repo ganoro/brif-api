@@ -19,14 +19,13 @@ var findByEmail = function(email, opts) {
  * Create new user
  * success() and error() functions required in opts
  */ 
-var storeUserDetails = function(user_data, opts) {
+var storeUserDetails = function(opts) {
 	console.log("storeUserDetails");
-	console.log (user_data);
-	findByEmail(user_data.email, {
+	findByEmail(opts.user_data.email, {
 		success: function(object) {
 			debugger;
 			var u = (object ? object : new Users());
-			u.set(this.user_data);
+			u.set(opts.user_data);
 			u.save(null, opts);
 		},
 		error: function(error) {

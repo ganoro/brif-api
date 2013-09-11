@@ -163,7 +163,8 @@ var storeUserData = function(user_data) {
 	delete user_data.id;
 	console.log(user_data);
 
-  	model['users'].storeUserDetails(user_data, {
+  	model['users'].storeUserDetails({
+  		user_data : user_data,
 		success : function(o) {
 			console.log("user attributes saved!");
 		},
