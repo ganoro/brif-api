@@ -166,6 +166,7 @@ var storeUserData = function(user_data) {
   	model['users'].findByEmail(user_data.email, {
   		user_data : user_data,
 		success: function(object) {
+			debugger;
 			var u = (object ? object : new Users());
 			u.set(this.user_data);
 			u.save(null, {
