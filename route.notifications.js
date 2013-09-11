@@ -131,10 +131,12 @@ var onSocketMessagesSearch = function(socket, data) {
 }
 
 var groupsTopicName = function(client_id, email) {
+	console.log(email + "/" + client_id + "/g");
 	return email + "/" + client_id + "/g";
 }
 
 var messagesTopicName = function(client_id, email, group_id) {
+	console.log(email + "/" + client_id + "/" + group + "/g")
 	return email + "/" + client_id + "/" + group + "/g";
 }
 
