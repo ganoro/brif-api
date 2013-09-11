@@ -153,6 +153,7 @@ var resolveHandler = function(client_id, email, topic) {
 }
 
 var setupClient = function(client_id, email) {
+	console.log(client_id + " " + email)
 	nots[email] = nots[email] || { sockets : {} };
 	nots[email].sockets[client_id] = nots[email].sockets[client_id] || { topics : [] };
 }
