@@ -12,52 +12,37 @@ model['groups'] = require('./model.groups.js');
  */
 var notify = function(req, res){
 	// notification params
+	var data = req.body.data;
 	var email = req.body.email;
-	var type = req.body.type;
-
+	var type = data.type.type;
 	if (type == null || email == null) {
 		sendUnsupportedOperation(res, "missing type and email fields");
 		return;
 	}
 
+	res.send("sending..."); // TODO 
+
 	if (type == "messages") {
-		var group_id = req.body.group_id;
-		var message = req.body.message;
-		if (group_id == null || message == null) {
-			sendUnsupportedOperation(res, "missing group_id and message fields");
-			return;
-		}
-		notifyMessagesListsners(email, group_id, message);
-
+		notifyMessagesListsners(email, data);
 	} else if (type == "groups") {
-		var message = req.body.message;
-		if (message == null) {
-			sendUnsupportedOperation(res, "missing message field");
-			return;
-		}
-		notifyGroupListsners(email, message);
+		notifyGroupListsners(email, data);
 	}
-
-	res.send("fuck ya!");
 };
 
 var sendUnsupportedOperation = function(res, msg) {
 	res.status(400).send(JSON.stringify({ error: "Unsupported operation", message : msg}));		
 }
 
-var notifyGroupListsners = function(email, msg) {
+var notifyGroupListsners = function(email, data) {
 	console.log("notifyGroupListsners");
 
 	if (typeof nots[email] === "undefined") {
 		return;
 	}
 
-	console.log(nots[email].clients);
-	for (var client_id in nots[email].clients) {
+	for (var client_id in nots[email].sockets) {
 		var topic = groupsTopicName(client_id, email);
-		console.log(topic);
-		console.log(msg);
-		minpubsub.publish(topic, [ msg ]);
+		minpubsub.publish(topic, [ data ]);
 	}
 }
 
@@ -66,7 +51,7 @@ var notifyMessagesListsners = function(email, group_id, msg) {
 		return;
 	}
 
-	for (var client_id in nots[email].clients) {
+	for (var client_id in nots[email].sockets) {
 		var topic = messagesTopicName(client_id, email, group_id);
 		minpubsub.publish(topic, msg);
 	}
@@ -154,16 +139,16 @@ var messagesTopicName = function(client_id, email, group_id) {
 }
 
 var registerHandler = function(email, client_id, topic, handler) {
-	nots[email].clients[client_id].topics[topic] = handler;
+	nots[email].sockets[client_id].topics[topic] = handler;
 }
 
 var resolveHandler = function(client_id, email, topic) {
-	return nots[email].clients[client_id].topics[topic];
+	return nots[email].sockets[client_id].topics[topic];
 }
 
 var setupClient = function(client_id, email) {
 	nots[email] = nots[email] || { clients : {} };
-	nots[email].clients[client_id] = nots[email].clients[client_id] || { topics : [] };
+	nots[email].sockets[client_id] = nots[email].sockets[client_id] || { topics : [] };
 }
 
 var subscribeGroupsListener = function(client_id, email, callback) {	
@@ -226,16 +211,16 @@ var messagesSearch = function(client_id, data) {
 }
 
 var unsubscribeAllTopicsToClient = function(email, client_id) {
-	if (!nots[email] || !nots[email].clients) {
+	if (!nots[email] || !nots[email].sockets) {
 		console.log("client is missing in notifications array");
 		return;
 	}
-	for (var topic in nots[email].clients[client_id].topics) {
+	for (var topic in nots[email].sockets[client_id].topics) {
 		var handler = resolveHandler(client_id, email, topic);
 		minpubsub.unsubscribe(handler);
 	}
 
-	delete nots[email].clients[client_id];
+	delete nots[email].sockets[client_id];
 }
 
 /**
