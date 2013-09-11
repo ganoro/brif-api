@@ -14,7 +14,7 @@ var notify = function(req, res){
 	// notification params
 	var data = req.body.data;
 	var email = req.body.email;
-	var entity = data.body.entity;
+	var entity = req.body.entity;
 	if (entity == null || email == null) {
 		sendUnsupportedOperation(res, "missing entity and email fields");
 		return;
