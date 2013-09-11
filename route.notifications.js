@@ -80,9 +80,9 @@ var onSocketSubscribeGroupsListener = function(socket, data, user) {
 	});
 }
 
-var onSocketUnsubscribeGroupsListener = function(socket, data) {
+var onSocketUnsubscribeGroupsListener = function(socket, data, user) {
 	console.log("onSocketUnsubscribeGroupsListener")
-  	unsubscribeGroupsListener(socket.id, data.email);
+  	unsubscribeGroupsListener(socket.id, user.email);
 }
 
 var onSocketGroupsInsert = function(socket, data) {
