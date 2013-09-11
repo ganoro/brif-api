@@ -14,17 +14,17 @@ var notify = function(req, res){
 	// notification params
 	var data = req.body.data;
 	var email = req.body.email;
-	var type = data.type.type;
-	if (type == null || email == null) {
-		sendUnsupportedOperation(res, "missing type and email fields");
+	var entity = data.body.entity;
+	if (entity == null || email == null) {
+		sendUnsupportedOperation(res, "missing entity and email fields");
 		return;
 	}
 
-	res.send("sending..."); // TODO 
+	res.send("sending..."); // TODO send before execute?
 
-	if (type == "messages") {
+	if (entity == "messages") {
 		notifyMessagesListsners(email, data);
-	} else if (type == "groups") {
+	} else if (entity == "groups") {
 		notifyGroupListsners(email, data);
 	}
 };
@@ -76,7 +76,7 @@ var onSocketDisconnect = function(socket) {
 var onSocketSubscribeGroupsListener = function(socket, data) {
 	console.log("onSocketSubscribeGroupsListener")
   	subscribeGroupsListener(socket.id, data.email, function(msg) {
-		socket.emit('groups:change', { type : "group", data : data, message : msg });
+		socket.emit('groups:change', { entity : "group", data : data, message : msg });
 	});
 }
 
@@ -111,7 +111,7 @@ var onSocketSubscribeMessagesListener = function(socket, data) {
 	}
   	console.log(data.email);	
   	subscribeMessagesListener(socket.id, data.email, data.group_id, function() {
-		socket.emit('messages:change', { type : "message", data : data });
+		socket.emit('messages:change', { entity : "message", data : data });
 	});
 }
 
