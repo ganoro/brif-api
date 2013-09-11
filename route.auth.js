@@ -163,26 +163,13 @@ var storeUserData = function(user_data) {
 	delete user_data.id;
 	console.log(user_data);
 
-  	model['users'].findByEmail(user_data.email, {
-  		user_data : user_data,
-		success: function(object) {
-			debugger;
-			var u = (object ? object : new Users());
-			u.set(this.user_data);
-			u.save(null, {
-				success : function(o) {
-					console.log("user attributes saved!");
-				},
-				error : function(o, e) {
-					console.log("Error: " + error.code + " " + error.message);
-				} 
-			});
+  	model['users'].storeUserDetails(user_data, {
+		success : function(o) {
+			console.log("user attributes saved!");
 		},
-		error: function(error) {
+		error : function(o, e) {
 			console.log("Error: " + error.code + " " + error.message);
-		}
+		} 
 	});
 }
-
-
 

@@ -15,7 +15,29 @@ var findByEmail = function(email, opts) {
 	query.first(opts);
 }
 
-// returns the user id to callback(objectId)
+/**
+ * Create new user
+ * success() and error() functions required in opts
+ */ 
+var storeUserDetails = function(user_data, opts) {
+
+	findByEmail(user_data.email, {
+  		user_data : user_data,
+		success: function(object) {
+			debugger;
+			var u = (object ? object : new Users());
+			u.set(this.user_data);
+			u.save(null, opts);
+		},
+		error: function(error) {
+			console.log("Error: " + error.code + " " + error.message);
+		}
+	});
+}
+
+/**
+ * returns the user id to callback(objectId)
+ */
 var getUserId = function(email, callback) {
 	findByEmail(email, {
 		success : function(user) {
@@ -25,4 +47,5 @@ var getUserId = function(email, callback) {
 }
 
 exports.findByEmail = findByEmail;
+exports.storeUserDetails = storeUserDetails;
 exports.getUserId = getUserId;
