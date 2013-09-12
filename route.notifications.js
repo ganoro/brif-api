@@ -93,16 +93,13 @@ var onSocketGroupsInsert = function(socket, data) {
 	groupsInsert(socket.id, data);
 }
 
-var onSocketGroupsSearch = function(socket, data) {
+var onSocketGroupsSearch = function(socket, data, user) {
 	console.log("onSocketGroupsSearch")
 	if (data.per_page == null || data.page == null) {
 		// TODO internal error
 	}
 
-	socket.get("userId", function(err, id) {
-		console.log("user - " + id);
-		groupsSearch(socket, id, data);
-	});
+	groupsSearch(socket, user.id, data);
 }
 
 var onSocketSubscribeMessagesListener = function(socket, data) {
