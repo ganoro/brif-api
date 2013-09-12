@@ -15,6 +15,7 @@ var notify = function(req, res){
 	var data = req.body.data;
 	var email = req.body.email;
 	var entity = req.body.entity;
+	var type = req.body.type;	
 	if (entity == null || email == null) {
 		sendUnsupportedOperation(res, "missing entity and email fields");
 		return;
@@ -25,7 +26,7 @@ var notify = function(req, res){
 	if (entity == "messages") {
 		notifyMessagesListsners(email, data);
 	} else if (entity == "groups") {
-		notifyGroupListsners(email, data);
+		notifyGroupListsners(email, req.body);
 	}
 };
 
@@ -78,7 +79,7 @@ var onSocketDisconnect = function(socket) {
 var onSocketSubscribeGroupsListener = function(socket, data, user) {
 	console.log("onSocketSubscribeGroupsListener")
   	subscribeGroupsListener(socket.id, user.email, function(message) {
-		socket.emit('groups:change', { entity : "group", data : data, message : message });
+		socket.emit('groups:change', { entity : "group", data : message, type : data.  });
 	});
 }
 
