@@ -79,7 +79,7 @@ var onSocketDisconnect = function(socket) {
 var onSocketSubscribeGroupsListener = function(socket, data, user) {
 	console.log("onSocketSubscribeGroupsListener")
   	subscribeGroupsListener(socket.id, user.email, function(message) {
-		socket.emit('groups:change', { entity : "group", data : message, type : data.  });
+		socket.emit('groups:change', message);
 	});
 }
 
