@@ -99,7 +99,7 @@ var onSocketGroupsSearch = function(socket, data, user) {
 		// TODO internal error
 	}
 
-	groupsSearch(socket, user.id, data);
+	groupsSearch(socket, user.objectId, data);
 }
 
 var onSocketSubscribeMessagesListener = function(socket, data) {
