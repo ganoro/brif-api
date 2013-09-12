@@ -59,6 +59,7 @@ io.sockets.on('connection', function (socket) {
 		return function(data) {
 			socket.get('user', function(err, result) {
 				var user = JSON.parse(result);
+				console.log(user)
 				callback(socket, data, user);
 			});
 		}

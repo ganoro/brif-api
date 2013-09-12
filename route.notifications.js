@@ -98,7 +98,8 @@ var onSocketGroupsSearch = function(socket, data, user) {
 	if (data.per_page == null || data.page == null) {
 		// TODO internal error
 	}
-
+	console.log(user);
+	console.log(data);
 	groupsSearch(socket, user.objectId, data);
 }
 
