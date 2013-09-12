@@ -65,7 +65,9 @@ var onSocketSetup = function(socket, data, user) {
 	setupClient(socket.id, data.email);
 	model['users'].getUserId(data.email, function(objectId) {
 		console.log("objectId: " + objectId);
-		socket.set('user', JSON.stringify({ "objectId" : objectId, "email" : data.email })); 
+		socket.set('user', JSON.stringify({ "objectId" : objectId, "email" : data.email }), function() {
+			socket.emit('setup:completed');
+		}); 
 	})
 }
 
