@@ -217,22 +217,23 @@ var messagesInsert = function(client_id, data) {
 	// TODO
 }
 
-var messagesSearch = function(client_id, user_id, data) {
+var messagesSearch = function(socket, user_id, data) {
 	var per_page = data.per_page;
 	var page = data.page;
 	var group_id = data.group_id;	
 
-	model['messages'].findByGroupId({
+	var opts = {
 		per_page : per_page, 
 		page : page, 
 		group_id : page, 
 		user_id : user_id, 
 		success : function(data) {
-			console.log(this);
+			console.log(opts);
 			console.log(data);
 			socket.emit('messages:fetch', { data : data });
 		}
-	});
+	};
+	model['messages'].findByGroupId(opts);
 }
 
 var unsubscribeAllTopicsToClient = function(email, client_id) {
