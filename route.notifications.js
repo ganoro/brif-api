@@ -228,6 +228,8 @@ var messagesSearch = function(client_id, user_id, data) {
 		group_id : page, 
 		user_id : user_id, 
 		success : function(data) {
+			console.log(this);
+			console.log(data);
 			socket.emit('messages:fetch', { data : data });
 		}
 	});
