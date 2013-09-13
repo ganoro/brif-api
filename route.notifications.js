@@ -5,6 +5,7 @@ var nots = {};
 var model = {};
 model['users'] = require('./model.users.js');
 model['groups'] = require('./model.groups.js');
+model['messages'] = require('./model.messages.js');
 
 /**
  * @api POST /notification/notify 
@@ -101,8 +102,6 @@ var onSocketGroupsSearch = function(socket, data, user) {
 	if (data.per_page == null || data.page == null) {
 		// TODO internal error
 	}
-	console.log(user);
-	console.log(data);
 	groupsSearch(socket, user.objectId, data);
 }
 
@@ -127,8 +126,12 @@ var onSocketMessagesInsert = function(socket, data) {
 
 }
 
-var onSocketMessagesSearch = function(socket, data) {
-
+var onSocketMessagesSearch = function(socket, data, user) {
+	console.log("onSocketMessagesSearch")
+	if (data.per_page == null || data.page == null || data.group_id == null) {
+		// TODO internal error
+	}
+	messagesSearch(socket, user.objectId, data);
 }
 
 var groupsTopicName = function(client_id, email) {
@@ -214,8 +217,20 @@ var messagesInsert = function(client_id, data) {
 	// TODO
 }
 
-var messagesSearch = function(client_id, data) {
-	// TODO
+var messagesSearch = function(client_id, user_id, data) {
+	var per_page = data.per_page;
+	var page = data.page;
+	var group_id = data.group_id;	
+
+	model['messages'].findByGroupId({
+		per_page : per_page, 
+		page : page, 
+		group_id : page, 
+		user_id : user_id, 
+		success : function(data) {
+			socket.emit('messages:fetch', { data : data });
+		}
+	});
 }
 
 var unsubscribeAllTopicsToClient = function(email, client_id) {
