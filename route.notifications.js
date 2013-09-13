@@ -230,7 +230,7 @@ var messagesSearch = function(socket, user_id, data) {
 		success : function(data) {
 			console.log(opts);
 			console.log(data);
-			socket.emit('messages:fetch', { data : data });
+			socket.emit('messages:fetch:' + opts.group_id , { data : data });
 		}
 	};
 	model['messages'].findByGroupId(opts);
