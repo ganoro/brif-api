@@ -225,7 +225,7 @@ var messagesSearch = function(socket, user_id, data) {
 	var opts = {
 		per_page : per_page, 
 		page : page, 
-		group_id : page, 
+		group_id : group_id, 
 		user_id : user_id, 
 		success : function(data) {
 			console.log(opts);
