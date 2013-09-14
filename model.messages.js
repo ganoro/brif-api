@@ -8,14 +8,17 @@ var Messages = model.parse.Object.extend("Messages");
  * paremetrs required - group_id, user_id
  */ 
 exports.findByGroupId = function(opts) {
-  	var query1 = new model.parse.Query(Messages);
-  	query1.equalTo("thread", opts.group_id);
 
-  	var query2 = new model.parse.Query(Messages);
-  	query2.equalTo("user", opts.user_id);
+  	console.log(opts.group_id);
+  	console.log(opts.user_id);
+  	console.log(opts.per_page);
+  	console.log(opts.page*opts.per_page);
 
-	var query = model.parse.Query.and(query1, query2);
-  	query.limit(opts.per_page).skip(opts.page*opts.per_page);
+  	var query = new model.parse.Query(Messages);
+  	query.equalTo("thread", opts.group_id)
+  		.equalTo("user", opts.user_id)
+  		.limit(opts.per_page)
+  		.skip(opts.page*opts.per_page);
 
 	query.find(opts);
 }
