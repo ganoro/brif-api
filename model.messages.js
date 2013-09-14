@@ -14,7 +14,7 @@ exports.findByGroupId = function(opts) {
   	var query2 = new model.parse.Query(Messages);
   	query2.equalTo("user", opts.user_id);
 
-	var query = Parse.Query.and(query1, query2);
+	var query = model.parse.Query.and(query1, query2);
   	query.limit(opts.per_page).skip(opts.page*opts.per_page);
 
 	query.find(opts);
