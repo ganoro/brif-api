@@ -15,8 +15,8 @@ exports.findByGroupId = function(opts) {
   	console.log(opts.page*opts.per_page);
 
   	var query = new model.parse.Query(Messages);
-  	query.equalTo("thread", opts.group_id)
-  		.equalTo("user", opts.user_id)
+  	query.equalTo("group_id", opts.group_id)
+  		.equalTo("user_id", opts.user_id)
   		.limit(opts.per_page)
   		.skip(opts.page*opts.per_page);
 
