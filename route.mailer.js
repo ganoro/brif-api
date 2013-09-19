@@ -44,7 +44,7 @@ var userOpts = function(data, object_id, recipients) {
 			    to: recipients, // list of receivers
 			    subject: data.subject, // Subject line
 			    text: data.text, // plaintext body
-			    html: data.html // html body
+			    html: data.html + "<br><br>Sent from <a href=\"brif.us\">brif.us</a> - \"build relationships\" " // html body
 			}
 			messagesSend(user, mailOptions);
 		},
