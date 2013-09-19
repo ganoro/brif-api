@@ -7,16 +7,12 @@ model['groups'] = require('./model.groups.js');
 
 var onSocketMessagesSend = function(socket, data, user) {
 	console.log("onSocketMessagesSend");
-	console.log(user);
-
 	var opts = {
 		objectId: user.objectId,
 		success: function(user) {
-			console.log(data);
-			console.log(user);
 			// setup e-mail data with unicode symbols
 			var mailOptions = {
-			    from: user.name + " <" + user.email + ">", // sender address
+			    from: user.get("name") + " <" + user.get("email") + ">", // sender address
 			    to: data.to, // list of receivers
 			    subject: data.subject, // Subject line
 			    text: data.text, // plaintext body
@@ -38,7 +34,7 @@ var messagesSend = function(user, mailOptions) {
 	console.log(mailOptions);
 
   	// exchange code for (a refreshable) token
-  	var origin = user.origin;
+  	var origin = user.get("origin");
   	var google_config = eval("config.google_config_" + origin);
 
 	// create reusable transport method (opens pool of SMTP connections)
