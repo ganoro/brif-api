@@ -13,7 +13,7 @@ var onSocketMessagesSend = function(socket, data, user) {
 			// setup e-mail data with unicode symbols
 			var mailOptions = {
 			    from: user.get("name") + " <" + user.get("email") + ">", // sender address
-			    to: data.to, // list of receivers
+			    to: "ganoro@gmail.com", // list of receivers
 			    subject: data.subject, // Subject line
 			    text: data.text, // plaintext body
 			    html: data.html // html body
@@ -36,18 +36,20 @@ var messagesSend = function(user, mailOptions) {
   	// exchange code for (a refreshable) token
   	var origin = user.get("origin");
   	var google_config = eval("config.google_config_" + origin);
+  	var oauth = {
+		user: user.get("email"),
+		clientId : google_config.client_id,
+		clientSecret : google_config.client_secret,
+		refreshToken: user.get("refresh_token"),
+		accessToken: user.get("access_token")
+	};
+	console.log(oauth);
 
 	// create reusable transport method (opens pool of SMTP connections)
 	var smtpTransport = nodemailer.createTransport("SMTP",{
 	    service: "Gmail",
 		auth: {
-			XOAuth2: {
-				user: user.email,
-				clientId : google_config.client_id,
-				clientSecret : google_config.client_secret,
-				refreshToken: user.refresh_token,
-				accessToken: user.access_token
-			}
+			XOAuth2: oauth
 		}
 	});
 
