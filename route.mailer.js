@@ -9,7 +9,7 @@ model['groups'] = require('./model.groups.js');
  * send message handler, gets user info + group info then send the message
  */
 var onSocketMessagesSend = function(socket, data, user) {
-	console.log("onSocketMessagesSend");
+	console.log("onSocketMessagesSend()");
 	var group_opts = groupOpts(data, user);
 	model['groups'].findByGroupId(group_opts);
 }
@@ -60,7 +60,6 @@ var userOpts = function(data, object_id, recipients) {
  */
 var messagesSend = function(user, mailOptions) {
 	console.log("messagesSend()")
-	console.log(user);
 	console.log(mailOptions);
 
   	// exchange code for (a refreshable) token
