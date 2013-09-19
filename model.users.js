@@ -37,7 +37,7 @@ var storeUserDetails = function(opts) {
 }
 
 /**
- * returns the user id to callback(objectId)
+ * Given a user's email return the user id to the callback(objectId)
  */
 var getUserId = function(email, callback) {
 	findByEmail(email, {
