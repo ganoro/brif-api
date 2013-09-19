@@ -11,6 +11,7 @@
     "minpubsub" : "0.0.1",
     "request": "2.27.0",
     "socket.io": "0.9.x",
-    "parse": "1.2.8"
+    "parse": "1.2.8",
+    "nodemailer" : "0.5.2"
   }
 }

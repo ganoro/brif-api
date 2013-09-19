@@ -29,6 +29,9 @@ var storeUserDetails = function(opts) {
 		},
 		error: function(error) {
 			console.log("Error: " + error.code + " " + error.message);
+			if (opts.error) {
+				opts.error(error);	
+			}
 		}
 	});
 }
@@ -44,6 +47,16 @@ var getUserId = function(email, callback) {
 	});
 }
 
+/**
+ * fins the details of the user given in opts.objectId, and runs opts.success() or opts.error()
+ */
+var getUserDetails = function(opts) {
+  	var query = new model.parse.Query(Users);
+  	query.get(opts.objectId, opts);
+}
+
 exports.findByEmail = findByEmail;
 exports.storeUserDetails = storeUserDetails;
 exports.getUserId = getUserId;
+exports.getUserDetails = getUserDetails;
+

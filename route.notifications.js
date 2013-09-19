@@ -122,10 +122,6 @@ var onSocketUnsubscribeMessagesListener = function(socket, data) {
   	unsubscribeMessagesListener(socket.id, data.email, data.group_id);
 }
 
-var onSocketMessagesInsert = function(socket, data) {
-
-}
-
 var onSocketMessagesSearch = function(socket, data, user) {
 	console.log("onSocketMessagesSearch")
 	if (data.per_page == null || data.page == null || data.group_id == null) {
@@ -213,10 +209,6 @@ var unsubscribeMessagesListener = function(client_id, email, group_id) {
 	}
 };
 
-var messagesInsert = function(client_id, data) {
-	// TODO
-}
-
 var messagesSearch = function(socket, user_id, data) {
 	var per_page = data.per_page;
 	var page = data.page;
@@ -264,5 +256,4 @@ exports.onSocketGroupsSearch = onSocketGroupsSearch;
 
 exports.onSocketSubscribeMessagesListener = onSocketSubscribeMessagesListener;
 exports.onSocketUnsubscribeMessagesListener = onSocketUnsubscribeMessagesListener;
-exports.onSocketMessagesInsert = onSocketMessagesInsert;
 exports.onSocketMessagesSearch = onSocketMessagesSearch;
