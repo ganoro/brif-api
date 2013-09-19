@@ -6,10 +6,14 @@ model['users'] = require('./model.users.js');
 model['groups'] = require('./model.groups.js');
 
 var onSocketMessagesSend = function(socket, data, user) {
+	console.log("onSocketMessagesSend");
+	console.log(user);
+
 	var opts = {
 		objectId: user.objectId,
 		success: function(user) {
 			console.log(data);
+			console.log(user);
 			// setup e-mail data with unicode symbols
 			var mailOptions = {
 			    from: user.name + " <" + user.email + ">", // sender address
