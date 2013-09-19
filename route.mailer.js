@@ -9,6 +9,7 @@ var onSocketMessagesSend = function(socket, data, user) {
 	var opts = {
 		objectId: user.objectId,
 		success: function(user) {
+			console.log(data);
 			// setup e-mail data with unicode symbols
 			var mailOptions = {
 			    from: user.name + " <" + user.email + ">", // sender address
