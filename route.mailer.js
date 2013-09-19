@@ -8,7 +8,7 @@ model['groups'] = require('./model.groups.js');
 var onSocketMessagesSend = function(socket, data, user) {
 	var opts = {
 		objectId: user.objectId,
-		success: function(info) {
+		success: function(user) {
 			// setup e-mail data with unicode symbols
 			var mailOptions = {
 			    from: user.name + " <" + user.email + ">", // sender address
@@ -28,6 +28,9 @@ var onSocketMessagesSend = function(socket, data, user) {
 }
 
 var messagesSend = function(user, mailOptions) {
+	console.log("messagesSend()")
+	console.log(user);
+	console.log(mailOptions);
 
   	// exchange code for (a refreshable) token
   	var origin = user.origin;
