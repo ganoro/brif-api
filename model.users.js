@@ -52,7 +52,7 @@ var getUserId = function(email, callback) {
  */
 var getUserDetails = function(opts) {
   	var query = new model.parse.Query(Users);
-  	query.get(opts.objectId, opts);
+  	query.get(opts.object_id, opts);
 }
 
 exports.findByEmail = findByEmail;

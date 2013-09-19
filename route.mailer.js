@@ -5,15 +5,43 @@ var model = {};
 model['users'] = require('./model.users.js');
 model['groups'] = require('./model.groups.js');
 
+/**
+ * send message handler, gets user info + group info then send the message
+ */
 var onSocketMessagesSend = function(socket, data, user) {
 	console.log("onSocketMessagesSend");
-	var opts = {
-		objectId: user.objectId,
+	var group_opts = groupOpts(data, user);
+	model['groups'].findByGroupId(group_opts);
+}
+
+
+/**
+ * build the group opts search
+ */
+var groupOpts = function(data, user) {
+	return {
+		object_id : data.group_id,
+		success : function(group) {
+			var user_opts = userOpts(data, user.objectId, group.get("recipients"));
+			model['users'].getUserDetails(user_opts);
+		},
+		error: function(error) {
+			console.log("error in onSocketMessagesSend");
+			console.log(error);
+		}
+	} 
+}
+
+/**
+ * build the user opts search
+ */
+var userOpts = function(data, object_id, recipients) {
+	return {
+		object_id: object_id,
 		success: function(user) {
-			// setup e-mail data with unicode symbols
 			var mailOptions = {
 			    from: user.get("name") + " <" + user.get("email") + ">", // sender address
-			    to: "ganoro@gmail.com", // list of receivers
+			    to: recipients, // list of receivers
 			    subject: data.subject, // Subject line
 			    text: data.text, // plaintext body
 			    html: data.html // html body
@@ -25,9 +53,11 @@ var onSocketMessagesSend = function(socket, data, user) {
 			console.log(error);
 		}
 	}
-	model['users'].getUserDetails(opts);
 }
 
+/**
+ * sends the message with the provided mail options 
+ */
 var messagesSend = function(user, mailOptions) {
 	console.log("messagesSend()")
 	console.log(user);
