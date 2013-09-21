@@ -95,4 +95,6 @@ var messagesSend = function(user, mailOptions) {
 	});
 }
 
-exports.onSocketMessagesSend = onSocketMessagesSend;
+module.exports = {
+	onSocketMessagesSend : onSocketMessagesSend
+};

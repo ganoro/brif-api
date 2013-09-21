@@ -76,6 +76,7 @@ io.sockets.on('connection', function (socket) {
 	socket.on('groups:subscribe', proxy(notifications.onSocketSubscribeGroupsListener));
 	socket.on('groups:unsubscribe', proxy(notifications.onSocketUnsubscribeGroupsListener));
 	socket.on('groups:insert', proxy(notifications.onSocketGroupsInsert));
+	socket.on('groups:modify', proxy(notifications.onSocketGroupsModify));
 	socket.on('groups:fetch', proxy(notifications.onSocketGroupsSearch));
 
 	// messages

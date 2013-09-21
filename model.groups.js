@@ -24,4 +24,21 @@ exports.findByGroupId = function(opts) {
   	var query = new model.parse.Query(Groups);
 	query.get(opts.object_id, opts);
 }
- 
+
+/**
+ * Updates a group unseen field
+ */
+exports.updateGroup = function(group_id, unseen, user_id, callback) {
+	var group = new Groups();
+	group.id = group_id;
+	group.set("unseen", unseen);
+	group.save(null, {
+	  success: function(group) {
+	  	callback(group);  	
+	  },
+	  error: function(group, error) {
+	    // TODO
+	    callback(group);
+	  }
+	});
+}

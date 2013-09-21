@@ -97,6 +97,16 @@ var onSocketGroupsInsert = function(socket, data) {
 	groupsInsert(socket.id, data);
 }
 
+var onSocketGroupsModify = function(socket, data, user) {
+	var group_id = data.group_id;
+	var unseen = data.unseen;
+	if (!group_id || !unseen) {
+		// TODO internal error
+	}
+
+	groupsModify(group_id, unseen, user);
+}
+
 var onSocketGroupsSearch = function(socket, data, user) {
 	console.log("onSocketGroupsSearch")
 	if (data.per_page == null || data.page == null) {
@@ -105,21 +115,21 @@ var onSocketGroupsSearch = function(socket, data, user) {
 	groupsSearch(socket, user.objectId, data);
 }
 
-var onSocketSubscribeMessagesListener = function(socket, data) {
-	if (data.email == null || data.group_id == null) {
+var onSocketSubscribeMessagesListener = function(socket, data, user) {
+	if (data.group_id == null) {
 		// TODO internal error 
 	}
-  	console.log(data.email);	
-  	subscribeMessagesListener(socket.id, data.email, data.group_id, function() {
-		socket.emit('messages:change', { entity : "message", data : data });
+
+  	subscribeMessagesListener(socket.id, user.email, data.group_id, function(message) {
+		socket.emit('messages:change:' + data.group_id, message);
 	});
 }
 
-var onSocketUnsubscribeMessagesListener = function(socket, data) {
-	if (data.email == null) {
+var onSocketUnsubscribeMessagesListener = function(socket, data, user) {
+	if (data.group_id == null) {
 		// TODO internal error 
 	}
-  	unsubscribeMessagesListener(socket.id, data.email, data.group_id);
+  	unsubscribeMessagesListener(socket.id, user.email, data.group_id);
 }
 
 var onSocketMessagesSearch = function(socket, data, user) {
@@ -131,13 +141,11 @@ var onSocketMessagesSearch = function(socket, data, user) {
 }
 
 var groupsTopicName = function(client_id, email) {
-	console.log(email + "/" + client_id + "/g");
 	return email + "/" + client_id + "/g";
 }
 
 var messagesTopicName = function(client_id, email, group_id) {
-	console.log(email + "/" + client_id + "/" + group + "/g")
-	return email + "/" + client_id + "/" + group + "/g";
+	return email + "/" + client_id + "/" + group + "/m";
 }
 
 var registerHandler = function(email, client_id, topic, handler) {
@@ -177,6 +185,17 @@ var unsubscribeGroupsListener = function(client_id, email) {
 
 var groupsInsert = function(client_id, data) {
 	// TODO
+}
+
+var groupsModify = function(socket, group_id, unseen, user) {
+	model['groups'].updateGroup(group_id, unseen, user.objectId, function(group) {
+		socket.emit('groups:change', { 
+			email : user.email, 
+			entity : "groups", 
+			type : "modified", 
+			data : group 
+		});
+	});
 }
 
 var groupsSearch = function(socket, user_id, data) {
@@ -241,19 +260,17 @@ var unsubscribeAllTopicsToClient = function(email, client_id) {
 	delete nots[email].sockets[client_id];
 }
 
-/**
- * Exports
- */
-exports.notify = notify;
-
-exports.onSocketSetup = onSocketSetup;
-exports.onSocketDisconnect = onSocketDisconnect;
-
-exports.onSocketSubscribeGroupsListener = onSocketSubscribeGroupsListener;
-exports.onSocketUnsubscribeGroupsListener = onSocketUnsubscribeGroupsListener;
-exports.onSocketGroupsInsert = onSocketGroupsInsert;
-exports.onSocketGroupsSearch = onSocketGroupsSearch;
-
-exports.onSocketSubscribeMessagesListener = onSocketSubscribeMessagesListener;
-exports.onSocketUnsubscribeMessagesListener = onSocketUnsubscribeMessagesListener;
-exports.onSocketMessagesSearch = onSocketMessagesSearch;
+// exports public functions
+module.exports = {
+	notify : notify,
+	onSocketSetup : onSocketSetup,
+	onSocketDisconnect : onSocketDisconnect,
+	onSocketSubscribeGroupsListener : onSocketSubscribeGroupsListener,
+	onSocketUnsubscribeGroupsListener : onSocketUnsubscribeGroupsListener,
+	onSocketGroupsInsert : onSocketGroupsInsert,
+	onSocketGroupsModify : onSocketGroupsModify,
+	onSocketGroupsSearch : onSocketGroupsSearch,
+	onSocketSubscribeMessagesListener : onSocketSubscribeMessagesListener,
+	onSocketUnsubscribeMessagesListener : onSocketUnsubscribeMessagesListener,
+	onSocketMessagesSearch : onSocketMessagesSearch
+};
