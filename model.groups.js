@@ -22,7 +22,8 @@ var findByUser = function(user_id, opts) {
  */ 
 var findByGroupId = function(opts) {
   	var query = new model.parse.Query(Groups);
-	console.log(opts.object_id);
+	console.log("findByGroupId()");
+	console.log(opts);
 	query.get(opts.object_id, opts);
 }
 
@@ -31,6 +32,7 @@ var findByGroupId = function(opts) {
  */
 var updateGroup = function(group_id, unseen, user_id, callback) {
 	console.log("updateGroup()")
+	console.log()
 	var opts = {
 		object_id : group_id,
 		unseen : unseen,
