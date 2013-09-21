@@ -29,12 +29,17 @@ var findByGroupId = function(opts) {
  * Updates a group unseen field
  */
 var updateGroup = function(group_id, unseen, user_id, callback) {
+	console.log("updateGroup()")
 	var opts = {
 		object_id : group_id,
 		unseen : unseen,
 		user_id : user_id,
 		callback: callback,
 		success: function(group) {
+			console.log(group.get("user_id"));
+			console.log(user_id);
+			console.log(callback);
+			console.log(unseen);
 		  	if (group.get("user_id") == user_id) {
 		  		group.set("unseen", unseen);
 		  		group.save(null, {
@@ -46,6 +51,7 @@ var updateGroup = function(group_id, unseen, user_id, callback) {
 					}
 				});
 		  	} else {
+		  		console.log()
 		  		// TODO
 		  	}
 		},
