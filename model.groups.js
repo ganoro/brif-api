@@ -29,7 +29,7 @@ exports.findByGroupId = function(opts) {
  * Updates a group unseen field
  */
 exports.updateGroup = function(group_id, unseen, user_id, callback) {
-	var ops = {
+	var opts = {
 		object_id : group_id,
 		unseen : unseen,
 		user_id : user_id,
