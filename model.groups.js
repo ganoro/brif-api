@@ -22,6 +22,7 @@ var findByUser = function(user_id, opts) {
  */ 
 var findByGroupId = function(opts) {
   	var query = new model.parse.Query(Groups);
+	console.log(opts.object_id);
 	query.get(opts.object_id, opts);
 }
 
