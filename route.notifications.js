@@ -104,6 +104,7 @@ var onSocketGroupsModify = function(socket, data, user) {
 		// TODO internal error
 	}
 
+	console.log(user);
 	groupsModify(group_id, unseen, user);
 }
 
@@ -188,6 +189,7 @@ var groupsInsert = function(client_id, data) {
 }
 
 var groupsModify = function(socket, group_id, unseen, user) {
+	console.log(user);
 	model['groups'].updateGroup(group_id, unseen, user.objectId, function(group) {
 		socket.emit('groups:change', { 
 			email : user.email, 
