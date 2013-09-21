@@ -9,7 +9,7 @@ var Groups = model.parse.Object.extend("Groups");
  * Find a list of groups by user_id
  * success() and error() functions required in opts
  */ 
-exports.findByUser = function(user_id, opts) {
+var findByUser = function(user_id, opts) {
   	var query = new model.parse.Query(Groups);
   	query.equalTo("user_id", user_id);
   	query.limit(opts.per_page).skip(opts.page*opts.per_page).descending("updatedBy");
@@ -20,7 +20,7 @@ exports.findByUser = function(user_id, opts) {
  * Find a the data of a specific group
  * success() and error() functions required in opts
  */ 
-exports.findByGroupId = function(opts) {
+var findByGroupId = function(opts) {
   	var query = new model.parse.Query(Groups);
 	query.get(opts.object_id, opts);
 }
@@ -28,7 +28,7 @@ exports.findByGroupId = function(opts) {
 /**
  * Updates a group unseen field
  */
-exports.updateGroup = function(group_id, unseen, user_id, callback) {
+var updateGroup = function(group_id, unseen, user_id, callback) {
 	var opts = {
 		object_id : group_id,
 		unseen : unseen,
@@ -55,4 +55,10 @@ exports.updateGroup = function(group_id, unseen, user_id, callback) {
 		}
 	};
 	findByGroupId(opts);
+}
+
+module.exports = {
+	findByUser : findByUser,
+	findByGroupId : findByGroupId,
+	updateGroup : updateGroup
 }
