@@ -104,8 +104,7 @@ var onSocketGroupsModify = function(socket, data, user) {
 		// TODO internal error
 	}
 
-	console.log(user);
-	groupsModify(group_id, unseen, user);
+	groupsModify(socket, group_id, unseen, user);
 }
 
 var onSocketGroupsSearch = function(socket, data, user) {
