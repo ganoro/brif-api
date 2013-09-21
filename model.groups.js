@@ -29,16 +29,30 @@ exports.findByGroupId = function(opts) {
  * Updates a group unseen field
  */
 exports.updateGroup = function(group_id, unseen, user_id, callback) {
-	var group = new Groups();
-	group.id = group_id;
-	group.set("unseen", unseen);
-	group.save(null, {
-	  success: function(group) {
-	  	callback(group);  	
-	  },
-	  error: function(group, error) {
-	    // TODO
-	    callback(group);
-	  }
-	});
+	var ops = {
+		object_id : group_id,
+		unseen : unseen,
+		user_id : user_id,
+		callback: callback,
+		success: function(group) {
+		  	if (group.get("user_id") == user_id) {
+		  		group.set("unseen", unseen);
+		  		group.save(null, {
+					success: function(group) {
+						callback(group);  	
+					},
+					error: function(group, error) {
+						// TODO
+					}
+				});
+		  	} else {
+		  		// TODO
+		  	}
+		},
+		error: function(group, error) {
+			// TODO
+			
+		}
+	};
+	findByGroupId(opts);
 }
