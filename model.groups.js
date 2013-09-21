@@ -36,6 +36,7 @@ var updateGroup = function(group_id, unseen, user_id, callback) {
 		user_id : user_id,
 		callback: callback,
 		success: function(group) {
+			console.log(group);
 			console.log(group.get("user_id"));
 			console.log(user_id);
 			console.log(callback);
