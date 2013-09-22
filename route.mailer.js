@@ -22,7 +22,7 @@ var groupOpts = function(data, user) {
 	return {
 		object_id : data.group_id,
 		success : function(group) {
-			var user_opts = userOpts(data, user.objectId, group.get("recipients").replace(/{|}/g, ''));
+			var user_opts = userOpts(data, user.objectId, group.get("recipients"));
 			model['users'].getUserDetails(user_opts);
 		},
 		error: function(error) {
