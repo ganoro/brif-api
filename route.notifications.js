@@ -299,6 +299,6 @@ module.exports = {
 	onSocketGroupsSearch : onSocketGroupsSearch,
 	onSocketSubscribeMessagesListener : onSocketSubscribeMessagesListener,
 	onSocketUnsubscribeMessagesListener : onSocketUnsubscribeMessagesListener,
-	onSocketMessagesSearch : onSocketMessagesSearch,
+	onSocketMessagesFetch : onSocketMessagesFetch,
 	onSocketMessagesUnread : onSocketMessagesUnread
 };
