@@ -250,7 +250,7 @@ var messagesFetch = function(socket, user_id, data) {
 		success : function(data) {
 			console.log(opts);
 			console.log(data);
-			socket.emit('messages:fetch:' + opts.group_id , { data : data });
+			socket.emit('messages:fetch:' + opts.original_recipients_id , { data : data });
 		}
 	};
 	model['messages'].findByOriginalRecipientsId(opts);
