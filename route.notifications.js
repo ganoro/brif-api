@@ -132,12 +132,12 @@ var onSocketUnsubscribeMessagesListener = function(socket, data, user) {
   	unsubscribeMessagesListener(socket.id, user.email, data.group_id);
 }
 
-var onSocketMessagesSearch = function(socket, data, user) {
-	console.log("onSocketMessagesSearch")
-	if (data.per_page == null || data.page == null || data.group_id == null) {
+var onSocketMessagesFetch = function(socket, data, user) {
+	console.log("onSocketMessagesFetch")
+	if (data.per_page == null || data.page == null || data.original_recipients_id == null) {
 		// TODO internal error
 	}
-	messagesSearch(socket, user.objectId, data);
+	messagesFetch(socket, user.objectId, data);
 }
 
 var onSocketMessagesUnread = function(socket, data, user) {
@@ -237,15 +237,15 @@ var unsubscribeMessagesListener = function(client_id, email, group_id) {
 	}
 };
 
-var messagesSearch = function(socket, user_id, data) {
+var messagesFetch = function(socket, user_id, data) {
 	var per_page = data.per_page;
 	var page = data.page;
-	var group_id = data.group_id;	
+	var original_recipients_id = data.original_recipients_id;	
 
 	var opts = {
 		per_page : per_page, 
 		page : page, 
-		group_id : group_id, 
+		original_recipients_id : original_recipients_id, 
 		user_id : user_id, 
 		success : function(data) {
 			console.log(opts);
@@ -253,7 +253,7 @@ var messagesSearch = function(socket, user_id, data) {
 			socket.emit('messages:fetch:' + opts.group_id , { data : data });
 		}
 	};
-	model['messages'].findByGroupId(opts);
+	model['messages'].findByOriginalRecipientsId(opts);
 }
 
 var messagesUnread = function(socket, user_id, data) {

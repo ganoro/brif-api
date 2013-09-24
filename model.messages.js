@@ -3,19 +3,19 @@ var model = require('./model.base.js');
 var Messages = model.parse.Object.extend("Messages");
 
 /**
- * Find by group id
+ * Find by original_recipients_id
  * success() and error() functions required in opts
- * paremetrs required - group_id, user_id
+ * paremetrs required - original_recipients_id, user_id
  */ 
-exports.findByGroupId = function(opts) {
-
-  	console.log(opts.group_id);
+exports.findByOriginalRecipientsId = function(opts) {
+	console.log("findByOriginalRecipientsId()");
+  	console.log(opts.original_recipients_id);
   	console.log(opts.user_id);
   	console.log(opts.per_page);
   	console.log(opts.page*opts.per_page);
 
   	var query = new model.parse.Query(Messages);
-  	query.equalTo("group_id", opts.group_id)
+  	query.equalTo("original_recipients_id", opts.original_recipients_id)
   		.equalTo("user_id", opts.user_id)
   		.limit(opts.per_page)
   		.skip(opts.page*opts.per_page);
@@ -26,7 +26,7 @@ exports.findByGroupId = function(opts) {
 /**
  * Find unread messages by user id
  * success() and error() functions required in opts
- * paremetrs required - group_id, user_id
+ * paremetrs required - user_id
  */ 
 exports.findUnreadByUserId = function(opts) {
 	console.log("findUnreadByUserId()");
