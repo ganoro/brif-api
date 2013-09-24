@@ -22,4 +22,27 @@ exports.findByGroupId = function(opts) {
 
 	query.find(opts);
 }
+
+/**
+ * Find unread messages by user id
+ * success() and error() functions required in opts
+ * paremetrs required - group_id, user_id
+ */ 
+exports.findUnreadByUserId = function(opts) {
+	console.log("findUnreadByUserId()");
+  	console.log(opts.user_id);
+  	console.log(opts.per_page);
+  	console.log(opts.page*opts.per_page);
+
+  	var query = new model.parse.Query(Messages);
+  	query.equalTo("seen", false)
+  		.equalTo("user_id", opts.user_id)
+  		.limit(opts.per_page)
+  		.skip(opts.page*opts.per_page);
+
+	query.find(opts);
+}
+
+
+
  

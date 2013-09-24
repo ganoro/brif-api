@@ -26,6 +26,7 @@ var groupOpts = function(data, user) {
 			model['users'].getUserDetails(user_opts);
 		},
 		error: function(error) {
+			// TODO
 			console.log("error in onSocketMessagesSend");
 			console.log(error);
 		}

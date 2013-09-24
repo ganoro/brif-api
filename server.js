@@ -83,6 +83,7 @@ io.sockets.on('connection', function (socket) {
 	socket.on('messages:subscribe', proxy(notifications.onSocketSubscribeMessagesListener));
 	socket.on('messages:unsubscribe', proxy(notifications.onSocketUnsubscribeMessagesListener));
 	socket.on('messages:fetch', proxy(notifications.onSocketMessagesSearch));
+	socket.on('messages:unread', proxy(notifications.onSocketMessagesUnread));
 
 	// mailer
 	socket.on('messages:send', proxy(mailer.onSocketMessagesSend));

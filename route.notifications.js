@@ -140,6 +140,14 @@ var onSocketMessagesSearch = function(socket, data, user) {
 	messagesSearch(socket, user.objectId, data);
 }
 
+var onSocketMessagesUnread = function(socket, data, user) {
+	console.log("onSocketMessagesUnread")
+	if (data.per_page == null || data.page == null) {
+		// TODO internal error
+	}
+	messagesUnread(socket, user.objectId, data);
+}
+
 var groupsTopicName = function(client_id, email) {
 	return email + "/" + client_id + "/g";
 }
@@ -248,6 +256,24 @@ var messagesSearch = function(socket, user_id, data) {
 	model['messages'].findByGroupId(opts);
 }
 
+var messagesUnread = function(socket, user_id, data) {
+	var per_page = data.per_page;
+	var page = data.page;
+
+	var opts = {
+		per_page : per_page, 
+		page : page, 
+		user_id : user_id, 
+		success : function(data) {
+			console.log(opts);
+			console.log(data);
+			socket.emit('messages:unread', { data : data });
+		}
+	};
+	model['messages'].findUnreadByUserId(opts);
+}
+
+
 var unsubscribeAllTopicsToClient = function(email, client_id) {
 	if (!nots[email] || !nots[email].sockets) {
 		console.log("client is missing in notifications array");
@@ -273,5 +299,6 @@ module.exports = {
 	onSocketGroupsSearch : onSocketGroupsSearch,
 	onSocketSubscribeMessagesListener : onSocketSubscribeMessagesListener,
 	onSocketUnsubscribeMessagesListener : onSocketUnsubscribeMessagesListener,
-	onSocketMessagesSearch : onSocketMessagesSearch
+	onSocketMessagesSearch : onSocketMessagesSearch,
+	onSocketMessagesUnread : onSocketMessagesUnread
 };
