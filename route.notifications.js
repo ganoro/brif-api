@@ -26,8 +26,6 @@ var notify = function(req, res){
 
 	if (entity == "messages") {
 		notifyMessagesListsners(email, data);
-	} else if (entity == "groups") {
-		notifyGroupListsners(email, req.body);
 	}
 };
 
@@ -35,27 +33,16 @@ var sendUnsupportedOperation = function(res, msg) {
 	res.status(400).send(JSON.stringify({ error: "Unsupported operation", message : msg}));		
 }
 
-var notifyGroupListsners = function(email, data) {
-	console.log("notifyGroupListsners");
+var notifyMessagesListsners = function(email, data) {
+	console.log("notifyMessagesListsners");
 
 	if (typeof nots[email] === "undefined") {
 		return;
 	}
 
 	for (var client_id in nots[email].sockets) {
-		var topic = groupsTopicName(client_id, email);
+		var topic = messagesTopicName(client_id, email);
 		minpubsub.publish(topic, [ data ]);
-	}
-}
-
-var notifyMessagesListsners = function(email, group_id, msg) {
-	if (typeof nots[email] === "undefined") {
-		return;
-	}
-
-	for (var client_id in nots[email].sockets) {
-		var topic = messagesTopicName(client_id, email, group_id);
-		minpubsub.publish(topic, msg);
 	}
 }
 
@@ -77,59 +64,26 @@ var onSocketDisconnect = function(socket) {
 	unsubscribeAllTopicsToClient(socket.id);
 }
 
-var onSocketSubscribeGroupsListener = function(socket, data, user) {
-	console.log("onSocketSubscribeGroupsListener")
-  	subscribeGroupsListener(socket.id, user.email, function(message) {
-		socket.emit('groups:change', message);
-	});
-}
-
-var onSocketUnsubscribeGroupsListener = function(socket, data, user) {
-	console.log("onSocketUnsubscribeGroupsListener")
-  	unsubscribeGroupsListener(socket.id, user.email);
-}
-
-var onSocketGroupsInsert = function(socket, data) {
-	if (data.info == null) {
-		// TODO internal error
-	}
-
-	groupsInsert(socket.id, data);
-}
-
-var onSocketGroupsModify = function(socket, data, user) {
-	var group_id = data.group_id;
-	var unseen = data.unseen;
-	if (!group_id || !unseen) {
-		// TODO internal error
-	}
-
-	groupsModify(socket, group_id, unseen, user);
-}
-
-var onSocketGroupsSearch = function(socket, data, user) {
-	console.log("onSocketGroupsSearch")
-	if (data.per_page == null || data.page == null) {
-		// TODO internal error
-	}
-	groupsSearch(socket, user.objectId, data);
-}
-
 var onSocketSubscribeMessagesListener = function(socket, data, user) {
-	if (data.group_id == null) {
-		// TODO internal error 
-	}
-
-  	subscribeMessagesListener(socket.id, user.email, data.group_id, function(message) {
-		socket.emit('messages:change:' + data.group_id, message);
+	console.log("onSocketSubscribeMessagesListener")
+  	subscribeMessagesListener(socket.id, user.email, function(message) {
+		socket.emit('messages:event', message);
 	});
 }
 
 var onSocketUnsubscribeMessagesListener = function(socket, data, user) {
-	if (data.group_id == null) {
-		// TODO internal error 
+	console.log("onSocketUnsubscribeMessagesListener")
+  	unsubscribeMessagesListener(socket.id, user.email);
+}
+
+var onSocketMessagesMarkAs = function(socket, data, user) {
+	var messages_id = data.messages_id;
+	var unseen = data.unseen;
+	if (!messages_id || !unseen) {
+		// TODO internal error
 	}
-  	unsubscribeMessagesListener(socket.id, user.email, data.group_id);
+
+	messagesMarkAs(socket, messages_id, unseen, user);
 }
 
 var onSocketMessagesFetch = function(socket, data, user) {
@@ -141,19 +95,15 @@ var onSocketMessagesFetch = function(socket, data, user) {
 }
 
 var onSocketMessagesUnread = function(socket, data, user) {
-	console.log("onSocketMessagesUnread")
+	console.log("onSocketMessagesUnread()")
 	if (data.per_page == null || data.page == null) {
 		// TODO internal error
 	}
 	messagesUnread(socket, user.objectId, data);
 }
 
-var groupsTopicName = function(client_id, email) {
-	return email + "/" + client_id + "/g";
-}
-
-var messagesTopicName = function(client_id, email, group_id) {
-	return email + "/" + client_id + "/" + group + "/m";
+var messagesTopicName = function(client_id, email) {
+	return email + "/" + client_id + "/m";
 }
 
 var registerHandler = function(email, client_id, topic, handler) {
@@ -174,8 +124,8 @@ var setupClient = function(client_id, email) {
 	nots[email].sockets[client_id] = nots[email].sockets[client_id] || { topics : [] };
 }
 
-var subscribeGroupsListener = function(client_id, email, callback) {	
-	var topic = groupsTopicName(client_id, email);
+var subscribeMessagesListener = function(client_id, email, callback) {	
+	var topic = messagesTopicName(client_id, email);
 	var handler = minpubsub.subscribe(topic, function(msg){
 		console.log("[" + topic + "] is executing with message " + msg);
 		callback(msg);
@@ -183,21 +133,17 @@ var subscribeGroupsListener = function(client_id, email, callback) {
 	registerHandler(email, client_id, topic, handler);
 }
 
-var unsubscribeGroupsListener = function(client_id, email) {
-	var topic = groupsTopicName(client_id, email);
+var unsubscribeMessagesListener = function(client_id, email) {
+	var topic = messagesTopicName(client_id, email);
 	var handler = resolveHandler(client_id, email, topic);
 	if (handler) {
 		minpubsub.unsubscribe(handler);	
 	}
 };
 
-var groupsInsert = function(client_id, data) {
-	// TODO
-}
-
-var groupsModify = function(socket, group_id, unseen, user) {
+var messagesMarkAs = function(socket, messages_id, unseen, user) {
 	console.log(user);
-	model['groups'].updateGroup(group_id, unseen, user.objectId, function(group) {
+	model['messages'].markAs(messages_id, unseen, user.objectId, function(group) {
 		socket.emit('groups:change', { 
 			email : user.email, 
 			entity : "groups", 
@@ -206,36 +152,6 @@ var groupsModify = function(socket, group_id, unseen, user) {
 		});
 	});
 }
-
-var groupsSearch = function(socket, user_id, data) {
-	var per_page = data.per_page;
-	var page = data.page;
-
-	model['groups'].findByUser(user_id, {
-		per_page : per_page, 
-		page : page, 
-		success : function(data) {
-			socket.emit('groups:fetch', { data : data });
-		}
-	});
-}
-
-var subscribeMessagesListener = function(client_id, email, group_id, callback) {	
-	var topic = messagesTopicName(client_id, email, group_id);
-	var handler = minpubsub.subscribe(topic, function(msg){
-		console.log("[" + topic + "] is executing with message " + msg);
-		callback(msg);
-	});
-	registerHandler(email, client_id, topic, handler);
-}
-
-var unsubscribeMessagesListener = function(client_id, email, group_id) {
-	var topic = messagesTopicName(client_id, email, group_id);
-	var handler = resolveHandler(client_id, email, topic);
-	if (handler) {
-		minpubsub.unsubscribe(handler);
-	}
-};
 
 var messagesFetch = function(socket, user_id, data) {
 	var per_page = data.per_page;
@@ -293,13 +209,9 @@ module.exports = {
 	notify : notify,
 	onSocketSetup : onSocketSetup,
 	onSocketDisconnect : onSocketDisconnect,
-	onSocketSubscribeGroupsListener : onSocketSubscribeGroupsListener,
-	onSocketUnsubscribeGroupsListener : onSocketUnsubscribeGroupsListener,
-	onSocketGroupsInsert : onSocketGroupsInsert,
-	onSocketGroupsModify : onSocketGroupsModify,
-	onSocketGroupsSearch : onSocketGroupsSearch,
 	onSocketSubscribeMessagesListener : onSocketSubscribeMessagesListener,
 	onSocketUnsubscribeMessagesListener : onSocketUnsubscribeMessagesListener,
 	onSocketMessagesFetch : onSocketMessagesFetch,
 	onSocketMessagesUnread : onSocketMessagesUnread
+	onSocketMessagesMarkAs : onSocketMessagesMarkAs
 };
