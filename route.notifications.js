@@ -212,6 +212,6 @@ module.exports = {
 	onSocketSubscribeMessagesListener : onSocketSubscribeMessagesListener,
 	onSocketUnsubscribeMessagesListener : onSocketUnsubscribeMessagesListener,
 	onSocketMessagesFetch : onSocketMessagesFetch,
-	onSocketMessagesUnread : onSocketMessagesUnread
+	onSocketMessagesUnread : onSocketMessagesUnread,
 	onSocketMessagesMarkAs : onSocketMessagesMarkAs
 };
