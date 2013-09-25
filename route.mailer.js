@@ -71,6 +71,7 @@ var messagesSend = function(user, mailOptions) {
 	    if (error) {
 	        console.log(error);
 	    } else {
+	        console.log(response);
 	        console.log("Message sent: " + response.message);
 	    }
 
