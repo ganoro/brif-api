@@ -10,28 +10,11 @@ model['groups'] = require('./model.groups.js');
  */
 var onSocketMessagesSend = function(socket, data, user) {
 	console.log("onSocketMessagesSend()");
-	var group_opts = groupOpts(data, user);
-	model['groups'].findByGroupId(group_opts);
+	var user_opts = userOpts(data, user.objectId, data.recipients);
+	model['users'].getUserDetails(user_opts);
 }
 
 
-/**
- * build the group opts search
- */
-var groupOpts = function(data, user) {
-	return {
-		object_id : data.group_id,
-		success : function(group) {
-			var user_opts = userOpts(data, user.objectId, group.get("recipients"));
-			model['users'].getUserDetails(user_opts);
-		},
-		error: function(error) {
-			// TODO
-			console.log("error in onSocketMessagesSend");
-			console.log(error);
-		}
-	} 
-}
 
 /**
  * build the user opts search
