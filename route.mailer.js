@@ -1,5 +1,7 @@
 var nodemailer = require("nodemailer");
 var config = require('./config.js');
+var imap = require('imap');
+var xoauth2 = require("xoauth2");
 
 var model = {};
 model['users'] = require('./model.users.js');
@@ -14,7 +16,36 @@ var onSocketMessagesSend = function(socket, data, user) {
 	model['users'].getUserDetails(user_opts);
 }
 
+/**
+ * send message handler, gets user info + group info then send the message
+ */
+var onSocketMessagesMarkAs = function(socket, data, user) {
+	console.log("onSocketMessagesMarkAs()");
+	var user_opts = userMarkAsOpts(data, user.objectId, data.recipients);
+	model['users'].getUserDetails(user_opts);
+}
 
+/**
+ * prepare mail options to the mark as procedure
+ */
+var userMarkAsOpts = function(data, object_id, recipients) {
+	console.log(data);
+	return {
+		object_id: object_id,
+		success: function(user) {
+			var mailOptions = {
+			    email: user.get("email"), 
+			    messages_id : data.messages_id,
+			    seen : data.seen
+			}
+			messagesMarkAs(user, mailOptions);
+		},
+		error: function(error) {
+			console.log("error in onSocketMessagesSend()");
+			console.log(error);
+		}
+	};
+}
 
 /**
  * build the user opts search
@@ -37,6 +68,72 @@ var userOpts = function(data, object_id, recipients) {
 			console.log(error);
 		}
 	}
+}
+
+/**
+ * sends the message with the provided mail options 
+ */
+var messagesMarkAs = function(user, mailOptions) {
+	console.log("messagesMarkAs()")
+	console.log(mailOptions);
+
+  	// exchange code for (a refreshable) token
+  	var origin = user.get("origin");
+  	var google_config = eval("config.google_config_" + origin);
+	var xoauth2gen = xoauth2.createXOAuth2Generator({
+	    user: user.get("email"),
+	    clientId : google_config.client_id,
+	    clientSecret : google_config.client_secret,
+	    refreshToken: user.get("refresh_token")
+	});
+	xoauth2gen.getToken(function(err, token){
+		if(err) {
+			return console.log(err);
+		} else {
+			var connection = connect(token, user, mailOptions);
+
+		}
+	});
+
+}
+
+var connect = function(token, user, mailOptions) {
+	var connection = new imap({
+		tls: true,
+        tlsOptions: { rejectUnauthorized: false },
+		user : user.get("email"),
+		xoauth2 : token,
+		host: 'imap.gmail.com',
+		port: 993,
+		secure : true,
+		keepalive : false,
+		debug : console.log 
+	});
+	console.log(connection);
+	connection.on('ready', function() {
+		console.log("ready")
+		connection.openBox('[Gmail]/All Mail', false, function(err, box) {
+			for (var i = mailOptions.messages_id.length - 1; i >= 0; i--) {
+				var uid = mailOptions.messages_id[i];
+				console.log(uid);
+				if (mailOptions.seen) {
+					connection.addFlags(uid, '\\Seen');
+				} else {
+					connection.delFlags(uid, '\\Seen');
+				}
+			};
+		});
+	});
+	connection.on('error', function(err) {
+		console.log(err);
+	});
+
+	connection.on('end', function() {
+		console.log('Connection ended');
+	});
+	connection.connect(function(err) {
+  if (err) throw err;
+});
 }
 
 /**
@@ -81,5 +178,6 @@ var messagesSend = function(user, mailOptions) {
 }
 
 module.exports = {
-	onSocketMessagesSend : onSocketMessagesSend
+	onSocketMessagesSend : onSocketMessagesSend,
+	onSocketMessagesMarkAs : onSocketMessagesMarkAs
 };

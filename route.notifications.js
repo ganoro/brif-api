@@ -141,18 +141,6 @@ var unsubscribeMessagesListener = function(client_id, email) {
 	}
 };
 
-var messagesMarkAs = function(socket, messages_id, unseen, user) {
-	console.log(user);
-	model['messages'].markAs(messages_id, unseen, user.objectId, function(group) {
-		socket.emit('groups:change', { 
-			email : user.email, 
-			entity : "groups", 
-			type : "modified", 
-			data : group 
-		});
-	});
-}
-
 var messagesFetch = function(socket, user_id, data) {
 	var per_page = data.per_page;
 	var page = data.page;
@@ -212,6 +200,5 @@ module.exports = {
 	onSocketSubscribeMessagesListener : onSocketSubscribeMessagesListener,
 	onSocketUnsubscribeMessagesListener : onSocketUnsubscribeMessagesListener,
 	onSocketMessagesFetch : onSocketMessagesFetch,
-	onSocketMessagesUnread : onSocketMessagesUnread,
-	onSocketMessagesMarkAs : onSocketMessagesMarkAs
+	onSocketMessagesUnread : onSocketMessagesUnread
 };
