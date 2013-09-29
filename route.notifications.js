@@ -55,15 +55,20 @@ var notifyMessagesListsners = function(email, data) {
 var onSocketSetup = function(socket, data, user) {
 	console.log("connected to : " + socket.id + ", with email : " + data.email);
 	setupClient(socket.id, data.email);
-	model['users'].getUserId(data.email, function(objectId) {
-		console.log("objectId: " + objectId);
-		socket.set('user', JSON.stringify({ 
-			"objectId" : objectId, 
-			"email" : data.email 
-		}), function() {
-			socket.emit('setup:completed');
-		}); 
-	});
+	var opts = {
+		socket : socket,
+		success : function(user) {
+			console.log(user);
+			socket.set('user', JSON.stringify({ 
+				"objectId" : user.objectId, 
+				"clientId" : user.client_id, 
+				"email" : data.email 
+			}), function() {
+				socket.emit('setup:completed');
+			}); 
+		}
+	}
+	model['users'].findByEmail(data.email, opts);
 }
 
 var onSocketDisconnect = function(socket) {
