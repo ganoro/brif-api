@@ -46,6 +46,5 @@ var getUserDetails = function(opts) {
 
 exports.findByEmail = findByEmail;
 exports.storeUserDetails = storeUserDetails;
-exports.getUserId = getUserId;
 exports.getUserDetails = getUserDetails;
 
