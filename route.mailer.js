@@ -108,23 +108,7 @@ var userOpts = function(data, object_id, recipients) {
 var executeMailOptions = function(user, mailOptions) {
 	console.log("executeMailOptions()")
 	console.log(mailOptions);
-
-  	// exchange code for (a refreshable) token
-  	var origin = user.get("origin");
-  	var google_config = eval("config.google_config_" + origin);
-	var xoauth2gen = xoauth2.createXOAuth2Generator({
-	    user: user.get("email"),
-	    clientId : google_config.client_id,
-	    clientSecret : google_config.client_secret,
-	    refreshToken: user.get("refresh_token")
-	});
-	xoauth2gen.getToken(function(err, token){
-		if(err) {
-			return console.log(err);
-		} else {
-			var connection = connect(token, user, mailOptions);
-		}
-	});
+	var connection = connect(user.token, user, mailOptions);
 }
 
 var connect = function(token, user, mailOptions) {

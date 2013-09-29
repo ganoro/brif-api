@@ -58,14 +58,37 @@ var onSocketSetup = function(socket, data, user) {
 	var opts = {
 		socket : socket,
 		success : function(user) {
-			console.log(user);
-			socket.set('user', JSON.stringify({ 
-				"objectId" : user.objectId, 
-				"clientId" : user.get("client_id"), 
-				"email" : data.email 
-			}), function() {
-				opts.socket.emit('setup:completed');
-			}); 
+			// exchange code for (a refreshable) token
+		  	var origin = user.get("origin");
+		  	var google_config = eval("config.google_config_" + origin);
+			var xoauth2gen = xoauth2.createXOAuth2Generator({
+			    user: user.get("email"),
+			    clientId : google_config.client_id,
+			    clientSecret : google_config.client_secret,
+			    refreshToken: user.get("refresh_token")
+			});
+			var process = {
+				socket : socket,
+				token : function(err, token, access_token) {
+					if(err) {
+						// TODO : internal error
+						return console.log(err);
+					} else {
+						var data = { 
+							"objectId" : user.id, 
+							"origin" : user.get("origin"), 
+							"refresh_token" : user.get("refresh_token"), 
+							"token" : token, 
+							"access_token" : access_token,
+							"email" : user.get("email"), 
+						};
+						console.log(data);
+						process.socket.set('user', JSON.stringify(data));
+						opts.socket.emit('setup:completed');
+					}
+				}
+			}
+			xoauth2gen.getToken(process.token);
 		}
 	}
 	model['users'].findByEmail(data.email, opts);
@@ -99,8 +122,7 @@ var onSocketMessagesMarkAs = function(socket, data, user) {
 
 var onSocketMessagesUnread = function(socket, data, user) {
 	console.log("onSocketMessagesUnread()");
-	var user_opts = userOpts(data, user.objectId, socket);
-	model['users'].getUserDetails(user_opts);
+	messagesUnread(socket, data, user);
 }
 
 var onSocketMessagesFetch = function(socket, data, user) {
@@ -171,36 +193,11 @@ var messagesFetch = function(socket, user_id, data) {
 }
 
 /**
- * build the user opts for unread
- */
-var userOpts = function(data, object_id, socket) {
-	return {
-		object_id: object_id,
-		success: function(user) {
-			messagesUnread(user, data, socket);
-		},
-		error: function(error) {
-			console.log("error in userOpts()");
-			console.log(error);
-		}
-	}
-}
-
-/**
  * fetch unread
  */
-var messagesUnread = function(user, data, socket) {
+var messagesUnread = function(socket, data, user) {
 	console.log("messagesUnread()")
 
-  	// exchange code for (a refreshable) token
-  	var origin = user.get("origin");
-  	var google_config = eval("config.google_config_" + origin);
-	var xoauth2gen = xoauth2.createXOAuth2Generator({
-	    user: user.get("email"),
-	    clientId : google_config.client_id,
-	    clientSecret : google_config.client_secret,
-	    refreshToken: user.get("refresh_token")
-	});
 	var process = {
 		socket : socket,
 		messages : function(error, result) {
@@ -226,18 +223,6 @@ var messagesUnread = function(user, data, socket) {
 			model['messages'].findByGoogleMsgId(opt);
 		},
 
-		token : function(err, token, access_token) {
-			if(err) {
-				// TODO : internal error
-				return console.log(err);
-			} else {
-				var url = 'https://mail.google.com/mail/feed/atom';
-				request.get(url, { headers : { 
-					"Authorization" : "Bearer " + access_token 
-				}}, process.parse);			
-			}
-		},
-
 		parse : function(e, r, body) {
 			var messages = process.messages;
 			if (e) {
@@ -247,7 +232,8 @@ var messagesUnread = function(user, data, socket) {
 			xml2js(body, messages);
 		}
 	};
-	xoauth2gen.getToken(process.token);
+	var url = 'https://mail.google.com/mail/feed/atom';
+	request.get(url, { headers : { "Authorization" : "Bearer " + user.access_token }}, process.parse);	
 }
 
 var unsubscribeAllTopicsToClient = function(email, client_id) {
