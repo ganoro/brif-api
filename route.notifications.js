@@ -61,7 +61,7 @@ var onSocketSetup = function(socket, data, user) {
 			console.log(user);
 			socket.set('user', JSON.stringify({ 
 				"objectId" : user.objectId, 
-				"clientId" : user.client_id, 
+				"clientId" : user.get("client_id"), 
 				"email" : data.email 
 			}), function() {
 				socket.emit('setup:completed');
