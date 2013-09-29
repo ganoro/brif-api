@@ -211,7 +211,6 @@ var messagesUnread = function(socket, data, user) {
 				google_msg_id : google_msg_id,
 				success : function(messages) {
 					console.log("emitting messages");
-					console.log(messages);
 					process.socket.emit('messages:unread', { 
 						data : messages 
 					});
