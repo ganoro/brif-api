@@ -77,11 +77,10 @@ io.sockets.on('connection', function (socket) {
 	socket.on('messages:unsubscribe', proxy(notifications.onSocketUnsubscribeMessagesListener));
 	socket.on('messages:fetch', proxy(notifications.onSocketMessagesFetch));
 	socket.on('messages:unread', proxy(notifications.onSocketMessagesUnread));
-
+	
 	// mailer
 	socket.on('messages:send', proxy(mailer.onSocketMessagesSend));
 	socket.on('messages:markas', proxy(mailer.onSocketMessagesMarkAs));
-
 });
 
 console.log('Listening on port ' + config.port);

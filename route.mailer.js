@@ -5,7 +5,8 @@ var xoauth2 = require("xoauth2");
 
 var model = {};
 model['users'] = require('./model.users.js');
-model['groups'] = require('./model.groups.js');
+model['messages'] = require('./model.messages.js');
+
 
 /**
  * send message handler, gets user info + group info then send the message
@@ -21,14 +22,44 @@ var onSocketMessagesSend = function(socket, data, user) {
  */
 var onSocketMessagesMarkAs = function(socket, data, user) {
 	console.log("onSocketMessagesMarkAs()");
-	var user_opts = userMarkAsOpts(data, user.objectId, data.recipients);
+	var user_opts = userMarkAsOpts(data, user.objectId);
 	model['users'].getUserDetails(user_opts);
+}
+
+var onSocketMessagesUnread = function(socket, data, user) {
+	console.log("onSocketMessagesUnread()");
+	var user_opts = userUnreadOpts(data, user.objectId, socket);
+	model['users'].getUserDetails(user_opts);
+}
+
+/**
+ * prepare mail options to the unread procedure
+ */
+var userUnreadOpts = function(data, object_id, socket) {
+	console.log(data);
+	return {
+		object_id: object_id,
+		success: function(user) {
+			var mailOptions = {
+			    email: user.get("email"), 
+			    page : data.page,
+			    per_page : data.per_page,
+			    callback : getUnread,
+			    socket : socket
+			}
+			executeMailOptions(user, mailOptions);
+		},
+		error: function(error) {
+			console.log("error in userUnreadOpts()");
+			console.log(error);
+		}
+	};
 }
 
 /**
  * prepare mail options to the mark as procedure
  */
-var userMarkAsOpts = function(data, object_id, recipients) {
+var userMarkAsOpts = function(data, object_id) {
 	console.log(data);
 	return {
 		object_id: object_id,
@@ -36,12 +67,13 @@ var userMarkAsOpts = function(data, object_id, recipients) {
 			var mailOptions = {
 			    email: user.get("email"), 
 			    messages_id : data.messages_id,
-			    seen : data.seen
+			    seen : data.seen,
+			    callback : markAs
 			}
-			messagesMarkAs(user, mailOptions);
+			executeMailOptions(user, mailOptions);
 		},
 		error: function(error) {
-			console.log("error in onSocketMessagesSend()");
+			console.log("error in userMarkAsOpts()");
 			console.log(error);
 		}
 	};
@@ -59,12 +91,12 @@ var userOpts = function(data, object_id, recipients) {
 			    to: recipients, // list of receivers
 			    subject: data.subject, // Subject line
 			    text: data.text, // plaintext body
-			    html: data.html + "<br><br>Sent from <a href=\"brif.us\">brif.us</a> - \"build relationships\" " // html body
+			    html: data.html + "<br><br>Sent from <a href=\"brif.us\">brif.us</a> - \"Treasure your relationships\" " // html body
 			}
 			messagesSend(user, mailOptions);
 		},
 		error: function(error) {
-			console.log("error in onSocketMessagesSend()");
+			console.log("error in userOpts()");
 			console.log(error);
 		}
 	}
@@ -73,8 +105,8 @@ var userOpts = function(data, object_id, recipients) {
 /**
  * sends the message with the provided mail options 
  */
-var messagesMarkAs = function(user, mailOptions) {
-	console.log("messagesMarkAs()")
+var executeMailOptions = function(user, mailOptions) {
+	console.log("executeMailOptions()")
 	console.log(mailOptions);
 
   	// exchange code for (a refreshable) token
@@ -91,10 +123,8 @@ var messagesMarkAs = function(user, mailOptions) {
 			return console.log(err);
 		} else {
 			var connection = connect(token, user, mailOptions);
-
 		}
 	});
-
 }
 
 var connect = function(token, user, mailOptions) {
@@ -111,18 +141,8 @@ var connect = function(token, user, mailOptions) {
 	});
 	console.log(connection);
 	connection.on('ready', function() {
-		console.log("ready")
-		connection.openBox('[Gmail]/All Mail', false, function(err, box) {
-			for (var i = mailOptions.messages_id.length - 1; i >= 0; i--) {
-				var uid = mailOptions.messages_id[i];
-				console.log(uid);
-				if (mailOptions.seen) {
-					connection.addFlags(uid, '\\Seen');
-				} else {
-					connection.delFlags(uid, '\\Seen');
-				}
-			};
-		});
+		console.log('ready');
+		mailOptions.callback(connection, mailOptions);
 	});
 	connection.on('error', function(err) {
 		console.log(err);
@@ -132,8 +152,45 @@ var connect = function(token, user, mailOptions) {
 		console.log('Connection ended');
 	});
 	connection.connect(function(err) {
-  if (err) throw err;
-});
+  		if (err) throw err;
+	});
+}
+
+var markAs = function(connection, mailOptions) {
+	connection.openBox('[Gmail]/All Mail', false, function(err, box) {
+		for (var i = mailOptions.messages_id.length - 1; i >= 0; i--) {
+			var uid = mailOptions.messages_id[i];
+			console.log(uid);
+			if (mailOptions.seen) {
+				connection.addFlags(uid, '\\Seen');
+			} else {
+				connection.delFlags(uid, '\\Seen');
+			}
+		};
+	});
+}
+
+var getUnread = function(connection, mailOptions) {
+	connection.openBox('[Gmail]/All Mail', false, function(err, box) {
+		if (err) return;
+		connection.search([ 'UNSEEN'], function(err, results) {
+    		var data;
+    		if (err || results == null) {
+    			fata = [];
+    		} else {
+	    		// data = results.slice(mailOptions.page*mailOptions.per_page, mailOptions.per_page)
+	    		data = results.slice(-3, -1)
+    			console.log(data);
+    		}
+    		var opts = {
+    			success: function(d) {
+    				console.log(d);
+	    			mailOptions.socket.emit('messages:unread', d);
+    			}
+    		}
+    		model['messages'].findById(data, opts);
+      	});
+	});	
 }
 
 /**
@@ -179,5 +236,6 @@ var messagesSend = function(user, mailOptions) {
 
 module.exports = {
 	onSocketMessagesSend : onSocketMessagesSend,
-	onSocketMessagesMarkAs : onSocketMessagesMarkAs
+	onSocketMessagesMarkAs : onSocketMessagesMarkAs,
+	onSocketMessagesUnread : onSocketMessagesUnread
 };

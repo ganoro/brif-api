@@ -1,10 +1,13 @@
+var config = require('./config.js');
+var xoauth2 = require("xoauth2");
 var minpubsub = require('minpubsub/minpubsub');
+var request = require('request');
+var xml2js = require('xml2js').parseString;
 var $ = require('jquery').create();
 
 var nots = {};
 var model = {};
 model['users'] = require('./model.users.js');
-model['groups'] = require('./model.groups.js');
 model['messages'] = require('./model.messages.js');
 
 /**
@@ -54,10 +57,13 @@ var onSocketSetup = function(socket, data, user) {
 	setupClient(socket.id, data.email);
 	model['users'].getUserId(data.email, function(objectId) {
 		console.log("objectId: " + objectId);
-		socket.set('user', JSON.stringify({ "objectId" : objectId, "email" : data.email }), function() {
+		socket.set('user', JSON.stringify({ 
+			"objectId" : objectId, 
+			"email" : data.email 
+		}), function() {
 			socket.emit('setup:completed');
 		}); 
-	})
+	});
 }
 
 var onSocketDisconnect = function(socket) {
@@ -86,20 +92,18 @@ var onSocketMessagesMarkAs = function(socket, data, user) {
 	messagesMarkAs(socket, messages_id, unseen, user);
 }
 
+var onSocketMessagesUnread = function(socket, data, user) {
+	console.log("onSocketMessagesUnread()");
+	var user_opts = userOpts(data, user.objectId, socket);
+	model['users'].getUserDetails(user_opts);
+}
+
 var onSocketMessagesFetch = function(socket, data, user) {
 	console.log("onSocketMessagesFetch")
 	if (data.per_page == null || data.page == null || data.original_recipients_id == null) {
 		// TODO internal error
 	}
 	messagesFetch(socket, user.objectId, data);
-}
-
-var onSocketMessagesUnread = function(socket, data, user) {
-	console.log("onSocketMessagesUnread()")
-	if (data.per_page == null || data.page == null) {
-		// TODO internal error
-	}
-	messagesUnread(socket, user.objectId, data);
 }
 
 var messagesTopicName = function(client_id, email) {
@@ -161,23 +165,85 @@ var messagesFetch = function(socket, user_id, data) {
 	model['messages'].findByOriginalRecipientsId(opts);
 }
 
-var messagesUnread = function(socket, user_id, data) {
-	var per_page = data.per_page;
-	var page = data.page;
-
-	var opts = {
-		per_page : per_page, 
-		page : page, 
-		user_id : user_id, 
-		success : function(data) {
-			console.log(opts);
-			console.log(data);
-			socket.emit('messages:unread', { data : data });
+/**
+ * build the user opts for unread
+ */
+var userOpts = function(data, object_id, socket) {
+	return {
+		object_id: object_id,
+		success: function(user) {
+			messagesUnread(user, data, socket);
+		},
+		error: function(error) {
+			console.log("error in userOpts()");
+			console.log(error);
 		}
-	};
-	model['messages'].findUnreadByUserId(opts);
+	}
 }
 
+/**
+ * fetch unread
+ */
+var messagesUnread = function(user, data, socket) {
+	console.log("messagesUnread()")
+
+  	// exchange code for (a refreshable) token
+  	var origin = user.get("origin");
+  	var google_config = eval("config.google_config_" + origin);
+	var xoauth2gen = xoauth2.createXOAuth2Generator({
+	    user: user.get("email"),
+	    clientId : google_config.client_id,
+	    clientSecret : google_config.client_secret,
+	    refreshToken: user.get("refresh_token")
+	});
+	var process = {
+		socket : socket,
+		messages : function(error, result) {
+			var google_msg_id = [];
+			for (var i = 0; i < result.feed.entry.length; i++) {
+				var entry = result.feed.entry[i].id[0];
+				var last = entry.lastIndexOf(":") + 1;
+				google_msg_id.push(entry.substring(last));
+			};
+			var opt = {
+				google_msg_id : google_msg_id,
+				success : function(messages) {
+					console.log("emitting messages");
+					console.log(messages);
+					process.socket.emit('messages:unread', { 
+						data : messages 
+					});
+				},
+				error : function(e) {
+					// TODO : handle errors
+				}
+			}
+			model['messages'].findByGoogleMsgId(opt);
+		},
+
+		token : function(err, token, access_token) {
+			if(err) {
+				// TODO : internal error
+				return console.log(err);
+			} else {
+				var url = 'https://mail.google.com/mail/feed/atom';
+				request.get(url, { headers : { 
+					"Authorization" : "Bearer " + access_token 
+				}}, process.parse);			
+			}
+		},
+
+		parse : function(e, r, body) {
+			var messages = process.messages;
+			if (e) {
+				// TODO : internal error
+				return console.log(e);
+			}
+			xml2js(body, messages);
+		}
+	};
+	xoauth2gen.getToken(process.token);
+}
 
 var unsubscribeAllTopicsToClient = function(email, client_id) {
 	if (!nots[email] || !nots[email].sockets) {
