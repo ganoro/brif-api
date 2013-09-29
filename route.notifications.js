@@ -64,7 +64,7 @@ var onSocketSetup = function(socket, data, user) {
 				"clientId" : user.get("client_id"), 
 				"email" : data.email 
 			}), function() {
-				socket.emit('setup:completed');
+				opts.socket.emit('setup:completed');
 			}); 
 		}
 	}
