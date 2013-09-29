@@ -81,6 +81,8 @@ io.sockets.on('connection', function (socket) {
 	// mailer
 	socket.on('messages:send', proxy(mailer.onSocketMessagesSend));
 	socket.on('messages:markas', proxy(mailer.onSocketMessagesMarkAs));
+
+	socket.emit('setup:ready');
 });
 
 console.log('Listening on port ' + config.port);
