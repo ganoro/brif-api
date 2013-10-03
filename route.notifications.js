@@ -101,6 +101,7 @@ var onSocketDisconnect = function(socket) {
 var onSocketSubscribeMessagesListener = function(socket, data, user) {
 	console.log("onSocketSubscribeMessagesListener")
   	subscribeMessagesListener(socket.id, user.email, function(message) {
+  		console.log("messages:event");
 		socket.emit('messages:event', message);
 	});
 }
@@ -109,6 +110,20 @@ var onSocketUnsubscribeMessagesListener = function(socket, data, user) {
 	console.log("onSocketUnsubscribeMessagesListener")
   	unsubscribeMessagesListener(socket.id, user.email);
 }
+
+var onSocketSubscribeChannelListener = function(socket, data, user) {
+	console.log("onSocketSubscribeChannelListener")
+  	subscribeChannelListener(socket.id, user.email, function(message) {
+  		console.log("channel:event");
+		socket.emit('channel:event', message);
+	});
+}
+
+var onSocketUnsubscribechannelListener = function(socket, data, user) {
+	console.log("onSocketUnsubscribechannelListener")
+  	unsubscribeChannelListener(socket.id, user.email);
+}
+
 
 var onSocketMessagesMarkAs = function(socket, data, user) {
 	var messages_id = data.messages_id;
@@ -135,6 +150,10 @@ var onSocketMessagesFetch = function(socket, data, user) {
 
 var messagesTopicName = function(client_id, email) {
 	return email + "/" + client_id + "/m";
+}
+
+var channelTopicName = function(channel_id) {
+	return channel_id + "/c";
 }
 
 var registerHandler = function(email, client_id, topic, handler) {
@@ -171,6 +190,24 @@ var unsubscribeMessagesListener = function(client_id, email) {
 		minpubsub.unsubscribe(handler);	
 	}
 };
+
+var subscribeChannelListener = function(typer, channel_id, callback) {	
+	var topic = channelTopicName(client_id, email);
+	var handler = minpubsub.subscribe(topic, function(msg){
+		console.log("[" + topic + "] is executing with message " + msg);
+		callback(msg);
+	});
+	registerHandler(email, client_id, topic, handler);
+}
+
+var unsubscribeChannelListener = function(client_id, email) {
+	var topic = channelTopicName(client_id, email);
+	var handler = resolveHandler(client_id, email, topic);
+	if (handler) {
+		minpubsub.unsubscribe(handler);	
+	}
+};
+
 
 var messagesFetch = function(socket, user_id, data) {
 	var per_page = data.per_page;
