@@ -17,7 +17,7 @@ exports.findByOriginalRecipientsId = function(opts) {
   	var query = new model.parse.Query(Messages);
   	query.equalTo("original_recipients_id", opts.original_recipients_id)
   		.equalTo("user_id", opts.user_id)
-      .descending("sent_date")
+      .ascending("sent_date")
   		.limit(opts.per_page)
   		.skip(opts.page*opts.per_page);
 
