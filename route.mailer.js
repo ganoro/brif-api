@@ -111,6 +111,8 @@ var executeMailOptions = function(user, mailOptions) {
 }
 
 var connect = function(token, user, mailOptions) {
+	console.log(token);
+	console.log("token");
 	var connection = new imap({
 		tls: true,
         tlsOptions: { rejectUnauthorized: false },
