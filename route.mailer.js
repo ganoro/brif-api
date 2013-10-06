@@ -100,7 +100,7 @@ var connect = function(token, user, mailOptions) {
 	var connection = new imap({
 		tls: true,
         tlsOptions: { rejectUnauthorized: false },
-		user : user.get("email"),
+		user : user.email,
 		xoauth2 : token,
 		host: 'imap.gmail.com',
 		port: 993,
