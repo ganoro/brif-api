@@ -22,8 +22,13 @@ var onSocketMessagesSend = function(socket, data, user) {
  */
 var onSocketMessagesMarkAs = function(socket, data, user) {
 	console.log("onSocketMessagesMarkAs()");
-	var user_opts = userMarkAsOpts(data, user.objectId);
-	model['users'].getUserDetails(user_opts);
+	var mailOptions = {
+		email: user.email, 
+		messages_id : data.messages_id,
+		seen : data.seen,
+		callback : markAs
+	}
+	executeMailOptions(user, mailOptions);
 }
 
 var onSocketMessagesUnread = function(socket, data, user) {
@@ -57,29 +62,6 @@ var userUnreadOpts = function(data, object_id, socket) {
 }
 
 /**
- * prepare mail options to the mark as procedure
- */
-var userMarkAsOpts = function(data, object_id) {
-	console.log(data);
-	return {
-		object_id: object_id,
-		success: function(user) {
-			var mailOptions = {
-			    email: user.get("email"), 
-			    messages_id : data.messages_id,
-			    seen : data.seen,
-			    callback : markAs
-			}
-			executeMailOptions(user, mailOptions);
-		},
-		error: function(error) {
-			console.log("error in userMarkAsOpts()");
-			console.log(error);
-		}
-	};
-}
-
-/**
  * build the user opts search
  */
 var userOpts = function(data, object_id, recipients) {
@@ -106,7 +88,8 @@ var userOpts = function(data, object_id, recipients) {
  * sends the message with the provided mail options 
  */
 var executeMailOptions = function(user, mailOptions) {
-	console.log("executeMailOptions()")
+	console.log("executeMailOptions()");
+	console.log(user.token);
 	var connection = connect(user.token, user, mailOptions);
 }
 
@@ -223,6 +206,5 @@ var messagesSend = function(user, mailOptions) {
 
 module.exports = {
 	onSocketMessagesSend : onSocketMessagesSend,
-	onSocketMessagesMarkAs : onSocketMessagesMarkAs,
-	onSocketMessagesUnread : onSocketMessagesUnread
+	onSocketMessagesMarkAs : onSocketMessagesMarkAs
 };
