@@ -28,6 +28,7 @@ var onSocketMessagesMarkAs = function(socket, data, user) {
 		seen : data.seen,
 		callback : markAs
 	}
+	console.log(user);
 	executeMailOptions(user, mailOptions);
 }
 
