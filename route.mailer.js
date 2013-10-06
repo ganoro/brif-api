@@ -108,7 +108,6 @@ var connect = function(token, user, mailOptions) {
 		keepalive : false,
 		debug : console.log 
 	});
-	console.log(connection);
 	connection.on('ready', function() {
 		console.log('ready');
 		mailOptions.callback(connection, mailOptions);
@@ -137,7 +136,6 @@ var markAs = function(connection, mailOptions) {
 				connection.delFlags(uid, '\\Seen');
 			}
 		};
-		connection.closeBox();
 	});
 }
 
