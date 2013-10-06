@@ -107,7 +107,6 @@ var userOpts = function(data, object_id, recipients) {
  */
 var executeMailOptions = function(user, mailOptions) {
 	console.log("executeMailOptions()")
-	console.log(mailOptions);
 	var connection = connect(user.token, user, mailOptions);
 }
 
@@ -152,6 +151,7 @@ var markAs = function(connection, mailOptions) {
 				connection.delFlags(uid, '\\Seen');
 			}
 		};
+		connection.closeBox();
 	});
 }
 
