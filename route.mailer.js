@@ -28,7 +28,6 @@ var onSocketMessagesMarkAs = function(socket, data, user) {
 		seen : data.seen,
 		callback : markAs
 	}
-	console.log(user);
 	executeMailOptions(user, mailOptions);
 }
 
@@ -90,13 +89,10 @@ var userOpts = function(data, object_id, recipients) {
  */
 var executeMailOptions = function(user, mailOptions) {
 	console.log("executeMailOptions()");
-	console.log(user.token);
 	var connection = connect(user.token, user, mailOptions);
 }
 
 var connect = function(token, user, mailOptions) {
-	console.log(token);
-	console.log("token");
 	var connection = new imap({
 		tls: true,
         tlsOptions: { rejectUnauthorized: false },
