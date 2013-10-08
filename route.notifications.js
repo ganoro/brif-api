@@ -117,8 +117,8 @@ var onSocketSubscribeChannelListener = function(socket, data, user) {
 		// TODO
 	}
   	subscribeChannelListener(socket.id, user.email, data.channel_id, function(message) {
-  		console.log("channel:event");
-		socket.emit('channel:event', message);
+  		console.log("channels:event");
+		socket.emit('channels:event', message);
 	});
 }
 
@@ -160,7 +160,6 @@ var onSocketChannelsSend = function (socket, data, user) {
 		// TODO internal error
 	}
 	data.origin_email = user.email;
-
 	channelsSend(socket, data);
 }
 
