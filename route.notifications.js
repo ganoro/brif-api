@@ -69,29 +69,35 @@ var onSocketSetup = function(socket, data, user) {
 			});
 			var process = {
 				socket : socket,
-				token : function(err, token, access_token) {
-					if(err) {
-						// TODO : internal error
-						return console.log(err);
-					} else {
-						var data = { 
-							"objectId" : user.id, 
-							"origin" : user.get("origin"), 
-							"refresh_token" : user.get("refresh_token"), 
-							"token" : token, 
-							"access_token" : access_token,
-							"email" : user.get("email"), 
-						};
-						console.log(data);
-						process.socket.set('user', JSON.stringify(data));
-						opts.socket.emit('setup:completed');
-					}
-				}
+				token : setSocketDetails
 			}
 			xoauth2gen.getToken(process.token);
 		}
 	}
 	model['users'].findByEmail(data.email, opts);
+}
+
+var setSocketDetails = function(err, token, access_token) {
+	console.log("setSocketDetails()");
+	console.log(opts);
+	console.log(socket);
+	
+	if (err) {
+		// TODO : internal error
+		return console.log(err);
+	} else {
+		var data = { 
+			"objectId" : user.id, 
+			"origin" : user.get("origin"), 
+			"refresh_token" : user.get("refresh_token"), 
+			"token" : token, 
+			"access_token" : access_token,
+			"email" : user.get("email"), 
+		};
+		console.log(data);
+		process.socket.set('user', JSON.stringify(data));
+		socket.emit('setup:completed');
+	}
 }
 
 var onSocketDisconnect = function(socket) {

@@ -73,7 +73,7 @@ var userOpts = function(data, object_id, recipients) {
 			    to: recipients, // list of receivers
 			    subject: data.subject, // Subject line
 			    text: data.text, // plaintext body
-			    html: data.html + "<br><br>Sent from <a href=\"brif.us\">brif.us</a> - \"Treasure your relationships\" " // html body
+			    html: data.html + "<br><br>Sent from <a href=\"http://brif.us\">brif.us</a> - \"Treasure your relationships\" " // html body
 			}
 			messagesSend(user, mailOptions);
 		},
@@ -123,7 +123,7 @@ var connect = function(token, user, mailOptions) {
 var markAs = function(connection, mailOptions) {
 	console.log("markAs()");
 	connection.openBox('[Gmail]/All Mail', false, function(err, box) {
-		for (var i = mailOptions.messages_id.length - 1; i >= 0; i--) {
+		for (var i = 0; i < mailOptions.messages_id.length; i++) {
 			var uid = mailOptions.messages_id[i];
 			console.log(uid);
 			if (mailOptions.seen) {
