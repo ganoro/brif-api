@@ -156,11 +156,9 @@ var onSocketChannelsSend = function (socket, data, user) {
 	if (data.channel_id == null || data.message == null) {
 		// TODO internal error
 	}
-	data.origin_email = user.email;
-
 	console.log(data);
 	var topic = channelTopicName(data.channel_id);
-	minpubsub.publish(topic, [ data ]);
+	minpubsub.publish(topic, [ { sender : user.email, message : data.message } ]);
 
 }
 
