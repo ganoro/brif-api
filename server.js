@@ -83,6 +83,8 @@ io.sockets.on('connection', function (socket) {
 	socket.on('messages:markas', proxy(mailer.onSocketMessagesMarkAs));
 
 	// channels
+	socket.on('channels:subscribe', proxy(notifications.onSocketSubscribeChannelsListener));
+	socket.on('channels:unsubscribe', proxy(notifications.onSocketUnsubscribeChannelsListener));
 	socket.on('channels:send', proxy(notifications.onSocketChannelsSend));
 	
 	socket.emit('setup:ready');
