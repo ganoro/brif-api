@@ -160,7 +160,11 @@ var onSocketChannelsSend = function (socket, data, user) {
 		// TODO internal error
 	}
 	data.origin_email = user.email;
-	channelsSend(socket, data);
+
+	console.log(data);
+	var topic = channelTopicName(data.channel_id);
+	minpubsub.publish(topic, data);
+
 }
 
 var messagesTopicName = function(client_id, email) {
@@ -298,11 +302,6 @@ var unsubscribeAllTopicsToClient = function(email, client_id) {
 	}
 
 	delete nots[email].sockets[client_id];
-}
-
-var channelsSend = function(socket, data) {
-	var topic = channelTopicName(data.channel_id);
-	minpubsub.publish(topic, data);
 }
 
 // exports public functions
