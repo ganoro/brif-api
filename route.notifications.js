@@ -111,7 +111,7 @@ var onSocketUnsubscribeMessagesListener = function(socket, data, user) {
   	unsubscribeMessagesListener(socket.id, user.email);
 }
 
-var onSocketSubscribeChannelListener = function(socket, data, user) {
+var onSocketSubscribeChannelsListener = function(socket, data, user) {
 	console.log("onSocketSubscribeChannelListener");
 	if (data.channel_id == null) {
 		// TODO
@@ -122,7 +122,7 @@ var onSocketSubscribeChannelListener = function(socket, data, user) {
 	});
 }
 
-var onSocketUnsubscribechannelListener = function(socket, data, user) {
+var onSocketUnsubscribechannelsListener = function(socket, data, user) {
 	console.log("onSocketUnsubscribechannelListener");
 	if (data.channel_id == null) {
 		// TODO
@@ -314,5 +314,7 @@ module.exports = {
 	onSocketUnsubscribeMessagesListener : onSocketUnsubscribeMessagesListener,
 	onSocketMessagesFetch : onSocketMessagesFetch,
 	onSocketMessagesUnread : onSocketMessagesUnread,
+	onSocketSubscribeChannelsListener : onSocketSubscribeChannelsListener,
+	onSocketUnsubscribeChannelsListener : onSocketUnsubscribeChannelsListener,
 	onSocketChannelsSend : onSocketChannelsSend
 };
