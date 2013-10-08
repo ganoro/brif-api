@@ -160,7 +160,7 @@ var onSocketChannelsSend = function (socket, data, user) {
 
 	console.log(data);
 	var topic = channelTopicName(data.channel_id);
-	minpubsub.publish(topic, data);
+	minpubsub.publish(topic, [ data ]);
 
 }
 
