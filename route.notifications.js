@@ -79,7 +79,7 @@ var onSocketSetup = function(socket, data, user) {
 
 var setSocketDetails = function(err, token, access_token) {
 	console.log("setSocketDetails()");
-	console.log(socket);
+	console.log(this);
 	console.log(process);
 
 	if (err) {
