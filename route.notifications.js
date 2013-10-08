@@ -67,36 +67,31 @@ var onSocketSetup = function(socket, data, user) {
 			    clientSecret : google_config.client_secret,
 			    refreshToken: user.get("refresh_token")
 			});
+
 			var process = {
 				socket : socket,
-				user: user,
-				token : setSocketDetails
+				token : function(err, token, access_token) {
+					if (err) {
+						// TODO : internal error
+						return console.log(err);
+					} else {
+						var data = { 
+							"objectId" : user.id, 
+							"origin" : user.get("origin"), 
+							"refresh_token" : user.get("refresh_token"), 
+							"token" : token, 
+							"access_token" : access_token,
+							"email" : user.get("email"), 
+						};
+						socket.set('user', JSON.stringify(data));
+						socket.emit('setup:completed');
+					}
+				}
 			}
 			xoauth2gen.getToken(process.token);
 		}
 	}
 	model['users'].findByEmail(data.email, opts);
-}
-
-var setSocketDetails = function(err, token, access_token) {
-	console.log("setSocketDetails()");
-	var user = process.user;
-	var socket = process.socket;
-	if (err) {
-		// TODO : internal error
-		return console.log(err);
-	} else {
-		var data = { 
-			"objectId" : user.id, 
-			"origin" : user.get("origin"), 
-			"refresh_token" : user.get("refresh_token"), 
-			"token" : token, 
-			"access_token" : access_token,
-			"email" : user.get("email"), 
-		};
-		socket.set('user', JSON.stringify(data));
-		socket.emit('setup:completed');
-	}
 }
 
 var onSocketDisconnect = function(socket) {
