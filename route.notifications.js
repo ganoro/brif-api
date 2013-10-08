@@ -119,7 +119,7 @@ var onSocketSubscribeChannelsListener = function(socket, data, user) {
   	subscribeChannelListener(socket.id, user.email, data.channel_id, function(message) {
   		console.log("channels:event");
 		socket.emit('channels:event', message);
-	});
+	}, socket);
 }
 
 var onSocketUnsubscribeChannelsListener = function(socket, data, user) {
