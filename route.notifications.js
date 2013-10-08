@@ -112,7 +112,7 @@ var onSocketUnsubscribeMessagesListener = function(socket, data, user) {
 }
 
 var onSocketSubscribeChannelsListener = function(socket, data, user) {
-	console.log("onSocketSubscribeChannelListener");
+	console.log("onSocketSubscribeChannelsListener");
 	if (data.channel_id == null) {
 		// TODO
 	}
@@ -123,7 +123,7 @@ var onSocketSubscribeChannelsListener = function(socket, data, user) {
 }
 
 var onSocketUnsubscribechannelsListener = function(socket, data, user) {
-	console.log("onSocketUnsubscribechannelListener");
+	console.log("onSocketUnsubscribechannelsListener");
 	if (data.channel_id == null) {
 		// TODO
 	}
