@@ -81,6 +81,7 @@ var setSocketDetails = function(err, token, access_token) {
 	console.log("setSocketDetails()");
 	console.log(this);
 	console.log(socket);
+	console.log(user);
 
 	if (err) {
 		// TODO : internal error
