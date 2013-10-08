@@ -112,16 +112,22 @@ var onSocketUnsubscribeMessagesListener = function(socket, data, user) {
 }
 
 var onSocketSubscribeChannelListener = function(socket, data, user) {
-	console.log("onSocketSubscribeChannelListener")
-  	subscribeChannelListener(socket.id, user.email, function(message) {
+	console.log("onSocketSubscribeChannelListener");
+	if (data.channel_id == null) {
+		// TODO
+	}
+  	subscribeChannelListener(socket.id, user.email, data.channel_id, function(message) {
   		console.log("channel:event");
 		socket.emit('channel:event', message);
 	});
 }
 
 var onSocketUnsubscribechannelListener = function(socket, data, user) {
-	console.log("onSocketUnsubscribechannelListener")
-  	unsubscribeChannelListener(socket.id, user.email);
+	console.log("onSocketUnsubscribechannelListener");
+	if (data.channel_id == null) {
+		// TODO
+	}
+  	unsubscribeChannelListener(socket.id, user.email, data.channel_id);
 }
 
 
@@ -141,11 +147,21 @@ var onSocketMessagesUnread = function(socket, data, user) {
 }
 
 var onSocketMessagesFetch = function(socket, data, user) {
-	console.log("onSocketMessagesFetch")
+	console.log("onSocketMessagesFetch");
 	if (data.per_page == null || data.page == null || data.original_recipients_id == null) {
 		// TODO internal error
 	}
 	messagesFetch(socket, user.objectId, data);
+}
+
+var onSocketChannelsSend = function (socket, data, user) {
+	console.log("onSocketChannelsSend");
+	if (data.channel_id == null || data.message == null) {
+		// TODO internal error
+	}
+	data.origin_email = user.email;
+
+	channelsSend(socket, data);
 }
 
 var messagesTopicName = function(client_id, email) {
@@ -191,17 +207,17 @@ var unsubscribeMessagesListener = function(client_id, email) {
 	}
 };
 
-var subscribeChannelListener = function(typer, channel_id, callback) {	
-	var topic = channelTopicName(client_id, email);
+var subscribeChannelListener = function(client_id, email, channel_id, socket) {	
+	var topic = channelTopicName(channel_id);
 	var handler = minpubsub.subscribe(topic, function(msg){
 		console.log("[" + topic + "] is executing with message " + msg);
-		callback(msg);
+		socket.emit('channels:event', msg);
 	});
 	registerHandler(email, client_id, topic, handler);
 }
 
-var unsubscribeChannelListener = function(client_id, email) {
-	var topic = channelTopicName(client_id, email);
+var unsubscribeChannelListener = function(client_id, email, channel_id, email) {
+	var topic = channelTopicName(channel_id);
 	var handler = resolveHandler(client_id, email, topic);
 	if (handler) {
 		minpubsub.unsubscribe(handler);	
@@ -285,6 +301,11 @@ var unsubscribeAllTopicsToClient = function(email, client_id) {
 	delete nots[email].sockets[client_id];
 }
 
+var channelsSend = function(socket, data) {
+	var topic = channelTopicName(data.channel_id);
+	minpubsub.publish(topic, data);
+}
+
 // exports public functions
 module.exports = {
 	notify : notify,
@@ -293,5 +314,6 @@ module.exports = {
 	onSocketSubscribeMessagesListener : onSocketSubscribeMessagesListener,
 	onSocketUnsubscribeMessagesListener : onSocketUnsubscribeMessagesListener,
 	onSocketMessagesFetch : onSocketMessagesFetch,
-	onSocketMessagesUnread : onSocketMessagesUnread
+	onSocketMessagesUnread : onSocketMessagesUnread,
+	onSocketChannelsSend : onSocketChannelsSend
 };
