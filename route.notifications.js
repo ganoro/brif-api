@@ -69,6 +69,7 @@ var onSocketSetup = function(socket, data, user) {
 			});
 			var process = {
 				socket : socket,
+				user: user,
 				token : setSocketDetails
 			}
 			xoauth2gen.getToken(process.token);
@@ -79,7 +80,8 @@ var onSocketSetup = function(socket, data, user) {
 
 var setSocketDetails = function(err, token, access_token) {
 	console.log("setSocketDetails()");
-	console.log(process);
+	var user = process.user;
+	var socket = process.socket;
 	if (err) {
 		// TODO : internal error
 		return console.log(err);
@@ -92,8 +94,7 @@ var setSocketDetails = function(err, token, access_token) {
 			"access_token" : access_token,
 			"email" : user.get("email"), 
 		};
-		console.log(data);
-		process.socket.set('user', JSON.stringify(data));
+		socket.set('user', JSON.stringify(data));
 		socket.emit('setup:completed');
 	}
 }
