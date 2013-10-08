@@ -122,8 +122,8 @@ var onSocketSubscribeChannelsListener = function(socket, data, user) {
 	});
 }
 
-var onSocketUnsubscribechannelsListener = function(socket, data, user) {
-	console.log("onSocketUnsubscribechannelsListener");
+var onSocketUnsubscribeChannelsListener = function(socket, data, user) {
+	console.log("onSocketUnsubscribeChannelsListener");
 	if (data.channel_id == null) {
 		// TODO
 	}
