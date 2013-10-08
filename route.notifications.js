@@ -116,10 +116,7 @@ var onSocketSubscribeChannelsListener = function(socket, data, user) {
 	if (data.channel_id == null) {
 		// TODO
 	}
-  	subscribeChannelListener(socket.id, user.email, data.channel_id, function(message) {
-  		console.log("channels:event");
-		socket.emit('channels:event', message);
-	}, socket);
+  	subscribeChannelListener(socket.id, user.email, data.channel_id, socket);
 }
 
 var onSocketUnsubscribeChannelsListener = function(socket, data, user) {
