@@ -211,7 +211,7 @@ var subscribeChannelListener = function(client_id, email, channel_id, socket) {
 	var topic = channelTopicName(channel_id);
 	var handler = minpubsub.subscribe(topic, function(msg){
 		console.log("[" + topic + "] is executing with message " + msg);
-		socket.emit('channels:event', { message : msg } );
+		socket.emit('channels:event',  msg );
 	});
 	registerHandler(email, client_id, topic, handler);
 }
