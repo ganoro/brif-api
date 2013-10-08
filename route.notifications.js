@@ -71,7 +71,7 @@ var onSocketSetup = function(socket, data, user) {
 				socket : socket,
 				token : setSocketDetails
 			}
-			xoauth2gen.getToken(process.token);
+			xoauth2gen.getToken(process.token.bind(process));
 		}
 	}
 	model['users'].findByEmail(data.email, opts);
@@ -79,7 +79,7 @@ var onSocketSetup = function(socket, data, user) {
 
 var setSocketDetails = function(err, token, access_token) {
 	console.log("setSocketDetails()");
-	console.log(user);
+	console.log(socket);
 	console.log(process);
 
 	if (err) {
