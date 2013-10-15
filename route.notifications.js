@@ -171,6 +171,7 @@ var channelTopicName = function(channel_id) {
 }
 
 var registerHandler = function(email, client_id, topic, handler) {
+	console.log("registering handler to email: ", email, " client_id: ", client_id, " topic: ", topic );
 	nots[email].sockets[client_id].topics[topic] = handler;
 }
 
