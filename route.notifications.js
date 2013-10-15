@@ -55,7 +55,7 @@ var notifyMessagesListsners = function(email, data) {
  * On Socket messages
  */
 var onSocketSetup = function(socket, data, user) {
-	console.log("connected to : " + socket.id + ", with email : " + data.email);
+	console.log("connected to : ", socket.id, ", with email : ", data.email);
 	setupClient(socket.id, data.email);
 	var opts = {
 		socket : socket,
@@ -103,7 +103,6 @@ var onSocketDisconnect = function(socket) {
 var onSocketSubscribeMessagesListener = function(socket, data, user) {
 	console.log("onSocketSubscribeMessagesListener")
   	subscribeMessagesListener(socket.id, user.email, function(message) {
-  		console.log("messages:event");
 		socket.emit('messages:event', message);
 	});
 }
@@ -160,7 +159,6 @@ var onSocketChannelsSend = function (socket, data, user) {
 	var channel_id = data.channel_id;
 	for (var client_id in channel_event_handlers[channel_id]) {
 		var socket = channel_event_handlers[channel_id][client_id];
-		console.log("sending message to ", client_id, " with socket ", socket);
 		socket.emit('channels:event:' + channel_id, { 
 			sender : user.email, 
 			message : data.message 
@@ -173,12 +171,10 @@ var messagesTopicName = function(client_id, email) {
 }
 
 var registerHandler = function(email, client_id, topic, handler) {
-	console.log("registering handler to email: ", email, " client_id: ", client_id, " topic: ", topic );
 	user_event_handlers[email].sockets[client_id].topics[topic] = handler;
 }
 
 var registerDisposers = function(email, client_id, disposer) {
-	console.log("registering disposer to email: ", email, " client_id: ", client_id );
 	user_event_handlers[email].sockets[client_id].disposers.push(disposer);
 }
 
@@ -205,7 +201,7 @@ var unregisterSocket = function(channel_id, client_id) {
 }
 
 var setupClient = function(client_id, email) {
-	console.log(client_id + " " + email)
+	console.log("setting up ", client_id, " with ", email);
 	user_event_handlers[email] = user_event_handlers[email] || { sockets : {} };
 	user_event_handlers[email].sockets[client_id] = user_event_handlers[email].sockets[client_id] || { topics : [], disposers: [] };
 }
@@ -213,7 +209,6 @@ var setupClient = function(client_id, email) {
 var subscribeMessagesListener = function(client_id, email, callback) {	
 	var topic = messagesTopicName(client_id, email);
 	var handler = minpubsub.subscribe(topic, function(msg){
-		console.log("[" + topic + "] is executing with message " + msg);
 		callback(msg);
 	});
 	registerHandler(email, client_id, topic, handler);
@@ -223,7 +218,6 @@ var unsubscribeMessagesListener = function(client_id, email) {
 	var topic = messagesTopicName(client_id, email);
 	var handler = resolveHandler(client_id, email, topic);
 	if (handler) {
-		console.log("unsubscribing " + topic);
 		minpubsub.unsubscribe(handler);	
 	}
 };
@@ -253,7 +247,6 @@ var messagesFetch = function(socket, user_id, data) {
 		original_recipients_id : original_recipients_id, 
 		user_id : user_id, 
 		success : function(data) {
-			console.log(opts);
 			console.log('messages:fetch:' + opts.original_recipients_id);
 			socket.emit('messages:fetch:' + opts.original_recipients_id , { data : data });
 		}
