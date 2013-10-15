@@ -157,8 +157,7 @@ var onSocketChannelsSend = function (socket, data, user) {
 	if (data.channel_id == null || data.message == null) {
 		// TODO internal error
 	}
-	console.log(data);
-
+	var channel_id = data.channel_id;
 	for (var client_id in channel_event_handlers[channel_id]) {
 		console.log("sending message to: ", channel_id);
 		var socket = channel_event_handlers[channel_id][client_id];
