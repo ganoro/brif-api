@@ -218,7 +218,7 @@ var subscribeChannelListener = function(client_id, email, channel_id, socket) {
 	registerHandler(email, client_id, topic, handler);
 }
 
-var unsubscribeChannelListener = function(client_id, email, channel_id, email) {
+var unsubscribeChannelListener = function(client_id, email, channel_id) {
 	var topic = channelTopicName(channel_id);
 	var handler = resolveHandler(client_id, email, topic);
 	console.log("handler is: ", handler, " for client_id: ", client_id, " email: ", email, " topic: ", topic);
