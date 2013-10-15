@@ -232,10 +232,10 @@ var subscribeChannelListener = function(client_id, email, channel_id, socket) {
 		unregisterSocket(channel_id, client_id);
 	};
 	registerDisposers(email, client_id, disposer);
-}
+};
 
 var unsubscribeChannelListener = function(channel_id, client_id, socket) {
-	unregisterSocket(channel_id, client_id, socket);
+	unregisterSocket(channel_id, client_id, socket); 
 };
 
 var messagesFetch = function(socket, user_id, data) {
