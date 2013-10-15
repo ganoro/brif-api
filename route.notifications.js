@@ -208,6 +208,7 @@ var unsubscribeMessagesListener = function(client_id, email) {
 
 var subscribeChannelListener = function(client_id, email, channel_id, socket) {	
 	var topic = channelTopicName(channel_id);
+	console.log("topic is: ", topic);
 	var handler = minpubsub.subscribe(topic, function(msg){
 		console.log("[" + topic + "] is executing with message " + msg);
 		socket.emit('channels:event:' + channel_id,  msg );
