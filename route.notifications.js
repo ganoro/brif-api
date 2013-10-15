@@ -159,9 +159,12 @@ var onSocketChannelsSend = function (socket, data, user) {
 	}
 	var channel_id = data.channel_id;
 	for (var client_id in channel_event_handlers[channel_id]) {
-		console.log("sending message to: ", channel_id);
 		var socket = channel_event_handlers[channel_id][client_id];
-		socket.emit('channels:event', { sender : user.email, message : data.message });
+		console.log("sending message to ", client_id, " with socket ", socket);
+		socket.emit('channels:event:' + channel_id, { 
+			sender : user.email, 
+			message : data.message 
+		});
 	}
 }
 
