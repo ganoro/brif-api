@@ -5,7 +5,9 @@ var request = require('request');
 var xml2js = require('xml2js').parseString;
 var $ = require('jquery').create();
 
-var nots = {};
+var user_event_handlers = {};
+var channel_event_handlers = {};
+
 var model = {};
 model['users'] = require('./model.users.js');
 model['messages'] = require('./model.messages.js');
@@ -39,11 +41,11 @@ var sendUnsupportedOperation = function(res, msg) {
 var notifyMessagesListsners = function(email, data) {
 	console.log("notifyMessagesListsners");
 
-	if (typeof nots[email] === "undefined") {
+	if (typeof user_event_handlers[email] === "undefined") {
 		return;
 	}
 
-	for (var client_id in nots[email].sockets) {
+	for (var client_id in user_event_handlers[email].sockets) {
 		var topic = messagesTopicName(client_id, email);
 		minpubsub.publish(topic, [ data ]);
 	}
@@ -156,36 +158,52 @@ var onSocketChannelsSend = function (socket, data, user) {
 		// TODO internal error
 	}
 	console.log(data);
-	var topic = channelTopicName(data.channel_id);
-	minpubsub.publish(topic, [ { sender : user.email, message : data.message } ]);
 
+	for (var client_id in channel_event_handlers[channel_id]) {
+		console.log("sending message to: ", channel_id);
+		var socket = channel_event_handlers[channel_id][client_id];
+		socket.emit('channels:event', { sender : user.email, message : data.message });
+	}
 }
 
 var messagesTopicName = function(client_id, email) {
 	return email + "/" + client_id + "/m";
 }
 
-var channelTopicName = function(channel_id) {
-	return channel_id + "/c";
-}
-
 var registerHandler = function(email, client_id, topic, handler) {
 	console.log("registering handler to email: ", email, " client_id: ", client_id, " topic: ", topic );
-	nots[email].sockets[client_id].topics[topic] = handler;
+	user_event_handlers[email].sockets[client_id].topics[topic] = handler;
+}
+
+var registerDisposers = function(email, client_id, disposer) {
+	console.log("registering disposer to email: ", email, " client_id: ", client_id );
+	user_event_handlers[email].sockets[client_id].disposers.push(disposer);
 }
 
 var resolveHandler = function(client_id, email, topic) {
-	if (nots[email]) {
-		return nots[email].sockets[client_id].topics[topic];	
+	if (user_event_handlers[email]) {
+		return user_event_handlers[email].sockets[client_id].topics[topic];	
 	} else {
 		return null;
 	}
 }
 
+var registerSocket = function(channel_id, client_id, socket) {
+	channel_event_handlers[channel_id] = channel_event_handlers[channel_id] || {};
+	channel_event_handlers[channel_id][client_id] = channel_event_handlers[channel_id][client_id] || socket;
+}
+
+var unregisterSocket = function(channel_id, client_id) {
+	delete channel_event_handlers[channel_id][client_id];
+	if (Object.keys(channel_event_handlers[channel_id]).length == 0) {
+		delete channel_event_handlers[channel_id];
+	}
+}
+
 var setupClient = function(client_id, email) {
 	console.log(client_id + " " + email)
-	nots[email] = nots[email] || { sockets : {} };
-	nots[email].sockets[client_id] = nots[email].sockets[client_id] || { topics : [] };
+	user_event_handlers[email] = user_event_handlers[email] || { sockets : {} };
+	user_event_handlers[email].sockets[client_id] = user_event_handlers[email].sockets[client_id] || { topics : [], disposers: [] };
 }
 
 var subscribeMessagesListener = function(client_id, email, callback) {	
@@ -207,20 +225,17 @@ var unsubscribeMessagesListener = function(client_id, email) {
 };
 
 var subscribeChannelListener = function(client_id, email, channel_id, socket) {	
-	var topic = channelTopicName(channel_id);
-	var handler = minpubsub.subscribe(topic, function(msg){
-		console.log("[" + topic + "] is executing with message " + msg);
-		socket.emit('channels:event:' + channel_id,  msg );
-	});
-	registerHandler(email, client_id, topic, handler);
+	registerSocket(channel_id, client_id, socket);
+
+	// register a disposer to the channel listener
+	var disposer = function() {
+		unregisterSocket(channel_id, client_id);
+	};
+	registerDisposers(email, client_id, disposer);
 }
 
 var unsubscribeChannelListener = function(client_id, email, channel_id) {
-	var topic = channelTopicName(channel_id);
-	var handler = resolveHandler(client_id, email, topic);
-	if (handler) {
-		minpubsub.unsubscribe(handler);	
-	}
+	unregisterSocket(channel_id, client_id, socket);
 };
 
 var messagesFetch = function(socket, user_id, data) {
@@ -293,16 +308,20 @@ var messagesUnread = function(socket, data, user) {
 }
 
 var unsubscribeAllTopicsToClient = function(email, client_id) {
-	if (!nots[email] || !nots[email].sockets) {
+	if (!user_event_handlers[email] || !user_event_handlers[email].sockets) {
 		console.log("client is missing in notifications array");
 		return;
 	}
-	for (var topic in nots[email].sockets[client_id].topics) {
+	for (var topic in user_event_handlers[email].sockets[client_id].topics) {
 		var handler = resolveHandler(client_id, email, topic);
 		minpubsub.unsubscribe(handler);
 	}
 
-	delete nots[email].sockets[client_id];
+	for (var disposer in user_event_handlers[email].sockets[client_id].disposers) {
+		disposer();
+	}
+
+	delete user_event_handlers[email].sockets[client_id];
 }
 
 // exports public functions
