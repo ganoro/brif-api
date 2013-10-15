@@ -217,9 +217,11 @@ var subscribeChannelListener = function(client_id, email, channel_id, socket) {
 
 var unsubscribeChannelListener = function(client_id, email, channel_id, email) {
 	var topic = channelTopicName(channel_id);
+	console.log("topic is: ", topic);
 	var handler = resolveHandler(client_id, email, topic);
+	console.log("handler is: ", handler);
 	if (handler) {
-		console.log("unsubscribing " + topic);
+		console.log("unsubscribing ", topic);
 		minpubsub.unsubscribe(handler);	
 	}
 };
