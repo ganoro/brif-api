@@ -194,6 +194,9 @@ var registerSocket = function(channel_id, client_id, socket) {
 }
 
 var unregisterSocket = function(channel_id, client_id) {
+	if (channel_event_handlers[channel_id] == null) {
+		return;
+	}
 	delete channel_event_handlers[channel_id][client_id];
 	if (Object.keys(channel_event_handlers[channel_id]).length == 0) {
 		delete channel_event_handlers[channel_id];
