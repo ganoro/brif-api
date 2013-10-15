@@ -126,7 +126,7 @@ var onSocketUnsubscribeChannelsListener = function(socket, data, user) {
 	if (data.channel_id == null) {
 		// TODO
 	}
-  	unsubscribeChannelListener(socket.id, user.email, data.channel_id);
+  	unsubscribeChannelListener(data.channel_id, socket.id, socket);
 }
 
 var onSocketMessagesMarkAs = function(socket, data, user) {
@@ -234,7 +234,7 @@ var subscribeChannelListener = function(client_id, email, channel_id, socket) {
 	registerDisposers(email, client_id, disposer);
 }
 
-var unsubscribeChannelListener = function(client_id, email, channel_id) {
+var unsubscribeChannelListener = function(channel_id, client_id, socket) {
 	unregisterSocket(channel_id, client_id, socket);
 };
 
