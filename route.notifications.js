@@ -127,7 +127,6 @@ var onSocketUnsubscribeChannelsListener = function(socket, data, user) {
   	unsubscribeChannelListener(socket.id, user.email, data.channel_id);
 }
 
-
 var onSocketMessagesMarkAs = function(socket, data, user) {
 	var messages_id = data.messages_id;
 	var unseen = data.unseen;
@@ -173,7 +172,6 @@ var channelTopicName = function(channel_id) {
 var registerHandler = function(email, client_id, topic, handler) {
 	console.log("registering handler to email: ", email, " client_id: ", client_id, " topic: ", topic );
 	nots[email].sockets[client_id].topics[topic] = handler;
-	console.log("handler found: ", resolveHandler(client_id, email, topic));
 }
 
 var resolveHandler = function(client_id, email, topic) {
@@ -210,7 +208,6 @@ var unsubscribeMessagesListener = function(client_id, email) {
 
 var subscribeChannelListener = function(client_id, email, channel_id, socket) {	
 	var topic = channelTopicName(channel_id);
-	console.log("topic is: ", topic);
 	var handler = minpubsub.subscribe(topic, function(msg){
 		console.log("[" + topic + "] is executing with message " + msg);
 		socket.emit('channels:event:' + channel_id,  msg );
@@ -221,13 +218,10 @@ var subscribeChannelListener = function(client_id, email, channel_id, socket) {
 var unsubscribeChannelListener = function(client_id, email, channel_id) {
 	var topic = channelTopicName(channel_id);
 	var handler = resolveHandler(client_id, email, topic);
-	console.log("handler is: ", handler, " for client_id: ", client_id, " email: ", email, " topic: ", topic);
 	if (handler) {
-		console.log("unsubscribing ", topic);
 		minpubsub.unsubscribe(handler);	
 	}
 };
-
 
 var messagesFetch = function(socket, user_id, data) {
 	var per_page = data.per_page;
