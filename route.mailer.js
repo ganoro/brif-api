@@ -23,7 +23,7 @@ var onSocketMessagesSend = function(socket, data, user) {
 		from: user.name + " <" + user.email + ">", // sender address
 		to: recipients, // list of receivers
 		subject: subject, // Subject line
-		text: text + signature, // plaintext body
+		text: text, // plaintext body
 		html: html + signature // html body
 	}
 	messagesSend(user, mailOptions);
