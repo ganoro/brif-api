@@ -68,19 +68,7 @@ exports.fetchAll = function(opts) {
       // error is an instance of Parse.Error.
     }
   });
-
-
-
-  var queries = [];
-  for (var i = 0; i < opts.google_msg_id.length; i++) {
-    var Messages = model.parse.Object.extend("Messages" + "_" + opts.user_id);
-    var query = new model.parse.Query(Messages);
-    query.equalTo("google_msg_id", opts.google_msg_id[i]);
-    console.log(opts.google_msg_id[i]);
-    queries.push(query);
-  };
-  var agg = model.parse.Query.or.apply(null, queries);
-  agg.find(opts);
+  
 }
 
 
