@@ -72,9 +72,6 @@ io.sockets.on('connection', function (socket) {
 	socket.on('setup', proxy(notifications.onSocketSetup));
 	socket.on('disconnect', proxy(notifications.onSocketDisconnect));
 
-	// groups
-	socket.on('groups:map', proxy(notifications.onSocketGroupsMap));
-
 
 	// messages
 	socket.on('messages:subscribe', proxy(notifications.onSocketSubscribeMessagesListener));

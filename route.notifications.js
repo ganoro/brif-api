@@ -172,10 +172,6 @@ var onSocketChannelsSend = function (socket, data, user) {
 	}
 }
 
-var onSocketGroupsMap = function(socket, data, user) {
-	// returns a list of group ids and rid
-}
-
 var messagesTopicName = function(client_id, email) {
 	return email + "/" + client_id + "/m";
 }
@@ -342,7 +338,7 @@ var messagesFetchAll = function(socket, data, user) {
 				seen_length : data.seen_length,
 				success : function(messages) {
 					console.log("emitting messages");
-					process.socket.emit('messages:fetch_all', messages);
+					process.socket.emit('messages:fetch_all', { data : messages });
 				},
 				error : function(e) {
 					// TODO : handle errors
@@ -395,6 +391,5 @@ module.exports = {
 	onSocketMessagesFetchAll : onSocketMessagesFetchAll,
 	onSocketSubscribeChannelsListener : onSocketSubscribeChannelsListener,
 	onSocketUnsubscribeChannelsListener : onSocketUnsubscribeChannelsListener,
-	onSocketChannelsSend : onSocketChannelsSend,
-	onSocketGroupsMap : onSocketGroupsMap
+	onSocketChannelsSend : onSocketChannelsSend
 };
