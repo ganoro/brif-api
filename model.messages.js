@@ -1,4 +1,5 @@
 var model = require('./model.base.js');
+var $ = require('jquery').create();
 
 /**
  * Find by original_recipients_id
@@ -61,6 +62,12 @@ exports.fetchAll = function(opts) {
   query.limit(opts.unread_per_page + opts.unread_per_page);
   query.find({
     success: function(results) {
+      for (var i = 0; i < results.length; i++) {
+        var m = results[i];
+          if ($.inArray()) {
+
+          }
+      };
       console.log(results);
     },
 
@@ -68,7 +75,7 @@ exports.fetchAll = function(opts) {
       // error is an instance of Parse.Error.
     }
   });
-  
+
 }
 
 
