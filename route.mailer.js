@@ -13,8 +13,20 @@ model['messages'] = require('./model.messages.js');
  */
 var onSocketMessagesSend = function(socket, data, user) {
 	console.log("onSocketMessagesSend()");
-	var user_opts = userOpts(data, user.objectId, data.recipients);
-	model['users'].getUserDetails(user_opts);
+	var recipients = data.recipients;
+	var subject = data.subject;
+	var text = data.text;
+	var html = data.html;
+	var signature = data.signature || "<div class=\"brif_hide\"><br><br>Sent from <a href=\"http://brif.us\">brif.us</a> - \"Treasure your relationships\"</div>";
+
+	var mailOptions = {
+		from: user.get("name") + " <" + user.get("email") + ">", // sender address
+		to: recipients, // list of receivers
+		subject: subject, // Subject line
+		text: text + signature, // plaintext body
+		html: html + signature // html body
+	}
+	messagesSend(user, mailOptions);
 }
 
 /**
@@ -59,29 +71,6 @@ var userUnreadOpts = function(data, object_id, socket) {
 			console.log(error);
 		}
 	};
-}
-
-/**
- * build the user opts search
- */
-var userOpts = function(data, object_id, recipients) {
-	return {
-		object_id: object_id,
-		success: function(user) {
-			var mailOptions = {
-			    from: user.get("name") + " <" + user.get("email") + ">", // sender address
-			    to: recipients, // list of receivers
-			    subject: data.subject, // Subject line
-			    text: data.text, // plaintext body
-			    html: data.html + "<div class=\"brif_hide\"><br><br>Sent from <a href=\"http://brif.us\">brif.us</a> - \"Treasure your relationships\"</div>" // html body
-			}
-			messagesSend(user, mailOptions);
-		},
-		error: function(error) {
-			console.log("error in userOpts()");
-			console.log(error);
-		}
-	}
 }
 
 /**
