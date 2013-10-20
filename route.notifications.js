@@ -143,6 +143,11 @@ var onSocketMessagesUnread = function(socket, data, user) {
 	messagesUnread(socket, data, user);
 }
 
+var onSocketMessagesFetchAll = function(socket, data, user) {
+	console.log("onSocketMessagesFetchAll()");
+	messagesFetchAll(socket, data, user);
+}
+
 var onSocketMessagesFetch = function(socket, data, user) {
 	console.log("onSocketMessagesFetch");
 	if (data.per_page == null || data.page == null || data.original_recipients_id == null) {
@@ -164,6 +169,10 @@ var onSocketChannelsSend = function (socket, data, user) {
 			message : data.message 
 		});
 	}
+}
+
+var onSocketGroupsMap = function(socket, data, user) {
+	// returns a list of group ids and rid
 }
 
 var messagesTopicName = function(client_id, email) {
@@ -304,6 +313,60 @@ var messagesUnread = function(socket, data, user) {
 	request.get(url, { headers : { "Authorization" : "Bearer " + user.access_token }}, process.parse);	
 }
 
+/**
+ * fetch all (read + unread)
+ */
+var messagesFetchAll = function(socket, data, user) {
+	console.log("messagesFetchAll()")
+
+	var process = {
+		socket : socket,
+		messages : function(error, result) {
+			var google_msg_id = [];
+			if (result.feed.entry == null) {
+				process.socket.emit('messages:fetch_all', { 
+					data : {} 
+				});
+				return;
+			}
+			for (var i = 0; i < result.feed.entry.length; i++) {
+				var entry = result.feed.entry[i].id[0];
+				var last = entry.lastIndexOf(":") + 1;
+				google_msg_id.push(entry.substring(last));
+			};
+			var opt = {
+				google_msg_id : google_msg_id,
+				user_id : user.objectId,
+				read_per_page : data.read_per_page,
+				unread_per_page : data.read_per_page,
+				success : function(messages) {
+					console.log("emitting messages");
+					process.socket.emit('messages:fetch_all', { 
+						data : messages 
+					});
+				},
+				error : function(e) {
+					// TODO : handle errors
+				}
+			}
+			model['messages'].fetchAll(opt);
+		},
+
+		parse : function(e, r, body) {
+			var messages = process.messages;
+			if (e) {
+				// TODO : internal error
+				return console.log(e);
+			}
+			xml2js(body, messages);
+		}
+	};
+	var url = 'https://mail.google.com/mail/feed/atom';
+	request.get(url, { headers : { "Authorization" : "Bearer " + user.access_token }}, process.parse);	
+}
+
+
+
 var unsubscribeAllTopicsToClient = function(email, client_id) {
 	if (!user_event_handlers[email] || !user_event_handlers[email].sockets) {
 		console.log("client is missing in notifications array");
@@ -330,7 +393,9 @@ module.exports = {
 	onSocketUnsubscribeMessagesListener : onSocketUnsubscribeMessagesListener,
 	onSocketMessagesFetch : onSocketMessagesFetch,
 	onSocketMessagesUnread : onSocketMessagesUnread,
+	onSocketMessagesFetchAll : onSocketMessagesFetchAll,
 	onSocketSubscribeChannelsListener : onSocketSubscribeChannelsListener,
 	onSocketUnsubscribeChannelsListener : onSocketUnsubscribeChannelsListener,
-	onSocketChannelsSend : onSocketChannelsSend
+	onSocketChannelsSend : onSocketChannelsSend,
+	onSocketGroupsMap : onSocketGroupsMap
 };

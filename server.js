@@ -72,11 +72,15 @@ io.sockets.on('connection', function (socket) {
 	socket.on('setup', proxy(notifications.onSocketSetup));
 	socket.on('disconnect', proxy(notifications.onSocketDisconnect));
 
+	// groups
+	socket.on('groups:map', proxy(notifications.onSocketGroupsMap));
+
+
 	// messages
 	socket.on('messages:subscribe', proxy(notifications.onSocketSubscribeMessagesListener));
 	socket.on('messages:unsubscribe', proxy(notifications.onSocketUnsubscribeMessagesListener));
 	socket.on('messages:fetch', proxy(notifications.onSocketMessagesFetch));
-	socket.on('messages:unread', proxy(notifications.onSocketMessagesUnread));
+	socket.on('messages:fetch_all', proxy(notifications.onSocketMessagesFetchAll));
 
 	// mailer
 	socket.on('messages:send', proxy(mailer.onSocketMessagesSend));
