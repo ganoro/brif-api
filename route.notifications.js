@@ -83,6 +83,7 @@ var onSocketSetup = function(socket, data, user) {
 							"refresh_token" : user.get("refresh_token"), 
 							"token" : token, 
 							"access_token" : access_token,
+							"name" : user.get("name"), 
 							"email" : user.get("email"), 
 						};
 						socket.set('user', JSON.stringify(data));
