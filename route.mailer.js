@@ -20,7 +20,7 @@ var onSocketMessagesSend = function(socket, data, user) {
 	var signature = data.signature || "<div class=\"brif_hide\"><br><br>Sent from <a href=\"http://brif.us\">brif.us</a> - \"Treasure your relationships\"</div>";
 
 	var mailOptions = {
-		from: user.get("name") + " <" + user.get("email") + ">", // sender address
+		from: user.name + " <" + user.email + ">", // sender address
 		to: recipients, // list of receivers
 		subject: subject, // Subject line
 		text: text + signature, // plaintext body
