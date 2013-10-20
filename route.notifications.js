@@ -337,13 +337,11 @@ var messagesFetchAll = function(socket, data, user) {
 			var opt = {
 				google_msg_id : google_msg_id,
 				user_id : user.objectId,
-				read_per_page : data.read_per_page,
-				unread_per_page : data.read_per_page,
+				unseen_length : data.unseen_length,
+				seen_length : data.seen_length,
 				success : function(messages) {
 					console.log("emitting messages");
-					process.socket.emit('messages:fetch_all', { 
-						data : messages 
-					});
+					process.socket.emit('messages:fetch_all', messages);
 				},
 				error : function(e) {
 					// TODO : handle errors
