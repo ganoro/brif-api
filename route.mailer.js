@@ -155,14 +155,14 @@ var messagesSend = function(user, mailOptions) {
 	console.log(mailOptions);
 
   	// exchange code for (a refreshable) token
-  	var origin = user.get("origin");
+  	var origin = user.origin;
   	var google_config = eval("config.google_config_" + origin);
   	var oauth = {
-		user: user.get("email"),
+		user: user.email,
 		clientId : google_config.client_id,
 		clientSecret : google_config.client_secret,
-		refreshToken: user.get("refresh_token"),
-		accessToken: user.get("access_token")
+		refreshToken: user.refresh_token,
+		accessToken: user.access_token
 	};
 	console.log(oauth);
 
