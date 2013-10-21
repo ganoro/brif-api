@@ -4,7 +4,7 @@ var minpubsub = require('minpubsub/minpubsub');
 var request = require('request');
 var xml2js = require('xml2js').parseString;
 var $ = require('jquery').create();
-var templates = require('templates');
+var templates = require('./templates.js');
 
 var user_event_handlers = {};
 var channel_event_handlers = {};
