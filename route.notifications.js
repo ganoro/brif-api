@@ -344,6 +344,7 @@ var groupsFetch = function(socket, data, user) {
 			});
 			console.log(search);
 			process.socket.emit('groups:fetch', { groups : search } );
+			console.log("after");
 		},
 
 		parse : function(e, r, body) {
