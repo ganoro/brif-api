@@ -327,30 +327,40 @@ var groupsFetch = function(socket, data, user) {
 
 	var process = {
 		socket : socket,
-		parse : function(error, result) {
-			if (result.feed.entry == null) {
+		headers : headers,
+		groups : function(error, result) {
+			if (error != null) {
 				return process.socket.emit('groups:fetch', { 
-					data : {} 
+					error : error 
 				});
 			}
-			var titles = [];
-			var ids = [];
-			$.each(result.feed.entry, function( i, v ) {
-				var entry = v.id[0];
-				var title = v.title[0];
-				var last = entry.lastIndexOf("/") + 1;
-				ids.push(entry.substring(last));
-				titles.push(title);
+			search = [];
+			// this.titles = [];
+			$.each(result["atom:feed"]["atom:entry"], function( i, v ) {
+				var id = v["atom:id"][0];
+				var title = v["atom:title"][0]["_"];
+				var search_term = "https://www.google.com/m8/feeds/contacts/default/full/?v=3&group="+encodeURIComponent(id);
+				search.push({id : id, title: title, search_term : search_term });
 			});
-			console.log(title)
-			console.log(ids)
-		}
+
+			this.socket.emit('groups:fetch', { groups : search } );
+		},
+
+		parse : function(e, r, body) {
+			console.log(body);
+			if (e) {
+				// TODO : internal error
+				return console.log(e);
+			}
+			var groups = process.groups;
+			xml2js(body, groups.bind(process));
+		} 
 	}
 
 	request.post(url, { 
 		headers : headers,
 		body : body
-	}, process.parse.bind(process));
+	}, process.parse);
 }
 
 var unsubscribeAllTopicsToClient = function(email, client_id) {
