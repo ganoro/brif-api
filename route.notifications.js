@@ -4,6 +4,7 @@ var minpubsub = require('minpubsub/minpubsub');
 var request = require('request');
 var xml2js = require('xml2js').parseString;
 var $ = require('jquery').create();
+var templates = require('templates');
 
 var user_event_handlers = {};
 var channel_event_handlers = {};
@@ -317,11 +318,10 @@ var messagesFetchAll = function(socket, data, user) {
 var groupsFetch = function(socket, data, user) {
 	var url = 'https://www.google.com/m8/feeds/groups/default/full/batch';
 	var headers = { "Authorization" : "Bearer " + user.access_token };
-	
 
 	request.post(url, { 
 		headers : headers,
-		body : body,
+		body : body
 	}, emitGroupMapping);
 }
 
