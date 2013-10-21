@@ -139,11 +139,6 @@ var onSocketMessagesMarkAs = function(socket, data, user) {
 	messagesMarkAs(socket, messages_id, unseen, user);
 }
 
-var onSocketMessagesUnread = function(socket, data, user) {
-	console.log("onSocketMessagesUnread()");
-	messagesUnread(socket, data, user);
-}
-
 var onSocketMessagesFetchAll = function(socket, data, user) {
 	console.log("onSocketMessagesFetchAll()");
 	messagesFetchAll(socket, data, user);
@@ -170,6 +165,15 @@ var onSocketChannelsSend = function (socket, data, user) {
 			message : data.message 
 		});
 	}
+}
+
+var onSocketGroupsFetch = function (socket, data, user) {
+	console.log("onSocketGroupsFetch");
+	if (data.group == null) {
+		// TODO internal error
+	}
+
+	groupsFetch(socket, data, user);
 }
 
 var messagesTopicName = function(client_id, email) {
@@ -261,56 +265,6 @@ var messagesFetch = function(socket, user_id, data) {
 }
 
 /**
- * fetch unread
- */
-var messagesUnread = function(socket, data, user) {
-	console.log("messagesUnread()")
-
-	var process = {
-		socket : socket,
-		messages : function(error, result) {
-			var google_msg_id = [];
-			if (result.feed.entry == null) {
-				process.socket.emit('messages:unread', { 
-					data : {} 
-				});
-				return;
-			}
-			for (var i = 0; i < result.feed.entry.length; i++) {
-				var entry = result.feed.entry[i].id[0];
-				var last = entry.lastIndexOf(":") + 1;
-				google_msg_id.push(entry.substring(last));
-			};
-			var opt = {
-				google_msg_id : google_msg_id,
-				user_id : user.objectId,
-				success : function(messages) {
-					console.log("emitting messages");
-					process.socket.emit('messages:unread', { 
-						data : messages 
-					});
-				},
-				error : function(e) {
-					// TODO : handle errors
-				}
-			}
-			model['messages'].findByGoogleMsgId(opt);
-		},
-
-		parse : function(e, r, body) {
-			var messages = process.messages;
-			if (e) {
-				// TODO : internal error
-				return console.log(e);
-			}
-			xml2js(body, messages);
-		}
-	};
-	var url = 'https://mail.google.com/mail/feed/atom';
-	request.get(url, { headers : { "Authorization" : "Bearer " + user.access_token }}, process.parse);	
-}
-
-/**
  * fetch all (read + unread)
  */
 var messagesFetchAll = function(socket, data, user) {
@@ -360,7 +314,19 @@ var messagesFetchAll = function(socket, data, user) {
 	request.get(url, { headers : { "Authorization" : "Bearer " + user.access_token }}, process.parse);	
 }
 
+var groupsFetch = function(socket, data, user) {
+	var url = 'https://www.google.com/m8/feeds/groups/default/full/batch';
+	var headers = { "Authorization" : "Bearer " + user.access_token };
+	var body = _.;
+	request.post(url, { 
+		headers : headers,
+		body : body,
+	}, emitGroupMapping);
+}
 
+var emitGroupMapping(results) {
+
+}
 
 var unsubscribeAllTopicsToClient = function(email, client_id) {
 	if (!user_event_handlers[email] || !user_event_handlers[email].sockets) {
@@ -387,9 +353,9 @@ module.exports = {
 	onSocketSubscribeMessagesListener : onSocketSubscribeMessagesListener,
 	onSocketUnsubscribeMessagesListener : onSocketUnsubscribeMessagesListener,
 	onSocketMessagesFetch : onSocketMessagesFetch,
-	onSocketMessagesUnread : onSocketMessagesUnread,
 	onSocketMessagesFetchAll : onSocketMessagesFetchAll,
 	onSocketSubscribeChannelsListener : onSocketSubscribeChannelsListener,
 	onSocketUnsubscribeChannelsListener : onSocketUnsubscribeChannelsListener,
-	onSocketChannelsSend : onSocketChannelsSend
+	onSocketChannelsSend : onSocketChannelsSend,
+	onSocketGroupsFetch : onSocketGroupsFetch
 };

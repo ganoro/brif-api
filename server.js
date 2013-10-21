@@ -72,13 +72,11 @@ io.sockets.on('connection', function (socket) {
 	socket.on('setup', proxy(notifications.onSocketSetup));
 	socket.on('disconnect', proxy(notifications.onSocketDisconnect));
 
-
 	// messages
 	socket.on('messages:subscribe', proxy(notifications.onSocketSubscribeMessagesListener));
 	socket.on('messages:unsubscribe', proxy(notifications.onSocketUnsubscribeMessagesListener));
 	socket.on('messages:fetch', proxy(notifications.onSocketMessagesFetch));
 	socket.on('messages:fetch_all', proxy(notifications.onSocketMessagesFetchAll));
-	socket.on('messages:unread', proxy(notifications.onSocketMessagesUnread));
 
 	// mailer
 	socket.on('messages:send', proxy(mailer.onSocketMessagesSend));
@@ -88,7 +86,10 @@ io.sockets.on('connection', function (socket) {
 	socket.on('channels:subscribe', proxy(notifications.onSocketSubscribeChannelsListener));
 	socket.on('channels:unsubscribe', proxy(notifications.onSocketUnsubscribeChannelsListener));
 	socket.on('channels:send', proxy(notifications.onSocketChannelsSend));
-	
+
+	// groups
+	socket.on('groups:fetch', proxy(notifications.onSocketGroupsFetch));
+
 	socket.emit('setup:ready');
 });
 
