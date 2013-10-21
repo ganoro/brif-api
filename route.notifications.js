@@ -317,7 +317,8 @@ var messagesFetchAll = function(socket, data, user) {
 var groupsFetch = function(socket, data, user) {
 	var url = 'https://www.google.com/m8/feeds/groups/default/full/batch';
 	var headers = { "Authorization" : "Bearer " + user.access_token };
-	var body = _.;
+	
+
 	request.post(url, { 
 		headers : headers,
 		body : body,
