@@ -325,7 +325,7 @@ var groupsFetch = function(socket, data, user) {
 	}, emitGroupMapping);
 }
 
-var emitGroupMapping(results) {
+var emitGroupMapping = function(results) {
 
 }
 
