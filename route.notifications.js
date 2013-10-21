@@ -325,14 +325,33 @@ var groupsFetch = function(socket, data, user) {
 	var body = templates.compile('retrieve_groups', { groups : data.groups });
 	console.log(body);
 
+	var process = {
+		socket : socket,
+		parse : function(error, result) {
+			if (result.feed.entry == null) {
+				return process.socket.emit('groups:fetch', { 
+					data : {} 
+				});
+			}
+			var titles = [];
+			var ids = [];
+			$.each(result.feed.entry, function( i, v ) {
+				var entry = v.id[0];
+				var title = v.title[0];
+				var last = entry.lastIndexOf("/") + 1;
+				ids.push(entry.substring(last));
+				titles.push(title);
+			});
+			console.log(title)
+			console.log(ids)
+
+		}
+	}
+
 	request.post(url, { 
 		headers : headers,
 		body : body
-	}, emitGroupMapping);
-}
-
-var emitGroupMapping = function(error, response, body) {
-	console.log(body);
+	}, process.parse.bind(process) });
 }
 
 var unsubscribeAllTopicsToClient = function(email, client_id) {
