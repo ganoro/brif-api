@@ -342,12 +342,11 @@ var groupsFetch = function(socket, data, user) {
 				var search_term = "https://www.google.com/m8/feeds/contacts/default/full/?v=3&group="+encodeURIComponent(id);
 				search.push({id : id, title: title, search_term : search_term });
 			});
-
+			console.log(search);
 			this.socket.emit('groups:fetch', { groups : search } );
 		},
 
 		parse : function(e, r, body) {
-			console.log(body);
 			if (e) {
 				// TODO : internal error
 				return console.log(e);
