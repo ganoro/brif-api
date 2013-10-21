@@ -344,14 +344,13 @@ var groupsFetch = function(socket, data, user) {
 			});
 			console.log(title)
 			console.log(ids)
-
 		}
 	}
 
 	request.post(url, { 
 		headers : headers,
 		body : body
-	}, process.parse.bind(process) });
+	}, process.parse.bind(process));
 }
 
 var unsubscribeAllTopicsToClient = function(email, client_id) {
