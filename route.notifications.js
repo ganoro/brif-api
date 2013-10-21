@@ -319,6 +319,7 @@ var groupsFetch = function(socket, data, user) {
 	var url = 'https://www.google.com/m8/feeds/groups/default/full/batch';
 	var headers = { "Authorization" : "Bearer " + user.access_token };
 	var body = templates.compile('retrieve_groups', { groups : data.groups });
+	console.log(body);
 
 	request.post(url, { 
 		headers : headers,
@@ -326,8 +327,8 @@ var groupsFetch = function(socket, data, user) {
 	}, emitGroupMapping);
 }
 
-var emitGroupMapping = function(results) {
-	console.log(results);
+var emitGroupMapping = function(error, response, body) {
+	console.log(response);
 }
 
 var unsubscribeAllTopicsToClient = function(email, client_id) {

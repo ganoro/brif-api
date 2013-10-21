@@ -14,7 +14,6 @@ fs.readFile('./templates/retrieve_groups.xml', function (err, data) {
 
 var compile = function(name, parameters) {
 	var text = templates[name];
-    console.log(text);
 	return _.template(text, parameters);
 }
 
