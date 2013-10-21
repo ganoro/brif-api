@@ -9,7 +9,7 @@ var templates = {};
 // retrieve groups xml
 fs.readFile('./templates/retrieve_groups.xml', function (err, data) {
   if (err) throw err;
-  templates['retrieve_groups'] = data;
+  templates['retrieve_groups'] = data.toString('utf8');;
 });
 
 var compile = function(name, parameters) {

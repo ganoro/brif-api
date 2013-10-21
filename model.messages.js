@@ -66,8 +66,6 @@ var fetchAll = function(opts) {
     success: function(results) {
       for (var i = 0; i < results.length; i++) {
         var m = results[i];
-        console.log(m.get("google_msg_id"));
-        console.log(opts.google_msg_id);
         var idx = $.inArray(m.get("google_msg_id"), opts.google_msg_id)
         if (idx != -1) {
           opts.google_msg_id.splice(idx, 1);
