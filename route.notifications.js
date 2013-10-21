@@ -170,7 +170,8 @@ var onSocketChannelsSend = function (socket, data, user) {
 
 var onSocketGroupsFetch = function (socket, data, user) {
 	console.log("onSocketGroupsFetch");
-	if (data.group == null) {
+	console.log(data);
+	if (data.groups == null) {
 		// TODO internal error
 	}
 
