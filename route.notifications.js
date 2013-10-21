@@ -327,33 +327,27 @@ var groupsFetch = function(socket, data, user) {
 
 	var process = {
 		socket : socket,
-		headers : headers,
-		groups : function(error, result) {
+		resolveGroup : function(error, result) {
 			if (error != null) {
 				return process.socket.emit('groups:fetch', { 
 					error : error 
 				});
 			}
-			search = [];
+			groups = [];
 			// this.titles = [];
 			$.each(result["atom:feed"]["atom:entry"], function( i, v ) {
 				var id = v["atom:id"][0];
 				var title = v["atom:title"][0]["_"];
-				var search_term = "https://www.google.com/m8/feeds/contacts/default/full/?v=3&group="+encodeURIComponent(id);
-				search.push({id : id, title: title, search_term : search_term });
+				groups.push({ id : id, title: title });
 			});
-			console.log(search);
-			process.socket.emit('groups:fetch', { groups : search } );
-			console.log("after");
+			process.socket.emit('groups:fetch', { groups : groups } );
 		},
-
 		parse : function(e, r, body) {
 			if (e) {
 				// TODO : internal error
 				return console.log(e);
 			}
-			var groups = process.groups;
-			xml2js(body, groups.bind(process));
+			xml2js(body, process.resolveGroup);
 		} 
 	}
 
