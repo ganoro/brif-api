@@ -343,7 +343,7 @@ var groupsFetch = function(socket, data, user) {
 				search.push({id : id, title: title, search_term : search_term });
 			});
 			console.log(search);
-			this.socket.emit('groups:fetch', { groups : search } );
+			process.socket.emit('groups:fetch', { groups : search } );
 		},
 
 		parse : function(e, r, body) {
