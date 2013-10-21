@@ -8,7 +8,7 @@ var templates = {};
 
 // retrieve groups xml
 fs.readFile('./templates/retrieve_groups.xml', function (err, data) {
-  if (err) throw err;
+  if (err) console.log(err);
   templates['retrieve_groups'] = data;
 });
 
