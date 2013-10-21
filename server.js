@@ -58,7 +58,6 @@ io.sockets.on('connection', function (socket) {
 	// proxy, enables socket and user details as parameters
 	var proxy = function(callback) {
 		return function(data) {
-			console.log(data);
 			socket.get('user', function(err, result) {
 				var user = JSON.parse(result);
 				callback(socket, data, user);
