@@ -7,7 +7,7 @@ var _ = require('underscore');
 var templates = {};
 
 // retrieve groups xml
-fs.readFile('./templates/retrieve_groups.xml', function (err, data) {
+fs.readFile('./retrieve_groups.xml', function (err, data) {
   if (err) console.log(err);
   templates['retrieve_groups'] = data;
 });
