@@ -328,7 +328,7 @@ var groupsFetch = function(socket, data, user) {
 }
 
 var emitGroupMapping = function(error, response, body) {
-	console.log(response);
+	console.log(body);
 }
 
 var unsubscribeAllTopicsToClient = function(email, client_id) {
