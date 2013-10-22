@@ -323,8 +323,6 @@ var groupsFetch = function(socket, data, user) {
 		"Authorization" : "Bearer " + user.access_token 
 	};
 	var body = templates.compile('retrieve_groups', { groups : data.groups });
-	console.log(body);
-
 	var process = {
 		socket : socket,
 		resolveGroup : function(error, result) {
