@@ -41,7 +41,7 @@ var findByGoogleMsgId = function(opts) {
   	console.log(opts.google_msg_id[i]);
   	queries.push(query);
   };
-  if (queries.length == 0) {
+  if (queries.length != 0) {
     var agg = model.parse.Query.or.apply(null, queries);
     agg.find(opts);    
   } else {
