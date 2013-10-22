@@ -7,6 +7,7 @@ var _ = require('underscore');
 var templates = {};
 
 var load = function(name, filename) {
+	console.log("* loading template " + name);
 	// retrieve groups xml
 	fs.readFile('./templates/' + filename, function (err, data) {
 	  if (err) throw err;
