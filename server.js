@@ -89,6 +89,7 @@ io.sockets.on('connection', function (socket) {
 
 	// groups
 	socket.on('groups:fetch', proxy(notifications.onSocketGroupsFetch));
+	socket.on('groups:create', proxy(notifications.onSocketGroupsCreate));
 
 	socket.emit('setup:ready');
 });

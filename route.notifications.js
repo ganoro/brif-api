@@ -177,6 +177,15 @@ var onSocketGroupsFetch = function (socket, data, user) {
 	groupsFetch(socket, data, user);
 }
 
+var onSocketGroupsCreate = function (socket, data, user) {
+	console.log("onSocketGroupsCreate");
+	if (data.title == null || data.content == null || data.recipients == null) {
+		// TODO internal error
+	}
+
+	groupsCreate(socket, data, user);
+}
+
 var messagesTopicName = function(client_id, email) {
 	return email + "/" + client_id + "/m";
 }
@@ -355,6 +364,48 @@ var groupsFetch = function(socket, data, user) {
 	}, process.parse);
 }
 
+var groupsCreate = function(socket, data, user) {
+	console.log("groupsCreate()");
+	var url = 'https://www.google.com/m8/feeds/groups/default/full/';
+	var headers = { 
+		"Content-type" : "application/atom+xml", 
+		"Authorization" : "Bearer " + user.access_token 
+	};
+	var body = templates.compile('new_group', { title: data.title, content: data.content });
+	var process = {
+		socket : socket,
+		resolveGroup : function(error, result) {
+			if (error != null) {
+				return process.socket.emit('groups:create', { 
+					error : error 
+				});
+			}
+			groups = [];
+			// this.titles = [];
+			$.each(result["atom:feed"]["atom:entry"], function( i, v ) {
+				var id = v["atom:id"][0];
+				var title = v["atom:title"][0]["_"];
+				groups.push({ id : id, title: title });
+			});
+			process.socket.emit('groups:fetch', { groups : groups } );
+		},
+		parse : function(e, r, body) {
+			if (e) {
+				// TODO : internal error
+				return console.log(e);
+			}
+			console.log(body);
+			return;
+			xml2js(body, process.resolveGroup);
+		} 
+	}
+
+	request.post(url, { 
+		headers : headers,
+		body : body
+	}, process.parse);
+}
+
 var unsubscribeAllTopicsToClient = function(email, client_id) {
 	if (!user_event_handlers[email] || !user_event_handlers[email].sockets) {
 		console.log("client is missing in notifications array");
@@ -384,5 +435,6 @@ module.exports = {
 	onSocketSubscribeChannelsListener : onSocketSubscribeChannelsListener,
 	onSocketUnsubscribeChannelsListener : onSocketUnsubscribeChannelsListener,
 	onSocketChannelsSend : onSocketChannelsSend,
-	onSocketGroupsFetch : onSocketGroupsFetch
+	onSocketGroupsFetch : onSocketGroupsFetch,
+	onSocketGroupsCreate : onSocketGroupsCreate
 };
