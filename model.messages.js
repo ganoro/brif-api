@@ -68,7 +68,7 @@ var findByGoogleTrdId = function(opt) {
     .limit(opt.per_page)
     .skip(opt.page*opt.per_page);
 
-  query.find(opts);    
+  query.find(opt);    
 }
 
 
