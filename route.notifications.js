@@ -335,6 +335,7 @@ var messagesFetchAll = function(socket, data, user) {
 var messagesFetchThread = function(socket, data, user) {
 	console.log("messagesFetchThread()")
 	var opt = {
+		socket : socket,
 		google_trd_id : data.google_trd_id,
 		recipients_id : data.recipients_id,
 		user_id : user.objectId,

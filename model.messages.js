@@ -55,18 +55,18 @@ var findByGoogleMsgId = function(opts) {
  * success() and error() functions required in opts
  * paremetrs required - google_trd_id 
  */ 
-var findByGoogleTrdId = function(opts) {
+var findByGoogleTrdId = function(opt) {
   console.log("findByGoogleTrdId()");
-  console.log(opts.google_trd_id);
-  console.log(opts.user_id);
+  console.log(opt.google_trd_id);
+  console.log(opt.user_id);
 
-  var Messages = model.parse.Object.extend("Messages_" + opts.user_id);
+  var Messages = model.parse.Object.extend("Messages_" + opt.user_id);
   var query = new model.parse.Query(Messages);
-  query.equalTo("google_trd_id", opts.google_trd_id)
-    .equalTo("recipients_id", opts.recipients_id)
+  query.equalTo("google_trd_id", opt.google_trd_id)
+    .equalTo("recipients_id", opt.recipients_id)
     .descending("sent_date")
-    .limit(opts.per_page)
-    .skip(opts.page*opts.per_page);
+    .limit(opt.per_page)
+    .skip(opt.page*opt.per_page);
 
   query.find(opts);    
 }
@@ -117,9 +117,6 @@ var fetchAll = function(opts) {
     }
   });
 }
-
-
-
 
 // exports public functions
 module.exports = {
