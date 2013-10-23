@@ -58,6 +58,9 @@ var findByGoogleMsgId = function(opts) {
 var findByGoogleTrdId = function(opt) {
   console.log("findByGoogleTrdId()");
   console.log(opt.google_trd_id);
+  console.log(opt.recipients_id);
+  console.log(opt.per_page);
+  console.log(opt.page);
   console.log(opt.user_id);
 
   var Messages = model.parse.Object.extend("Messages_" + opt.user_id);
@@ -70,8 +73,6 @@ var findByGoogleTrdId = function(opt) {
 
   query.find(opt);    
 }
-
-
 
 /**
  * Fetch all messages by user id and array of unread messages 
