@@ -125,5 +125,6 @@ var fetchAll = function(opts) {
 module.exports = {
   fetchAll : fetchAll,
   findByGoogleMsgId : findByGoogleMsgId,
+  findByGoogleTrdId : findByGoogleTrdId,
   findByOriginalRecipientsId : findByOriginalRecipientsId
 }
