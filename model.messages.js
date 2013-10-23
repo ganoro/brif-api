@@ -62,7 +62,7 @@ var findByGoogleTrdId = function(opts) {
 
   var Messages = model.parse.Object.extend("Messages_" + opts.user_id);
   var query = new model.parse.Query(Messages);
-  query.equalTo("google_trd_id", opts.google_trd_id);
+  query.equalTo("google_trd_id", opts.google_trd_id)
     .equalTo("recipients_id", opts.recipients_id)
     .descending("sent_date")
     .limit(opts.per_page)
