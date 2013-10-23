@@ -51,15 +51,35 @@ var findByGoogleMsgId = function(opts) {
 }
 
 /**
+ * Find messages by user id and thread id
+ * success() and error() functions required in opts
+ * paremetrs required - google_trd_id 
+ */ 
+var findByGoogleTrdId = function(opts) {
+  console.log("findByGoogleTrdId()");
+  console.log(opts.google_trd_id);
+  console.log(opts.user_id);
+
+  var Messages = model.parse.Object.extend("Messages_" + opts.user_id);
+  var query = new model.parse.Query(Messages);
+  query.equalTo("google_trd_id", opts.google_trd_id);
+    .equalTo("recipients_id", opts.recipients_id)
+    .descending("sent_date")
+    .limit(opts.per_page)
+    .skip(opts.page*opts.per_page);
+
+  query.find(opts);    
+}
+
+
+
+/**
  * Fetch all messages by user id and array of unread messages 
  * success(), error(), unseen_length, seen_length, google_msg_id[] required in opts
  */ 
 var fetchAll = function(opts) {
-  console.log("getLatests()");
-  console.log(opts.unseen_length);
-  console.log(opts.seen_length);
-  console.log(opts.google_msg_id); // unread messages
-  console.log(opts.user_id);
+  console.log("fetchAll()");
+  console.log(opts.unseen_length, opts.seen_length, opts.google_msg_id, opts.user_id);
 
   // search latests messages in list
   var Messages = model.parse.Object.extend("Messages_" + opts.user_id);
@@ -96,8 +116,10 @@ var fetchAll = function(opts) {
       opts.error(error);
     }
   });
-
 }
+
+
+
 
 // exports public functions
 module.exports = {

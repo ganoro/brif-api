@@ -145,6 +145,11 @@ var onSocketMessagesFetchAll = function(socket, data, user) {
 	messagesFetchAll(socket, data, user);
 }
 
+var onSocketMessagesFetchThread = function(socket, data, user) {
+	console.log("onSocketMessagesFetchThread()");
+	messagesFetchThread(socket, data, user);
+}
+
 var onSocketMessagesFetch = function(socket, data, user) {
 	console.log("onSocketMessagesFetch");
 	if (data.per_page == null || data.page == null || data.original_recipients_id == null) {
@@ -324,6 +329,31 @@ var messagesFetchAll = function(socket, data, user) {
 	request.get(url, { headers : { "Authorization" : "Bearer " + user.access_token }}, process.parse);	
 }
 
+/**
+ * fetch all messages from specific thread id + rid 
+ */
+var messagesFetchThread = function(socket, data, user) {
+	console.log("messagesFetchThread()")
+	var opt = {
+		google_trd_id : data.google_trd_id,
+		recipients_id : data.recipients_id,
+		user_id : user.objectId,
+		per_page : data.per_page,
+		page : data.page,
+		success : function(messages) {
+			console.log("emitting messages");
+			opt.socket.emit('messages:fetch_thread', { data : messages });
+		},
+		error : function(e) {
+			// TODO : handle errors
+		}
+	}
+	model['messages'].findByGoogleTrdId(opt);
+}
+
+
+
+
 var groupsFetch = function(socket, data, user) {
 	console.log("groupsFetch()");
 	var url = 'https://www.google.com/m8/feeds/groups/default/full/batch';
@@ -432,6 +462,7 @@ module.exports = {
 	onSocketUnsubscribeMessagesListener : onSocketUnsubscribeMessagesListener,
 	onSocketMessagesFetch : onSocketMessagesFetch,
 	onSocketMessagesFetchAll : onSocketMessagesFetchAll,
+	onSocketMessagesFetchThread : onSocketMessagesFetchThread,
 	onSocketSubscribeChannelsListener : onSocketSubscribeChannelsListener,
 	onSocketUnsubscribeChannelsListener : onSocketUnsubscribeChannelsListener,
 	onSocketChannelsSend : onSocketChannelsSend,

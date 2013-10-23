@@ -77,6 +77,7 @@ io.sockets.on('connection', function (socket) {
 	socket.on('messages:unsubscribe', proxy(notifications.onSocketUnsubscribeMessagesListener));
 	socket.on('messages:fetch', proxy(notifications.onSocketMessagesFetch));
 	socket.on('messages:fetch_all', proxy(notifications.onSocketMessagesFetchAll));
+	socket.on('messages:fetch_thread', proxy(notifications.onSocketMessagesFetchThread));
 
 	// mailer
 	socket.on('messages:send', proxy(mailer.onSocketMessagesSend));
