@@ -122,5 +122,5 @@ module.exports = {
   fetchAll : fetchAll,
   findByGoogleMsgId : findByGoogleMsgId,
   findByGoogleTrdId : findByGoogleTrdId,
-  findByOriginalRecipientsId : findByOriginalRecipientsId
+  findByRecipientsId : findByRecipientsId
 }
