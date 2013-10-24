@@ -2,20 +2,18 @@ var model = require('./model.base.js');
 var $ = require('jquery').create();
 
 /**
- * Find by original_recipients_id
+ * Find by recipients_id
  * success() and error() functions required in opts
- * paremetrs required - original_recipients_id, user_id
+ * paremetrs required - recipients_id, user_id
  */ 
-var findByOriginalRecipientsId = function(opts) {
-	console.log("findByOriginalRecipientsId()");
-  console.log(opts.original_recipients_id);
+var findByRecipientsId = function(opts) {
+	console.log("findByRecipientsId()");
+  console.log(opts.recipients_id);
   console.log(opts.user_id);
-  console.log(opts.per_page);
-  console.log(opts.page*opts.per_page);
 
   var Messages = model.parse.Object.extend("Messages" + "_" + opts.user_id);
   var query = new model.parse.Query(Messages);
-  query.equalTo("original_recipients_id", opts.original_recipients_id)
+  query.equalTo("recipients_id", opts.recipients_id)
     .descending("sent_date")
     .limit(opts.per_page)
     .skip(opts.page*opts.per_page);

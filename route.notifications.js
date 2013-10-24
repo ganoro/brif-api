@@ -152,7 +152,7 @@ var onSocketMessagesFetchThread = function(socket, data, user) {
 
 var onSocketMessagesFetch = function(socket, data, user) {
 	console.log("onSocketMessagesFetch");
-	if (data.per_page == null || data.page == null || data.original_recipients_id == null) {
+	if (data.per_page == null || data.page == null || data.recipients_id == null) {
 		// TODO internal error
 	}
 	messagesFetch(socket, user.objectId, data);
@@ -264,19 +264,19 @@ var unsubscribeChannelListener = function(channel_id, client_id, socket) {
 var messagesFetch = function(socket, user_id, data) {
 	var per_page = data.per_page;
 	var page = data.page;
-	var original_recipients_id = data.original_recipients_id;	
+	var recipients_id = data.recipients_id;	
 
 	var opts = {
 		per_page : per_page, 
 		page : page, 
-		original_recipients_id : original_recipients_id, 
+		recipients_id : recipients_id, 
 		user_id : user_id, 
 		success : function(data) {
-			console.log('messages:fetch:' + opts.original_recipients_id);
-			socket.emit('messages:fetch:' + opts.original_recipients_id , { data : data });
+			console.log('messages:fetch:' + opts.recipients_id);
+			socket.emit('messages:fetch:' + opts.recipients_id , { data : data });
 		}
 	};
-	model['messages'].findByOriginalRecipientsId(opts);
+	model['messages'].findByRecipientsId(opts);
 }
 
 /**
