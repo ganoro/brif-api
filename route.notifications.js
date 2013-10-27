@@ -289,17 +289,13 @@ var messagesFetchAll = function(socket, data, user) {
 		socket : socket,
 		messages : function(error, result) {
 			var google_msg_id = [];
-			if (result.feed.entry == null) {
-				process.socket.emit('messages:fetch_all', { 
-					data : {} 
-				});
-				return;
+			if (result.feed.entry != null) {
+				for (var i = 0; i < result.feed.entry.length; i++) {
+					var entry = result.feed.entry[i].id[0];
+					var last = entry.lastIndexOf(":") + 1;
+					google_msg_id.push(entry.substring(last));
+				};
 			}
-			for (var i = 0; i < result.feed.entry.length; i++) {
-				var entry = result.feed.entry[i].id[0];
-				var last = entry.lastIndexOf(":") + 1;
-				google_msg_id.push(entry.substring(last));
-			};
 			var opt = {
 				google_msg_id : google_msg_id,
 				user_id : user.objectId,

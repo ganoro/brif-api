@@ -27,6 +27,10 @@ var findByRecipientsId = function(opts) {
  * paremetrs required - google_msg_id (array)
  */ 
 var findByGoogleMsgId = function(opts) {
+  if (opts.google_msg_id.length != 0) {
+    return opts.success([]);
+  }
+
 	console.log("findByGoogleMsgId()");
   console.log(opts.google_msg_id);
   console.log(opts.user_id);
@@ -39,13 +43,8 @@ var findByGoogleMsgId = function(opts) {
   	console.log(opts.google_msg_id[i]);
   	queries.push(query);
   };
-  if (queries.length != 0) {
-    var agg = model.parse.Query.or.apply(null, queries);
-    agg.find(opts);    
-  } else {
-    opts.success([]);
-  }
-
+  var agg = model.parse.Query.or.apply(null, queries);
+  agg.find(opts);    
 }
 
 /**
