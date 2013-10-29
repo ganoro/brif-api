@@ -117,7 +117,9 @@ var markAs = function(connection, mailOptions) {
 			console.log(uid);
 			if (mailOptions.seen) {
 				connection.addFlags(uid, '\\Seen');
+				connection.addFlags(uid, '\\Seen');
 			} else {
+				connection.delFlags(uid, '\\Seen');
 				connection.delFlags(uid, '\\Seen');
 			}
 		};
