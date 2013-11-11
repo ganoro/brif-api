@@ -183,6 +183,8 @@ var messagesSend = function(user, mailOptions) {
 	    } else {
 	        console.log(response);
 	        console.log("Message sent: " + response.message);
+	        console.log(responseStatus.message); // response from the server
+        	console.log(responseStatus.messageId); // Message-ID value used
 	    }
 
 	    // if you don't want to use this transport object anymore, uncomment following line
