@@ -113,17 +113,13 @@ var connect = function(token, user, mailOptions) {
 var markAs = function(connection, mailOptions) {
 	console.log("markAs()");
 	connection.openBox('[Gmail]/All Mail', false, function(err, box) {
-		function closeBox(err) {
-			connection.closeBox();
-			console.log("closing");
-		}
 		for (var i = mailOptions.messages_id.length - 1; i >= 0 ; i--) {
 			var uid = mailOptions.messages_id[i];
 			console.log(uid);
 			if (mailOptions.seen) {
-				connection.addFlags(uid, '\\Seen', i == 0 ? closeBox : undefined);
+				connection.addFlags(uid, '\\Seen');
 			} else {
-				connection.delFlags(uid, '\\Seen', i == 0 ? closeBox : undefined);
+				connection.delFlags(uid, '\\Seen');
 			}
 		};
 	});
