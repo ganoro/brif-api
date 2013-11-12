@@ -114,8 +114,8 @@ var markAs = function(connection, mailOptions) {
 	console.log("markAs()");
 	connection.openBox('[Gmail]/All Mail', false, function(err, box) {
 		function closeBox() {
-
-			connection.closeBox(true);
+			console.log("closing");
+			connection.closeBox();
 		}
 
 		console.log("addflag", closeBox);
