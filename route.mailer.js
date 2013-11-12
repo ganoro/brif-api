@@ -124,9 +124,9 @@ var markAs = function(connection, mailOptions) {
 			var uid = mailOptions.messages_id[i];
 			console.log(uid);
 			if (mailOptions.seen) {
-				connection.addFlags(uid, '\\Seen', closeBox);
+				connection.addFlags(uid, '\\Seen');
 			} else {
-				connection.delFlags(uid, '\\Seen', closeBox);
+				connection.delFlags(uid, '\\Seen');
 			}
 		};
 	});
