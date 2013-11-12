@@ -114,8 +114,11 @@ var markAs = function(connection, mailOptions) {
 	console.log("markAs()");
 	connection.openBox('[Gmail]/All Mail', false, function(err, box) {
 		function closeBox() {
+
 			connection.closeBox(true);
 		}
+
+		console.log("addflag", closeBox);
 
 		for (var i = 0; i < mailOptions.messages_id.length; i++) {
 			var uid = mailOptions.messages_id[i];
