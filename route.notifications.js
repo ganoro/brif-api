@@ -369,11 +369,13 @@ var groupsFetch = function(socket, data, user) {
 			}
 			groups = [];
 			// this.titles = [];
-			$.each(result["atom:feed"]["atom:entry"], function( i, v ) {
-				var id = v["atom:id"][0];
-				var title = v["atom:title"][0]["_"];
-				groups.push({ id : id, title: title });
-			});
+			if (result["atom:feed"]["atom:entry"]) {
+				$.each(result["atom:feed"]["atom:entry"], function( i, v ) {
+					var id = v["atom:id"][0];
+					var title = v["atom:title"][0]["_"];
+					groups.push({ id : id, title: title });
+				});			
+			}
 			process.socket.emit('groups:fetch', { groups : groups } );
 		},
 		parse : function(e, r, body) {
