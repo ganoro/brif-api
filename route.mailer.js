@@ -123,8 +123,10 @@ var markAs = function(connection, mailOptions) {
 			console.log(uid);
 			var ec = (i == 0 ? endConnection : undefined);
 			if (mailOptions.seen) {
+				connection.addFlags(uid, '\\Seen');
 				connection.addFlags(uid, '\\Seen', ec);
 			} else {
+				connection.delFlags(uid, '\\Seen');
 				connection.delFlags(uid, '\\Seen', ec);
 			}
 		};
