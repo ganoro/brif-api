@@ -26,7 +26,9 @@ app.use(express.bodyParser());
 
 app.all('*', function(req, res, next) {
 	res.header("Access-Control-Allow-Origin", "*");
-	res.header("Access-Control-Allow-Headers", "X-Requested-With");
+	res.header("Access-Control-Allow-Headers", "X-Requested-With,content-type");
+    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
+    res.setHeader('Access-Control-Allow-Credentials', true);
 	next();
  });
 
@@ -51,6 +53,7 @@ app.use(function(err, req, res, next){
  */ 
 var io = require('socket.io').listen(app.listen(config.port));
 io.set('log level', 1); // reduce logging
+io.set("origins","*");
 
 io.sockets.on('connection', function (socket) {
 	console.log("connected to: " + socket.id);
