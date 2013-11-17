@@ -51,7 +51,6 @@ app.use(function(err, req, res, next){
  */ 
 var io = require('socket.io').listen(app.listen(config.port));
 io.set('log level', 1); // reduce logging
-io.set( 'origins', '*brif.us*:*' );
 
 io.sockets.on('connection', function (socket) {
 	console.log("connected to: " + socket.id);
