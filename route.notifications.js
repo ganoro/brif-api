@@ -191,6 +191,15 @@ var onSocketGroupsCreate = function (socket, data, user) {
 	groupsCreate(socket, data, user);
 }
 
+var onSocketContactsCreate = function (socket, data, user) {
+	console.log("onSocketContactsCreate");
+	if (data.name == null || data.email == null) {
+		// TODO internal error
+	}
+
+	contactsCreate(socket, data, user);
+}
+
 var messagesTopicName = function(client_id, email) {
 	return email + "/" + client_id + "/m";
 }
@@ -348,9 +357,6 @@ var messagesFetchThread = function(socket, data, user) {
 	model['messages'].findByGoogleTrdId(opt);
 }
 
-
-
-
 var groupsFetch = function(socket, data, user) {
 	console.log("groupsFetch()");
 	var url = 'https://www.google.com/m8/feeds/groups/default/full/batch';
@@ -435,6 +441,53 @@ var groupsCreate = function(socket, data, user) {
 	}, process.parse);
 }
 
+var contactsCreate = function(socket, data, user) {
+	console.log("groupsCreate()");
+	var url = 'https://www.google.com/m8/feeds/contacts/default/full/';
+	var headers = { 
+		"Content-type" : "application/atom+xml", 
+		"Authorization" : "Bearer " + user.access_token 
+	};
+	var fullName = data.name;
+	var firstName = fullName.split(' ').slice(0, -1).join(' ');
+	var lastName = fullName.split(' ').slice(-1).join(' ');
+	var body = templates.compile('new_contact', { name: fullName, email: data.email, firstName : firstName, lastName : lastName});
+	console.log(body);
+	var process = {
+		socket : socket,
+		emit : function(error, result) {
+			if (error != null) {
+				return process.socket.emit('contacts:create', { 
+					error : error 
+				});
+			}
+			$.each(result["entry"]["link"], function( i, v ) {
+				var rel = v['$']['rel'];
+				if(rel.match("#photo$")) {
+					var contact = {
+						id : result["entry"]["id"][0],
+						image : v['$']['href']
+					}
+					process.socket.emit('contacts:create', { contact : contact } );
+				}
+			});			
+		},
+		parse : function(e, r, body) {
+			if (e) {
+				// TODO : internal error
+				return console.log(e);
+			}
+			xml2js(body, process.emit);
+		} 
+	}
+
+	request.post(url, { 
+		headers : headers,
+		body : body
+	}, process.parse);
+}
+
+
 var unsubscribeAllTopicsToClient = function(email, client_id) {
 	if (!user_event_handlers[email] || !user_event_handlers[email].sockets) {
 		console.log("client is missing in notifications array");
@@ -466,5 +519,6 @@ module.exports = {
 	onSocketUnsubscribeChannelsListener : onSocketUnsubscribeChannelsListener,
 	onSocketChannelsSend : onSocketChannelsSend,
 	onSocketGroupsFetch : onSocketGroupsFetch,
-	onSocketGroupsCreate : onSocketGroupsCreate
+	onSocketGroupsCreate : onSocketGroupsCreate,
+	onSocketContactsCreate : onSocketContactsCreate
 };

@@ -88,9 +88,10 @@ io.sockets.on('connection', function (socket) {
 	socket.on('channels:unsubscribe', proxy(notifications.onSocketUnsubscribeChannelsListener));
 	socket.on('channels:send', proxy(notifications.onSocketChannelsSend));
 
-	// groups
+	// groups & contacts
 	socket.on('groups:fetch', proxy(notifications.onSocketGroupsFetch));
 	socket.on('groups:create', proxy(notifications.onSocketGroupsCreate));
+	socket.on('contacts:create', proxy(notifications.onSocketContactsCreate));
 
 	socket.emit('setup:ready');
 });

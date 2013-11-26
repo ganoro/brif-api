@@ -21,7 +21,8 @@ var compile = function(name, parameters) {
 }
 
 load('retrieve_groups', 'retrieve_groups.xml');
-load('new group', 'new_group.xml');
+load('new_group', 'new_group.xml');
+load('new_contact', 'new_contact.xml');
 
 module.exports = {
 	compile : compile
