@@ -3,8 +3,6 @@
   <atom:category scheme='http://schemas.google.com/g/2005#kind'
     term='http://schemas.google.com/contact/2008#contact'/>
   <gd:name>
-     <gd:givenName><%= firstName %></gd:givenName>
-     <gd:familyName><%= lastName %></gd:familyName>
      <gd:fullName><%= name %></gd:fullName>
   </gd:name>
   <gd:email rel='http://schemas.google.com/g/2005#work'

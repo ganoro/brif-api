@@ -448,11 +448,7 @@ var contactsCreate = function(socket, data, user) {
 		"Content-type" : "application/atom+xml", 
 		"Authorization" : "Bearer " + user.access_token 
 	};
-	var fullName = data.name;
-	var firstName = fullName.split(' ').slice(0, -1).join(' ');
-	var lastName = fullName.split(' ').slice(-1).join(' ');
-	var body = templates.compile('new_contact', { name: fullName, email: data.email, firstName : firstName, lastName : lastName});
-	console.log(body);
+	var body = templates.compile('new_contact', { name: data.name, email: data.email});
 	var process = {
 		socket : socket,
 		emit : function(error, result) {
