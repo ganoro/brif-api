@@ -300,7 +300,7 @@ var messagesFetchTimeline = function(socket, data, user) {
 		user_id : user.objectId,
 		success : function(messages) {
 			console.log("emitting messages");
-			process.socket.emit('messages:fetch_timeline', { data : messages });
+			socket.emit('messages:fetch_timeline', { data : messages });
 		},
 		error : function(e) {
 			// TODO : handle errors
