@@ -140,9 +140,9 @@ var onSocketMessagesMarkAs = function(socket, data, user) {
 	messagesMarkAs(socket, messages_id, unseen, user);
 }
 
-var onSocketMessagesFetchAll = function(socket, data, user) {
-	console.log("onSocketMessagesFetchAll()");
-	messagesFetchAll(socket, data, user);
+var onSocketMessagesFetchTimeline = function(socket, data, user) {
+	console.log("onSocketMessagesFetchTimeline()");
+	messagesFetchTimeline(socket, data, user);
 }
 
 var onSocketMessagesFetchThread = function(socket, data, user) {
@@ -290,51 +290,23 @@ var messagesFetch = function(socket, user_id, data) {
 }
 
 
-
 /**
  * fetch all (read + unread)
  */
-var messagesFetchAll = function(socket, data, user) {
-	console.log("messagesFetchAll()")
+var messagesFetchTimeline = function(socket, data, user) {
+	console.log("messagesFetchTimeline()")
 
-	var process = {
-		socket : socket,
-		messages : function(error, result) {
-			var google_msg_id = [];
-			if (result.feed.entry != null) {
-				for (var i = 0; i < result.feed.entry.length; i++) {
-					var entry = result.feed.entry[i].id[0];
-					var last = entry.lastIndexOf(":") + 1;
-					google_msg_id.push(entry.substring(last));
-				};
-			}
-			var opt = {
-				google_msg_id : google_msg_id,
-				user_id : user.objectId,
-				unseen_length : data.unseen_length,
-				seen_length : data.seen_length,
-				success : function(messages) {
-					console.log("emitting messages");
-					process.socket.emit('messages:fetch_all', { data : messages });
-				},
-				error : function(e) {
-					// TODO : handle errors
-				}
-			}
-			model['messages'].fetchAll(opt);
+	var opt = {
+		user_id : user.objectId,
+		success : function(messages) {
+			console.log("emitting messages");
+			process.socket.emit('messages:fetch_timeline', { data : messages });
 		},
-
-		parse : function(e, r, body) {
-			var messages = process.messages;
-			if (e) {
-				// TODO : internal error
-				return console.log(e);
-			}
-			xml2js(body, messages);
+		error : function(e) {
+			// TODO : handle errors
 		}
-	};
-	var url = 'https://mail.google.com/mail/feed/atom';
-	request.get(url, { headers : { "Authorization" : "Bearer " + user.access_token }}, process.parse);	
+	}
+	model['messages'].fetchAll(opt);
 }
 
 /**
@@ -550,7 +522,7 @@ module.exports = {
 	onSocketSubscribeMessagesListener : onSocketSubscribeMessagesListener,
 	onSocketUnsubscribeMessagesListener : onSocketUnsubscribeMessagesListener,
 	onSocketMessagesFetch : onSocketMessagesFetch,
-	onSocketMessagesFetchAll : onSocketMessagesFetchAll,
+	onSocketMessagesFetchTimeline : onSocketMessagesFetchTimeline,
 	onSocketMessagesFetchUnread : onSocketMessagesFetchUnread,
 	onSocketMessagesFetchThread : onSocketMessagesFetchThread,
 	onSocketSubscribeChannelsListener : onSocketSubscribeChannelsListener,

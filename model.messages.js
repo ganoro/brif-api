@@ -72,42 +72,51 @@ var findByGoogleTrdId = function(opt) {
 }
 
 /**
- * Fetch all messages by user id and array of unread messages 
+ * Fetch all messages by user id 
  * success(), error(), unseen_length, seen_length, google_msg_id[] required in opts
  */ 
 var fetchAll = function(opts) {
   console.log("fetchAll()");
-  console.log(opts.unseen_length, opts.seen_length, opts.google_msg_id, opts.user_id);
+  console.log(opts.user_id);
 
   // search latests messages in list
   var Messages = model.parse.Object.extend("Messages_" + opts.user_id);
   var query = new model.parse.Query(Messages);
    
-  query.limit(opts.unseen_length + opts.seen_length)
+  query.limit(40)
     .descending("sent_date");
   query.find({
     success: function(results) {
+      var recipients_ids = [];
+      var subset = [];
+
       for (var i = 0; i < results.length; i++) {
         var m = results[i];
-        var idx = $.inArray(m.get("google_msg_id"), opts.google_msg_id)
-        if (idx != -1) {
-          opts.google_msg_id.splice(idx, 1);
-          m.set("unseen", true);
-        } else {
-          m.set("unseen", false);
+        var rid = m.get("recipients_id");
+        var idx = $.inArray(rid, recipients_ids)
+
+        if (idx == -1) {
+          recipients_ids.push(rid);
+          subset.push({ 
+            'recipients_id' : rid, 
+            'recipients' : m.get("recipients"), 
+            'recipients_names' : m.get("recipients_names"), 
+            'sent_date' : m.get("sent_date")
+          });
         }
       };
-      findByGoogleMsgId({ 
-        google_msg_id : opts.google_msg_id,
-        user_id : opts.user_id,
-        success : function(unread) {
-          for (var i = unread.length - 1; i >= 0; i--) {
-            unread[i].set("unseen", true)
-          };
-          opts.success($.merge(results, unread));
-        }, 
-        error : opts.error
-      });
+      opts.success(subset);
+      // findByGoogleMsgId({ 
+      //   google_msg_id : opts.google_msg_id,
+      //   user_id : opts.user_id,
+      //   success : function(unread) {
+      //     for (var i = unread.length - 1; i >= 0; i--) {
+      //       unread[i].set("unseen", true)
+      //     };
+      //     opts.success($.merge(results, unread));
+      //   }, 
+      //   error : opts.error
+      // });
     },
 
     error: function(error) {

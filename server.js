@@ -76,7 +76,7 @@ io.sockets.on('connection', function (socket) {
 	socket.on('messages:subscribe', proxy(notifications.onSocketSubscribeMessagesListener));
 	socket.on('messages:unsubscribe', proxy(notifications.onSocketUnsubscribeMessagesListener));
 	socket.on('messages:fetch', proxy(notifications.onSocketMessagesFetch));
-	socket.on('messages:fetch_all', proxy(notifications.onSocketMessagesFetchAll));
+	socket.on('messages:fetch_timeline', proxy(notifications.onSocketMessagesFetchTimeline));
 	socket.on('messages:fetch_unread', proxy(notifications.onSocketMessagesFetchUnread));
 	socket.on('messages:fetch_thread', proxy(notifications.onSocketMessagesFetchThread));
 
