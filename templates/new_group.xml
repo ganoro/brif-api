@@ -2,8 +2,11 @@
 <entry xmlns="http://www.w3.org/2005/Atom" xmlns:batch="http://schemas.google.com/gdata/batch" xmlns:gContact="http://schemas.google.com/contact/2008" xmlns:gd="http://schemas.google.com/g/2005" >
 	<category scheme="http://schemas.google.com/g/2005#kind" term="http://schemas.google.com/contact/2008#group" />
 		<title><%= title %></title>
-		<content><%= content %></content>
+		<content><%= title %></content>
 		<gd:extendedProperty name="created_by">
 			<info>brif</info>
+		</gd:extendedProperty>
+		<gd:extendedProperty name="contacts">
+			<info><%= email %></info>
 		</gd:extendedProperty>
 </entry>

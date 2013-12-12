@@ -77,6 +77,7 @@ io.sockets.on('connection', function (socket) {
 	socket.on('messages:unsubscribe', proxy(notifications.onSocketUnsubscribeMessagesListener));
 	socket.on('messages:fetch', proxy(notifications.onSocketMessagesFetch));
 	socket.on('messages:fetch_all', proxy(notifications.onSocketMessagesFetchAll));
+	socket.on('messages:fetch_unread', proxy(notifications.onSocketMessagesFetchUnread));
 	socket.on('messages:fetch_thread', proxy(notifications.onSocketMessagesFetchThread));
 
 	// mailer
@@ -90,7 +91,6 @@ io.sockets.on('connection', function (socket) {
 
 	// groups & contacts
 	socket.on('groups:fetch', proxy(notifications.onSocketGroupsFetch));
-	socket.on('groups:create', proxy(notifications.onSocketGroupsCreate));
 	socket.on('contacts:create', proxy(notifications.onSocketContactsCreate));
 
 	socket.emit('setup:ready');

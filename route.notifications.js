@@ -150,6 +150,11 @@ var onSocketMessagesFetchThread = function(socket, data, user) {
 	messagesFetchThread(socket, data, user);
 }
 
+var onSocketMessagesFetchUnread = function(socket, data, user) {
+	console.log("onSocketMessagesFetchUnread()");
+	messagesFetchUnread(socket, data, user);
+}
+
 var onSocketMessagesFetch = function(socket, data, user) {
 	console.log("onSocketMessagesFetch");
 	if (data.per_page == null || data.page == null || data.recipients_id == null) {
@@ -182,22 +187,18 @@ var onSocketGroupsFetch = function (socket, data, user) {
 	groupsFetch(socket, data, user);
 }
 
-var onSocketGroupsCreate = function (socket, data, user) {
-	console.log("onSocketGroupsCreate");
-	if (data.title == null || data.content == null || data.recipients == null) {
-		// TODO internal error
-	}
-
-	groupsCreate(socket, data, user);
-}
-
 var onSocketContactsCreate = function (socket, data, user) {
 	console.log("onSocketContactsCreate");
 	if (data.name == null || data.email == null) {
 		// TODO internal error
 	}
 
-	contactsCreate(socket, data, user);
+	if (data.email.length == 1) {
+		contactsCreate(socket, data, user);	
+	} else {
+		groupsCreate(socket, data, user);
+	}
+	
 }
 
 var messagesTopicName = function(client_id, email) {
@@ -288,6 +289,8 @@ var messagesFetch = function(socket, user_id, data) {
 	model['messages'].findByRecipientsId(opts);
 }
 
+
+
 /**
  * fetch all (read + unread)
  */
@@ -357,6 +360,39 @@ var messagesFetchThread = function(socket, data, user) {
 	model['messages'].findByGoogleTrdId(opt);
 }
 
+/**
+ * fetch all unread messages as array
+ */
+var messagesFetchUnread = function(socket, data, user) {
+	console.log("messagesFetchUnread()")
+
+	var process = {
+		socket : socket,
+		messages : function(error, result) {
+			var google_msg_id = [];
+			if (result.feed.entry != null) {
+				for (var i = 0; i < result.feed.entry.length; i++) {
+					var entry = result.feed.entry[i].id[0];
+					var last = entry.lastIndexOf(":") + 1;
+					google_msg_id.push(entry.substring(last));
+				};
+			}
+			console.log("emitting messages");
+			process.socket.emit('messages:fetch_unread', { data : google_msg_id });
+		},
+		parse : function(e, r, body) {
+			var messages = process.messages;
+			if (e) {
+				// TODO : internal error
+				return console.log(e);
+			}
+			xml2js(body, messages);
+		}
+	};
+	var url = 'https://mail.google.com/mail/feed/atom';
+	request.get(url, { headers : { "Authorization" : "Bearer " + user.access_token }}, process.parse);	
+}
+
 var groupsFetch = function(socket, data, user) {
 	console.log("groupsFetch()");
 	var url = 'https://www.google.com/m8/feeds/groups/default/full/batch';
@@ -406,23 +442,30 @@ var groupsCreate = function(socket, data, user) {
 		"Content-type" : "application/atom+xml", 
 		"Authorization" : "Bearer " + user.access_token 
 	};
-	var body = templates.compile('new_group', { title: data.title, content: data.content });
+	var body = templates.compile('new_group', { title: data.name, email: data.email.join() });
 	var process = {
 		socket : socket,
-		resolveGroup : function(error, result) {
+		emit : function(error, result) {
 			if (error != null) {
-				return process.socket.emit('groups:create', { 
-					error : error 
+				return process.socket.emit('contacts:create', { 
+					error : error
 				});
 			}
-			groups = [];
-			// this.titles = [];
-			$.each(result["atom:feed"]["atom:entry"], function( i, v ) {
-				var id = v["atom:id"][0];
-				var title = v["atom:title"][0]["_"];
-				groups.push({ id : id, title: title });
-			});
-			process.socket.emit('groups:fetch', { groups : groups } );
+			var groups = {};
+			groups.id= result["entry"]["id"][0];
+			groups.title = result["entry"]["title"][0]['_'];
+			process.socket.emit('contacts:create', { groups : groups } );
+			var url = 'https://www.google.com/m8/feeds/contacts/default/full/batch';
+			var headers = { 
+				"Content-type" : "application/atom+xml", 
+				"Authorization" : "Bearer " + user.access_token 
+			};
+			var body = templates.compile('new_contacts', { title: data.name, emails: data.email, group_id : groups.id });
+			console.log(body); 
+			request.post(url, { 
+				headers : headers,
+				body : body
+			}, function(e,r, body) { console.log (body);  } );
 		},
 		parse : function(e, r, body) {
 			if (e) {
@@ -430,8 +473,7 @@ var groupsCreate = function(socket, data, user) {
 				return console.log(e);
 			}
 			console.log(body);
-			return;
-			xml2js(body, process.resolveGroup);
+			xml2js(body, process.emit);
 		} 
 	}
 
@@ -442,7 +484,7 @@ var groupsCreate = function(socket, data, user) {
 }
 
 var contactsCreate = function(socket, data, user) {
-	console.log("groupsCreate()");
+	console.log("contactsCreate()");
 	var url = 'https://www.google.com/m8/feeds/contacts/default/full/';
 	var headers = { 
 		"Content-type" : "application/atom+xml", 
@@ -457,16 +499,15 @@ var contactsCreate = function(socket, data, user) {
 					error : error 
 				});
 			}
+			var contact = {};
+			contact.id = result["entry"]["id"][0];
 			$.each(result["entry"]["link"], function( i, v ) {
 				var rel = v['$']['rel'];
 				if(rel.match("#photo$")) {
-					var contact = {
-						id : result["entry"]["id"][0],
-						image : v['$']['href']
-					}
-					process.socket.emit('contacts:create', { contact : contact } );
+					contact.image = v['$']['href'];
 				}
 			});			
+			process.socket.emit('contacts:create', { contact : contact } );
 		},
 		parse : function(e, r, body) {
 			if (e) {
@@ -510,11 +551,11 @@ module.exports = {
 	onSocketUnsubscribeMessagesListener : onSocketUnsubscribeMessagesListener,
 	onSocketMessagesFetch : onSocketMessagesFetch,
 	onSocketMessagesFetchAll : onSocketMessagesFetchAll,
+	onSocketMessagesFetchUnread : onSocketMessagesFetchUnread,
 	onSocketMessagesFetchThread : onSocketMessagesFetchThread,
 	onSocketSubscribeChannelsListener : onSocketSubscribeChannelsListener,
 	onSocketUnsubscribeChannelsListener : onSocketUnsubscribeChannelsListener,
 	onSocketChannelsSend : onSocketChannelsSend,
 	onSocketGroupsFetch : onSocketGroupsFetch,
-	onSocketGroupsCreate : onSocketGroupsCreate,
 	onSocketContactsCreate : onSocketContactsCreate
 };
