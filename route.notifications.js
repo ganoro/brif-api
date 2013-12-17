@@ -130,16 +130,6 @@ var onSocketUnsubscribeChannelsListener = function(socket, data, user) {
   	unsubscribeChannelListener(data.channel_id, socket.id, socket);
 }
 
-var onSocketMessagesMarkAs = function(socket, data, user) {
-	var messages_id = data.messages_id;
-	var unseen = data.unseen;
-	if (!messages_id || !unseen) {
-		// TODO internal error
-	}
-
-	messagesMarkAs(socket, messages_id, unseen, user);
-}
-
 var onSocketMessagesFetchTimeline = function(socket, data, user) {
 	console.log("onSocketMessagesFetchTimeline()");
 	messagesFetchTimeline(socket, data, user);
@@ -194,7 +184,7 @@ var onSocketContactsCreate = function (socket, data, user) {
 	}
 
 	if (data.email.length == 1) {
-		contactsCreate(socket, data, user);	
+		contactExists(socket, data, user, contactsUpdate, contactsCreate);
 	} else {
 		groupsCreate(socket, data, user);
 	}
@@ -444,7 +434,6 @@ var groupsCreate = function(socket, data, user) {
 				// TODO : internal error
 				return console.log(e);
 			}
-			console.log(body);
 			xml2js(body, process.emit);
 		} 
 	}
@@ -455,10 +444,128 @@ var groupsCreate = function(socket, data, user) {
 	}, process.parse);
 }
 
+var contactExists = function(socket, data, user, contactsUpdate, contactsCreate) {
+	console.log("contactExists()");
+
+	var url = 'https://www.google.com/m8/feeds/contacts/default/full?q=' + data.email[0] ;
+
+	console.log(user)
+	var headers = { 
+		"Gdata-version" : "3.0", 
+		"Authorization" : "Bearer " + user.access_token 
+	};
+
+	var process = {
+		socket : socket,
+		data : data,
+		user: user,
+		emit : function(error, result) {
+			if (error != null) {
+				return process.socket.emit('contacts:create', { 
+					error : error
+				});
+			}
+			if (result["feed"]["entry"]) {
+    			for (var i = result["feed"]["entry"].length - 1; i >= 0; i--) {
+    				var entry = result["feed"]["entry"][i];
+    				console.log(entry);
+    				if (entry["gd:email"] && entry["gd:email"].length > 0 && 
+    					entry["gd:email"][0]['$']["address"] == data.email[0]) {
+    					contactsUpdate(entry['$']["gd:etag"], entry["gd:email"], entry["link"], socket, data, user);
+    				}
+    			};
+    		} else {
+    			contactsCreate(socket, data, user);
+    		}
+		},
+		parse : function(error, response, body) {
+    		if (error || response.statusCode != 200) {
+				// TODO : internal error
+				return console.log(error);
+			}
+			console.log(body);
+			xml2js(body, process.emit);
+		} 
+	}
+
+	request.get(url, { 
+		headers : headers,
+		xml : true
+	}, process.parse);
+}
+
+var contactsUpdate = function(etag, emails, links, socket, data, user) {
+	console.log("contactsUpdate()");
+
+	var id = null;
+	for (var i = links.length - 1; i >= 0; i--) {
+		if (links[i]['$']["rel"] == "edit") {
+			id = links[i]['$']["href"];
+		}
+	};
+
+	if (!id) {
+		console.log("intenral error in contactsUpdate()");
+	}
+	var headers = { 
+		"Gdata-version" : "3.0", 
+		"Content-type" : "application/atom+xml", 
+		"Authorization" : "Bearer " + user.access_token 
+	};
+	var url = "https://www.google.com/m8/feeds/contacts/default/full/batch";
+
+	data.emails = pluk("gd:email", emails);
+	data.links = pluk("link", links);
+
+	var body = templates.compile('update_contact', { etag: etag, id: id, emails: data.emails, links : data.links, name: data.name, email: data.email});
+	var process = {
+		socket : socket,
+		data : data,
+		emit : function(error, result) {
+			if (error != null) {
+				return process.socket.emit('contacts:create', { 
+					error : error 
+				}); 
+			}
+			process.socket.emit('contacts:create', { data : result } );
+		},
+		parse : function(e, r, body) {
+			if (e) {
+				// TODO : internal error
+				return console.log(e);
+			}
+			xml2js(body, process.emit);
+		} 
+	}
+	request.post(url, { 
+		headers : headers,
+		body : body
+	}, process.parse);
+
+	console.log("update ", url);
+	console.log("update ", body);
+}
+
+var pluk = function(prefix, elements) {
+	var result = '';
+	$.each(elements, function(i,list) {
+		result += '<' + prefix + ' ';
+		$.each(list, function(index,value) {
+		    for (var k in value) {
+		    	var v = value[k];
+		    	result += (k + "='" + v + "' ");
+		    }
+		});
+		result += ' />';
+	});
+	return result;
+}
+
 var contactsCreate = function(socket, data, user) {
 	console.log("contactsCreate()");
 	var url = 'https://www.google.com/m8/feeds/contacts/default/full/';
 	var headers = { 
+		"Gdata-version" : "3.0", 
 		"Content-type" : "application/atom+xml", 
 		"Authorization" : "Bearer " + user.access_token 
 	};
@@ -489,13 +596,11 @@ var contactsCreate = function(socket, data, user) {
 			xml2js(body, process.emit);
 		} 
 	}
-
 	request.post(url, { 
 		headers : headers,
 		body : body
 	}, process.parse);
 }
-
 
 var unsubscribeAllTopicsToClient = function(email, client_id) {
 	if (!user_event_handlers[email] || !user_event_handlers[email].sockets) {

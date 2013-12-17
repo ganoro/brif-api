@@ -5,7 +5,8 @@
   <gd:name>
      <gd:fullName><%= name %></gd:fullName>
   </gd:name>
+  <atom:content type='text'>Notes</atom:content>
   <gd:email rel='http://schemas.google.com/g/2005#work'
     primary='true'
     address='<%= email %>' displayName='<%= name %>'/>
-</atom:entry>
+</atom:entry> 
