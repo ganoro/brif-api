@@ -106,17 +106,6 @@ var fetchAll = function(opts) {
         }
       };
       opts.success(subset);
-      // findByGoogleMsgId({ 
-      //   google_msg_id : opts.google_msg_id,
-      //   user_id : opts.user_id,
-      //   success : function(unread) {
-      //     for (var i = unread.length - 1; i >= 0; i--) {
-      //       unread[i].set("unseen", true)
-      //     };
-      //     opts.success($.merge(results, unread));
-      //   }, 
-      //   error : opts.error
-      // });
     },
 
     error: function(error) {

@@ -340,7 +340,20 @@ var messagesFetchUnread = function(socket, data, user) {
 				};
 			}
 			console.log("emitting messages");
-			process.socket.emit('messages:fetch_unread', { data : google_msg_id });
+
+			model['messages'].findByGoogleMsgId({ 
+				google_msg_id : google_msg_id,
+				user_id : user.objectId,
+				success : function(unread) {
+				  for (var i = unread.length - 1; i >= 0; i--) {
+				    unread[i].set("unseen", true)
+				  };
+				  process.socket.emit('messages:fetch_unread', { data : unread });
+				}, 
+				error : function(e) {
+					process.socket.emit('messages:fetch_unread', { error : e });
+				}
+			});
 		},
 		parse : function(e, r, body) {
 			var messages = process.messages;
