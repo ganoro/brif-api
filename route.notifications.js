@@ -527,7 +527,7 @@ var contactsUpdate = function(etag, emails, links, socket, data, user) {
 					error : error 
 				}); 
 			}
-			process.socket.emit('contacts:create', { data : result } );
+			process.socket.emit('contacts:create', { data : result.feed.entry } );
 		},
 		parse : function(e, r, body) {
 			if (e) {
@@ -578,7 +578,7 @@ var contactsCreate = function(socket, data, user) {
 					error : error 
 				});
 			}
-			process.socket.emit('contacts:create', { data : result } );
+			process.socket.emit('contacts:create', { data : result.feed.entry } );
 		},
 		parse : function(e, r, body) {
 			if (e) {
