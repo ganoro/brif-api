@@ -578,15 +578,7 @@ var contactsCreate = function(socket, data, user) {
 					error : error 
 				});
 			}
-			var contact = {};
-			contact.id = result["entry"]["id"][0];
-			$.each(result["entry"]["link"], function( i, v ) {
-				var rel = v['$']['rel'];
-				if(rel.match("#photo$")) {
-					contact.image = v['$']['href'];
-				}
-			});			
-			process.socket.emit('contacts:create', { contact : contact } );
+			process.socket.emit('contacts:create', { data : result } );
 		},
 		parse : function(e, r, body) {
 			if (e) {
