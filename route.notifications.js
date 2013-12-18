@@ -448,8 +448,6 @@ var contactExists = function(socket, data, user, contactsUpdate, contactsCreate)
 	console.log("contactExists()");
 
 	var url = 'https://www.google.com/m8/feeds/contacts/default/full?q=' + data.email[0] ;
-
-	console.log(user)
 	var headers = { 
 		"Gdata-version" : "3.0", 
 		"Authorization" : "Bearer " + user.access_token 
