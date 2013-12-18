@@ -468,7 +468,6 @@ var contactExists = function(socket, data, user, contactsUpdate, contactsCreate)
 			if (result["feed"]["entry"]) {
     			for (var i = result["feed"]["entry"].length - 1; i >= 0; i--) {
     				var entry = result["feed"]["entry"][i];
-    				console.log(entry);
     				if (entry["gd:email"] && entry["gd:email"].length > 0 && 
     					entry["gd:email"][0]['$']["address"] == data.email[0]) {
     					contactsUpdate(entry['$']["gd:etag"], entry["gd:email"], entry["link"], socket, data, user);
@@ -483,7 +482,6 @@ var contactExists = function(socket, data, user, contactsUpdate, contactsCreate)
 				// TODO : internal error
 				return console.log(error);
 			}
-			console.log(body);
 			xml2js(body, process.emit);
 		} 
 	}
