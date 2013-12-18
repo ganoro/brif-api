@@ -345,10 +345,14 @@ var messagesFetchUnread = function(socket, data, user) {
 				google_msg_id : google_msg_id,
 				user_id : user.objectId,
 				success : function(unread) {
-				  for (var i = unread.length - 1; i >= 0; i--) {
-				    unread[i].set("unseen", true)
-				  };
-				  process.socket.emit('messages:fetch_unread', { data : unread });
+					result = [];
+				  	for (var i = unread.length - 1; i >= 0; i--) {
+				    	result.push( { 
+				    		recipients_id : unread[i].get("recipients_id"), 
+				    		message_id : unread[i].get("message_id") 
+				    	}); 
+				  	};
+				  	process.socket.emit('messages:fetch_unread', { data : result });
 				}, 
 				error : function(e) {
 					process.socket.emit('messages:fetch_unread', { error : e });
