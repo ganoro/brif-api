@@ -67,6 +67,7 @@ io.sockets.on('connection', function (socket) {
 
 	var notifications = require('./route.notifications.js');
 	var mailer = require('./route.mailer.js');
+	var crm = require('./route.crm.js');
 
 	// setup
 	socket.on('setup', proxy(notifications.onSocketSetup));
@@ -90,8 +91,8 @@ io.sockets.on('connection', function (socket) {
 	socket.on('channels:send', proxy(notifications.onSocketChannelsSend));
 
 	// groups & contacts
-	socket.on('groups:fetch', proxy(notifications.onSocketGroupsFetch));
-	socket.on('contacts:create', proxy(notifications.onSocketContactsCreate));
+	socket.on('groups:fetch', proxy(crm.onSocketGroupsFetch));
+	socket.on('contacts:create', proxy(crm.onSocketContactsCreate));
 
 	socket.emit('setup:ready');
 });
