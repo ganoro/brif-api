@@ -2,13 +2,11 @@
 <feed xmlns="http://www.w3.org/2005/Atom" xmlns:batch="http://schemas.google.com/gdata/batch" xmlns:gContact="http://schemas.google.com/contact/2008" xmlns:gd="http://schemas.google.com/g/2005">
 
 <% _.each(groups, function(id) { %> 
-
 	<entry>
 		<batch:id>retrieve</batch:id>
 		<batch:operation type="query" /> 
 		<id><%= id %></id>
 	</entry>
-
 <% }); %> 
 
 </feed>

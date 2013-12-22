@@ -91,7 +91,6 @@ io.sockets.on('connection', function (socket) {
 	socket.on('channels:send', proxy(notifications.onSocketChannelsSend));
 
 	// groups & contacts
-	socket.on('groups:fetch', proxy(crm.onSocketGroupsFetch));
 	socket.on('contacts:create', proxy(crm.onSocketContactsCreate));
 
 	socket.emit('setup:ready');

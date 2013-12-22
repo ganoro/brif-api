@@ -23,8 +23,7 @@ var compile = function(name, parameters) {
 load('retrieve_groups', 'retrieve_groups.xml');
 load('new_group', 'new_group.xml');
 load('new_contact', 'new_contact.xml');
-load('update_contact', 'update_contact.xml');
-load('new_contacts', 'new_contacts.xml');
+load('batch', 'batch.xml');
 
 module.exports = {
 	compile : compile
