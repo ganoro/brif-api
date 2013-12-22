@@ -8,7 +8,6 @@ var $ = require('jquery').create();
  */ 
 var findByRecipientsId = function(opts) {
 	console.log("findByRecipientsId()");
-  console.log(opts.recipients_id);
   console.log(opts.user_id);
 
   var Messages = model.parse.Object.extend("Messages" + "_" + opts.user_id);
@@ -17,6 +16,10 @@ var findByRecipientsId = function(opts) {
     .descending("sent_date")
     .limit(opts.per_page)
     .skip(opts.page*opts.per_page);
+
+  if (opts.only_attachments) {
+    query.exists("attachments");
+  }
 
 	query.find(opts);
 }
