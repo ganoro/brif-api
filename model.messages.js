@@ -90,7 +90,7 @@ var fetchAll = function(opts) {
       var recipients_ids = [];
       var subset = [];
 
-      for (var i = 0; i < results.length; i++) {
+      for (var i = 0; i < results.length && subset.length < 12; i++) {
         var m = results[i];
         var rid = m.get("recipients_id");
         var idx = $.inArray(rid, recipients_ids)
