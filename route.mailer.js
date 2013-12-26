@@ -46,32 +46,15 @@ var onSocketMessagesMarkAs = function(socket, data, user) {
 
 var onSocketMessagesUnread = function(socket, data, user) {
 	console.log("onSocketMessagesUnread()");
-	var user_opts = userUnreadOpts(data, user.objectId, socket);
-	model['users'].getUserDetails(user_opts);
-}
-
-/**
- * prepare mail options to the unread procedure
- */
-var userUnreadOpts = function(data, object_id, socket) {
-	console.log(data);
-	return {
-		object_id: object_id,
-		success: function(user) {
-			var mailOptions = {
-			    email: user.get("email"), 
-			    page : data.page,
-			    per_page : data.per_page,
-			    callback : getUnread,
-			    socket : socket
-			}
-			executeMailOptions(user, mailOptions);
-		},
-		error: function(error) {
-			console.log("error in userUnreadOpts()");
-			console.log(error);
+	var mailOptions = {
+		email: user.email, 
+		callback : getUnread,
+		emit : function(results) {
+			// console.log(results);
+			socket.emit('messages:fetch_unread_imap', { data : results});
 		}
-	};
+	}
+	executeMailOptions(user, mailOptions);
 }
 
 /**
@@ -134,24 +117,40 @@ var markAs = function(connection, mailOptions) {
 }
 
 var getUnread = function(connection, mailOptions) {
-	connection.openBox('[Gmail]/All Mail', false, function(err, box) {
+	console.log("getUnread()");
+	connection.openBox('INBOX', false, function(err, box) {
 		if (err) return;
 		connection.search([ 'UNSEEN'], function(err, results) {
-    		var data;
-    		if (err || results == null) {
-    			fata = [];
-    		} else {
-	    		// data = results.slice(mailOptions.page*mailOptions.per_page, mailOptions.per_page)
-	    		data = results.slice(-3, -1)
-    			console.log(data);
-    		}
-    		var opts = {
-    			success: function(d) {
-    				console.log(d);
-	    			mailOptions.socket.emit('messages:unread', d);
-    			}
-    		}
-    		model['messages'].findById(data, opts);
+			if (err) return;
+		    var f = connection.fetch(results, { 
+				bodies: 'HEADER.FIELDS (FROM TO)',
+		    });
+		    var data = {};
+			f.on('message', function(msg, seqno) {
+				data[seqno] = {};
+				msg.on('body', function(stream, info) {
+					var buffer = '';
+					stream.on('data', function(chunk) {
+						buffer += chunk.toString('utf8');
+					});
+					stream.once('end', function() {
+						data[seqno]['h'] = imap.parseHeader(buffer);
+						// console.log("end: ", imap.parseHeader(buffer))
+					});
+				});
+				msg.once('attributes', function(attrs) {
+					data[seqno]['a'] = attrs["x-gm-msgid"];
+					// console.log("attr", attrs);
+				});
+			});
+			f.once('error', function(err) {
+				console.log('Fetch error: ' + err);
+			});
+			f.once('end', function() {
+				mailOptions.emit(data);
+				console.log('Done fetching all messages!');
+				connection.end();
+			});
       	});
 	});	
 }
@@ -201,5 +200,6 @@ var messagesSend = function(user, mailOptions) {
 
 module.exports = {
 	onSocketMessagesSend : onSocketMessagesSend,
+	onSocketMessagesUnread :onSocketMessagesUnread,
 	onSocketMessagesMarkAs : onSocketMessagesMarkAs
 };

@@ -80,6 +80,8 @@ io.sockets.on('connection', function (socket) {
 	socket.on('messages:fetch_timeline', proxy(notifications.onSocketMessagesFetchTimeline));
 	socket.on('messages:fetch_unread', proxy(notifications.onSocketMessagesFetchUnread));
 	socket.on('messages:fetch_thread', proxy(notifications.onSocketMessagesFetchThread));
+	socket.on('messages:fetch_unread_imap', proxy(mailer.onSocketMessagesUnread));
+
 
 	// mailer
 	socket.on('messages:send', proxy(mailer.onSocketMessagesSend));
