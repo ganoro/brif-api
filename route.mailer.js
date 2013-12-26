@@ -74,8 +74,8 @@ var connect = function(token, user, mailOptions) {
 		host: 'imap.gmail.com',
 		port: 993,
 		secure : true,
-		keepalive : false,
-		debug : console.log 
+		// debug : console.log, 
+		keepalive : false
 	});
 	connection.on('ready', function() {
 		console.log('ready');
