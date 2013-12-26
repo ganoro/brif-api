@@ -279,6 +279,8 @@ var groupCreate = function(data, headers, successCallback, errorCallback) {
 var contactExists = function(headers, email, existsCallback, missingCallback, errorCallback) {
 	console.log("contactExists()");
 
+	email = email.toLowerCase();
+
 	var url = 'https://www.google.com/m8/feeds/contacts/default/full?q=' + email;
 	var process = {
 		existsCallback : existsCallback,
@@ -292,7 +294,7 @@ var contactExists = function(headers, email, existsCallback, missingCallback, er
     			for (var i = result["feed"]["entry"].length - 1; i >= 0; i--) {
     				var entry = result["feed"]["entry"][i];
     				// console.log(JSON.stringify(entry["gd:email"]));
-    				if (entry["gd:email"] && entry["gd:email"].length > 0 && entry["gd:email"][0]['$']["address"] == email) {
+    				if (entry["gd:email"] && entry["gd:email"].length > 0 && entry["gd:email"][0]['$']["address"].toLowerCase() == email) {
     					existsCallback(entry);
     				}
     			};
@@ -304,6 +306,8 @@ var contactExists = function(headers, email, existsCallback, missingCallback, er
     		if (error || response.statusCode != 200) {
 				return errorCallback(error);
 			}
+			console.log(body);
+
 			xml2js(body, process.emit);
 		} 
 	}
