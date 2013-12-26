@@ -123,7 +123,7 @@ var getUnread = function(connection, mailOptions) {
 		connection.search([ 'UNSEEN'], function(err, results) {
 			if (err) return;
 		    var f = connection.fetch(results, { 
-				bodies: 'HEADER.FIELDS (FROM TO)',
+				bodies: 'HEADER.FIELDS (FROM TO CC)',
 		    });
 		    var data = {};
 			f.on('message', function(msg, seqno) {
