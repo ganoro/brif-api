@@ -293,14 +293,12 @@ var contactExists = function(headers, email, existsCallback, missingCallback, er
 			if (result["feed"]["entry"]) {
     			for (var i = result["feed"]["entry"].length - 1; i >= 0; i--) {
     				var entry = result["feed"]["entry"][i];
-    				// console.log(JSON.stringify(entry["gd:email"]));
     				if (entry["gd:email"] && entry["gd:email"].length > 0 && entry["gd:email"][0]['$']["address"].toLowerCase() == email) {
-    					existsCallback(entry);
+    					return existsCallback(entry);
     				}
     			};
-    		} else {
-    			missingCallback();
-    		}
+    		} 
+    		return missingCallback();
 		},
 		parse : function(error, response, body) {
     		if (error || response.statusCode != 200) {
