@@ -122,6 +122,9 @@ var getUnread = function(connection, mailOptions) {
 		if (err) return;
 		connection.search([ 'UNSEEN'], function(err, results) {
 			if (err) return;
+			if (results == null || results.length ==0) {
+				return mailOptions.emit(results);
+			}
 		    var f = connection.fetch(results, { 
 				bodies: 'HEADER.FIELDS (FROM TO CC)',
 		    });
