@@ -8,7 +8,7 @@ var $ = require('jquery').create();
  */ 
 var findByRecipientsId = function(opts) {
 	console.log("findByRecipientsId()");
-  console.log(opts.user_id);
+  console.log("recipients ", opts.recipients_id);
 
   var Messages = model.parse.Object.extend("Messages" + "_" + opts.user_id);
   var query = new model.parse.Query(Messages);

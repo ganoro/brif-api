@@ -248,7 +248,10 @@ var messagesFetch = function(socket, user_id, data) {
 		success : function(data) {
 			console.log('messages:fetch:' + opts.recipients_id);
 			socket.emit('messages:fetch:' + opts.recipients_id , { data : data });
-		}
+		},
+	    error: function() {
+	    	socket.emit('messages:fetch:' + opts.recipients_id , { error : "error fetching messages" });	
+	    }
 	};
 	model['messages'].findByRecipientsId(opts);
 }
