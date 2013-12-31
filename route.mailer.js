@@ -130,7 +130,7 @@ var getUnread = function(connection, mailOptions) {
 				return mailOptions.emit(results);
 			}
 		    var f = connection.fetch(results, { 
-				bodies: 'HEADER.FIELDS (FROM TO CC)',
+				bodies: 'HEADER.FIELDS (FROM TO CC DATE)',
 		    });
 		    var data = {};
 			f.on('message', function(msg, seqno) {
