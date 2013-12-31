@@ -15,6 +15,9 @@ var load = function(name, filename) {
 	});
 }
 
+console.log("* Starting service " + new Date());
+
+
 var compile = function(name, parameters) {
 	var text = templates[name];
 	return _.template(text, parameters);
