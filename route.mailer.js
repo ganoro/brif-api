@@ -104,6 +104,9 @@ var markAs = function(connection, mailOptions) {
 		for (var i = mailOptions.messages_id.length - 1; i >= 0 ; i--) {
 			var uid = mailOptions.messages_id[i];
 			console.log(uid);
+			if (uid == null) {
+				return endConnection();
+			}
 			var ec = (i == 0 ? endConnection : undefined);
 			if (mailOptions.seen) {
 				connection.addFlags(uid, '\\Seen');
