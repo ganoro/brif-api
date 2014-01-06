@@ -40,9 +40,11 @@ app.post('/notifications/trigger', routes['notifications'].notify);
 
 /* UPLOAD TBD*/
 app.post('/attachments/upload', function(req, res) {
+	console.log(req);
 	res.send("{ key : '43b45a86547465e3f4' }"); // TODO send before execute?
 }); 
 app.post('/attachments/remove', function(req, res) {
+	console.log(req);
 	res.send("{ key : '43b45a86547465e3f4' }"); // TODO send before execute?
 }); 
 
