@@ -42,6 +42,10 @@ app.post('/notifications/trigger', routes['notifications'].notify);
 app.post('/attachments/upload', function(req, res) {
 	res.send("{ key : '43b45a86547465e3f4' }"); // TODO send before execute?
 }); 
+app.post('/attachments/remove', function(req, res) {
+	res.send("{ key : '43b45a86547465e3f4' }"); // TODO send before execute?
+}); 
+
 
 /**
  * error handling
