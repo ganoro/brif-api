@@ -41,22 +41,22 @@ app.post('/notifications/trigger', routes['notifications'].notify);
 // TBD Upload, very generic
 app.post('/attachments/upload', function(req, res) {
 	console.log('/attachments/upload');
-	var attachments = [];
-	if (req.files != null && req.files.attachments != null) {
-		console.log("files ", req.files.attachments.length);
-		$.each(req.files.attachments, function(i, v) {
+	var attachment = [];
+	if (req.files != null && req.files.attachment != null) {
+		console.log("files ", req.files.attachment.length);
+		$.each(req.files.attachment, function(i, v) {
 			var o = {
 				key: v.path.substring(5),
 				fileName : v.name,
 				filePath : v.path,
 				contentType : v.type
 			}
-			attachments.push(o);
+			attachment.push(o);
 		})
 	} else {
 		console.log(req);
 	}
-	res.send(JSON.stringify({ data : attachments }));
+	res.send(JSON.stringify({ data : attachment }));
 }); 
 app.post('/attachments/remove', function(req, res) {
 	console.log(req);
