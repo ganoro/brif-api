@@ -2,6 +2,7 @@ var nodemailer = require("nodemailer");
 var config = require('./config.js');
 var imap = require('imap');
 var xoauth2 = require("xoauth2");
+var fs = require('fs');
 
 var model = {};
 model['users'] = require('./model.users.js');
@@ -26,6 +27,10 @@ var onSocketMessagesSend = function(socket, data, user) {
 		subject: subject, // Subject line
 		text: text, // plaintext body
 		html: html + signature // html body
+	}
+	console.log(data.attachments);
+	if (data.attachments) {
+		mailOptions.attachments = data.attachments;
 	}
 	messagesSend(user, mailOptions);
 }
@@ -179,7 +184,6 @@ var messagesSend = function(user, mailOptions) {
 		refreshToken: user.refresh_token,
 		accessToken: user.access_token
 	};
-	console.log(oauth);
 
 	// create reusable transport method (opens pool of SMTP connections)
 	var smtpTransport = nodemailer.createTransport("SMTP",{
@@ -194,10 +198,14 @@ var messagesSend = function(user, mailOptions) {
 	    if (error) {
 	        console.log(error);
 	    } else {
-	        console.log(response);
 	        console.log("Message sent: " + response.message);
-	        console.log(response.message); // response from the server
         	console.log(response.messageId); // Message-ID value used
+	    }
+
+	    if (mailOptions.attachments) {
+	    	for (var i = mailOptions.attachments.length - 1; i >= 0; i--) {
+	    		fs.unlink(mailOptions.attachments[i].filePath);
+	    	};
 	    }
 
 	    // if you don't want to use this transport object anymore, uncomment following line

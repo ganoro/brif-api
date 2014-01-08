@@ -38,16 +38,26 @@ app.post('/auth/mobile-signin'   , routes['auth'].mobile_signin);
 app.post('/auth/refresh-token'   , routes['auth'].refresh_token);
 app.post('/notifications/trigger', routes['notifications'].notify); 
 
-/* UPLOAD TBD*/
+// TBD Upload, very generic
 app.post('/attachments/upload', function(req, res) {
-	console.log(req);
-	res.send("{ key : '43b45a86547465e3f4' }"); // TODO send before execute?
+	var attachments = [];
+	if (req.files != null && req.files.attachments != null) {
+		$.each(req.files.attachments, function(i, v) {
+			var o = {
+				key: v.path.substring(5),
+				fileName : v.name,
+				filePath : v.path,
+				contentType : v.type
+			}
+			attachments.push(o);
+		})
+	}
+	res.send(JSON.stringify({ data : attachments }));
 }); 
 app.post('/attachments/remove', function(req, res) {
 	console.log(req);
 	res.send("{ key : '43b45a86547465e3f4' }"); // TODO send before execute?
 }); 
-
 
 /**
  * error handling
@@ -92,7 +102,6 @@ io.sockets.on('connection', function (socket) {
 	socket.on('messages:fetch_unread', proxy(notifications.onSocketMessagesFetchUnread));
 	socket.on('messages:fetch_thread', proxy(notifications.onSocketMessagesFetchThread));
 	socket.on('messages:fetch_unread_imap', proxy(mailer.onSocketMessagesUnread));
-
 
 	// mailer
 	socket.on('messages:send', proxy(mailer.onSocketMessagesSend));
