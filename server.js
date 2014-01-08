@@ -43,8 +43,9 @@ app.post('/attachments/upload', function(req, res) {
 	console.log('/attachments/upload');
 	var attachment = [];
 	if (req.files != null && req.files.attachment != null) {
-		console.log("files ", req.files.attachment.length);
+		console.log(req.files.attachment);
 		$.each(req.files.attachment, function(i, v) {
+			console.log(v);
 			var o = {
 				key: v.path.substring(5),
 				fileName : v.name,
