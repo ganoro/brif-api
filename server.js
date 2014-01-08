@@ -40,8 +40,10 @@ app.post('/notifications/trigger', routes['notifications'].notify);
 
 // TBD Upload, very generic
 app.post('/attachments/upload', function(req, res) {
+	console.log('/attachments/upload');
 	var attachments = [];
 	if (req.files != null && req.files.attachments != null) {
+		console.log("files ", req.files.attachments.length);
 		$.each(req.files.attachments, function(i, v) {
 			var o = {
 				key: v.path.substring(5),
@@ -51,6 +53,8 @@ app.post('/attachments/upload', function(req, res) {
 			}
 			attachments.push(o);
 		})
+	} else {
+		console.log(req);
 	}
 	res.send(JSON.stringify({ data : attachments }));
 }); 
