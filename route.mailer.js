@@ -62,6 +62,21 @@ var onSocketMessagesUnread = function(socket, data, user) {
 	executeMailOptions(user, mailOptions);
 }
 
+var onSocketMessagesSearch = function(socket, data, user) {
+	console.log("onSocketMessagesSearch()");
+	console.log(data.raw_text);
+	var mailOptions = {
+		email: user.email, 
+		raw_text : data.raw_text,
+		callback : getSearch,
+		emit : function(results) {
+			console.log(results);
+			socket.emit('messages:search', { data : results});
+		}
+	}
+	executeMailOptions(user, mailOptions);
+}
+
 /**
  * sends the message with the provided mail options 
  */
@@ -79,7 +94,7 @@ var connect = function(token, user, mailOptions) {
 		host: 'imap.gmail.com',
 		port: 993,
 		secure : true,
-		// debug : console.log, 
+		debug : console.log, 
 		keepalive : false
 	});
 	connection.on('ready', function() {
@@ -213,8 +228,59 @@ var messagesSend = function(user, mailOptions) {
 	});
 }
 
+var getSearch = function(connection, mailOptions) {
+	console.log("getSearch()");
+	console.log(mailOptions.raw_text);
+
+	connection.openBox('INBOX', false, function(err, box) {
+		if (err) return;
+		connection.search([[ 'X-GM-RAW', mailOptions.raw_text]] , function(err, results) {
+			if (err) return;
+			if (results == null || results.length ==0) {
+				connection.end();				
+				return mailOptions.emit(results);
+			}
+			
+			console.log(results);
+
+			results = results.length < 6 ? results : results.slice(-5);
+
+		    var f = connection.fetch(results, { 
+				bodies: 'HEADER.FIELDS (FROM TO CC DATE)',
+		    });
+		    var data = {};
+			f.on('message', function(msg, seqno) {
+				data[seqno] = {};
+				msg.on('body', function(stream, info) {
+					var buffer = '';
+					stream.on('data', function(chunk) {
+						buffer += chunk.toString('utf8');
+					});
+					stream.once('end', function() {
+						data[seqno]['h'] = imap.parseHeader(buffer);
+						// console.log("end: ", imap.parseHeader(buffer))
+					});
+				});
+				msg.once('attributes', function(attrs) {
+					data[seqno]['a'] = attrs["x-gm-msgid"];
+					// console.log("attr", attrs);
+				});
+			});
+			f.once('error', function(err) {
+				console.log('Fetch error: ' + err);
+			});
+			f.once('end', function() {
+				mailOptions.emit(data);
+				console.log('Done fetching all messages!');
+				connection.end();
+			});
+      	});
+	});	
+}
+
 module.exports = {
 	onSocketMessagesSend : onSocketMessagesSend,
 	onSocketMessagesUnread :onSocketMessagesUnread,
+	onSocketMessagesSearch :onSocketMessagesSearch,
 	onSocketMessagesMarkAs : onSocketMessagesMarkAs
 };

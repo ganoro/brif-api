@@ -41,22 +41,15 @@ app.post('/notifications/trigger', routes['notifications'].notify);
 // TBD Upload, very generic
 app.post('/attachments/upload', function(req, res) {
 	console.log('/attachments/upload');
-	var attachment = [];
-	if (req.files != null && req.files.attachment != null) {
-		var atts = req.files.attachment;
-		if (toString.call(req.files.attachment) !== "[object Array]") {
-			atts = [ req.files.attachment ];
+	var attachment = null;
+	if (req.files != null && req.files.attachment != null && toString.call(req.files.attachment) !== "[object Array]") {
+		var a = req.files.attachment;
+		var attachment = {
+			key: a.path.substring(5),
+			fileName : a.name,
+			filePath : a.path,
+			contentType : a.type
 		}
-		$.each(atts, function(i, v) {
-			console.log(v);
-			var o = {
-				key: v.path.substring(5),
-				fileName : v.name,
-				filePath : v.path,
-				contentType : v.type
-			}
-			attachment.push(o);
-		})
 	} else {
 		console.log(req);
 	}
@@ -114,6 +107,7 @@ io.sockets.on('connection', function (socket) {
 	// mailer
 	socket.on('messages:send', proxy(mailer.onSocketMessagesSend));
 	socket.on('messages:markas', proxy(mailer.onSocketMessagesMarkAs));
+	socket.on('messages:search', proxy(mailer.onSocketMessagesSearch));
 
 	// channels
 	socket.on('channels:subscribe', proxy(notifications.onSocketSubscribeChannelsListener));
