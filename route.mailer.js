@@ -64,13 +64,11 @@ var onSocketMessagesUnread = function(socket, data, user) {
 
 var onSocketMessagesSearch = function(socket, data, user) {
 	console.log("onSocketMessagesSearch()");
-	console.log(data.raw_text);
 	var mailOptions = {
 		email: user.email, 
 		raw_text : data.raw_text,
 		callback : getSearch,
 		emit : function(results) {
-			console.log(results);
 			socket.emit('messages:search', { data : results});
 		}
 	}
@@ -230,7 +228,6 @@ var messagesSend = function(user, mailOptions) {
 
 var getSearch = function(connection, mailOptions) {
 	console.log("getSearch()");
-	console.log(mailOptions.raw_text);
 
 	connection.openBox('INBOX', false, function(err, box) {
 		if (err) return;
@@ -240,10 +237,8 @@ var getSearch = function(connection, mailOptions) {
 				connection.end();				
 				return mailOptions.emit(results);
 			}
-			
-			console.log(results);
-
-			results = results.length < 6 ? results : results.slice(-5);
+			var l = results.length;
+			results = results.slice(- 5);
 
 		    var f = connection.fetch(results, { 
 				bodies: 'HEADER.FIELDS (FROM TO CC DATE)',

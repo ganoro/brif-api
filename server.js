@@ -53,7 +53,7 @@ app.post('/attachments/upload', function(req, res) {
 	} else {
 		console.log(req);
 	}
-	res.send(JSON.stringify({ data : attachment }));
+	res.send({ data : attachment });
 }); 
 app.post('/attachments/remove', function(req, res) {
 	console.log(req);
