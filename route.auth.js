@@ -10,7 +10,7 @@ model['users'] = require('./model.users.js');
  * Sign in route
  */
 exports.signin = function(req, res){
-	console.log(res);
+	console.log(req);
 
 	// error handling
 	var error = req.query.error;
@@ -43,6 +43,7 @@ exports.signin = function(req, res){
 	    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
 	    form : form
 	}, function(e, r, body) {
+		console.log(body);
 		var data = JSON.parse(body);
 		if (data.access_token != null && data.expires_in != null && data.refresh_token != null) {
 			sendPostMessage(res, 'accept');
