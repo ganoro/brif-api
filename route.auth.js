@@ -53,11 +53,12 @@ exports.signin = function(req, res){
 			 */
 			var refresh_token = data.refresh_token;
 			var form = {
-				refresh_token : refresh_token,
+				code: code, 
 				client_id : google_config.client_id,
 				client_secret : google_config.client_secret,
-				grant_type : 'refresh_token',
-			};
+				redirect_uri : google_config.redirect_uris[0],
+				grant_type : 'authorization_code'
+		    };
 			var success = function(e, r, body) {
 				sendPostMessage(res, 'accept');
 				data.origin = origin;
