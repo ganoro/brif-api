@@ -10,9 +10,7 @@ model['users'] = require('./model.users.js');
  * Sign in route
  */
 exports.signin = function(req, res){
-
-	console.log(req);
-	console.log(req.query.code);
+	console.log(res);
 
 	// error handling
 	var error = req.query.error;
