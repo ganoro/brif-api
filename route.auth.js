@@ -48,29 +48,9 @@ exports.signin = function(req, res){
 		console.log("body", body);
 		var data = JSON.parse(body);
 		if (data.access_token != null && data.expires_in != null && data.refresh_token != null) {
-			/**
-			 * refresh due to a bug
-			 */
-			var refresh_token = data.refresh_token;
-			var form = {
-				code: code, 
-				client_id : google_config.client_id,
-				client_secret : google_config.client_secret,
-				redirect_uri : google_config.redirect_uris[0],
-				grant_type : 'authorization_code'
-		    };
-			var success = function(e, r, body) {
-				sendPostMessage(res, 'accept');
-				data.origin = origin;
-				processSignup(data);
-			};
-			success.bind(this);
-			request({
-			    method: 'POST', 
-			    uri: 'https://accounts.google.com/o/oauth2/token',
-			    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-			    form : form
-			}, success);
+			sendPostMessage(res, 'accept');
+			data.origin = origin;
+			processSignup(data);
 		} else {
 			sendPostMessage(res, 'google_error' +  data.error);
 		}
