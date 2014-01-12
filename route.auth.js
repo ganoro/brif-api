@@ -15,6 +15,7 @@ exports.signin = function(req, res){
 	// error handling
 	var error = req.query.error;
 	if (error != null) {
+		console.log("error", error);
 		sendPostMessage(res, 'cancel')
 		return;
 	} 
@@ -23,6 +24,7 @@ exports.signin = function(req, res){
   	var code = req.query.code;
   	var origin = req.query.state;
   	if (code == null || origin == null) {
+		console.log("query", req.query);
 		// TODO internal error 404?
 		sendPostMessage(res, 'internal_error')
   		return; 
@@ -43,11 +45,10 @@ exports.signin = function(req, res){
 	    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
 	    form : form
 	}, function(e, r, body) {
-		console.log(body);
+		console.log("body", body);
 		var data = JSON.parse(body);
 		if (data.access_token != null && data.expires_in != null && data.refresh_token != null) {
 			sendPostMessage(res, 'accept');
-			console.log(body);
 			data.origin = origin;
 			processSignup(data);
 		} else {
