@@ -30,7 +30,6 @@ exports.signin = function(req, res){
   		return; 
   	}
 
-
   	// exchange code for (a refreshable) token
   	var google_config = eval("config.google_config_" + origin);
   	console.log(JSON.stringify(google_config))
