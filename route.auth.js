@@ -66,19 +66,11 @@ exports.signin = function(req, res){
 exports.signin_plus = function(req, res){
 	console.log("signin_plus()");
 
-	// error handling
-	var error = req.query.error;
-	if (error != null) {
-		console.log("error", error);
-		sendPostMessage(res, 'cancel')
-		return;
-	} 
-
   	// validation check
-  	var code = req.query.code;
-  	var origin = req.query.state;
+  	var code = req.body.code;
+  	var origin = req.body.state;
   	if (code == null || origin == null) {
-		console.log("query", req.query);
+		console.log("query", req.body);
 		// TODO internal error 404?
 		sendPostMessage(res, 'internal_error')
   		return; 
