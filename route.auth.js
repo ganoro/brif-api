@@ -34,12 +34,13 @@ exports.signin = function(req, res){
   	// exchange code for (a refreshable) token
   	var google_config = eval("config.google_config_" + origin);
   	console.log(JSON.stringify(google_config))
-  	
+
   	var form = {
 		code: code, 
 		client_id : google_config.client_id,
 		client_secret : google_config.client_secret,
-		redirect_uri : google_config.redirect_uris[0],
+		// redirect_uri : google_config.redirect_uris[0],
+		redirect_uri : 'postmessage',
 		grant_type : 'authorization_code'
     };
   	request({
