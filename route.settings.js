@@ -25,8 +25,8 @@ var settingsSet = function(socket, data, user) {
 var settingsGet = function(socket, data, user) {
 	model.findByKey(user.objectId, data.key, {
 		success : function(r) {
-			var value = r ? r.get("value") : null;
-			socket.emit('settings:get', {data : {key : data.key, value : value}});		
+			var v = r ? r.get("value") : data.default ? data.default : null;
+			socket.emit('settings:get', {data : {key : data.key, value : v}});		
 		},
 		error : function(r, e) {
 			socket.emit('settings:get', {error : e });
