@@ -7,60 +7,6 @@ var model = {};
 model['users'] = require('./model.users.js');
 
 /**
- * Sign in route
- */
-exports.signin = function(req, res){
-	console.log("signin()");
-
-	// error handling
-	var error = req.query.error;
-	if (error != null) {
-		console.log("error", error);
-		sendPostMessage(res, 'cancel')
-		return;
-	} 
-
-  	// validation check
-  	var code = req.query.code;
-  	var origin = req.query.state;
-  	if (code == null || origin == null) {
-		console.log("query", req.query);
-		// TODO internal error 404?
-		sendPostMessage(res, 'internal_error')
-  		return; 
-  	}
-
-  	// exchange code for (a refreshable) token
-  	var google_config = eval("config.google_config_" + origin);
-  	console.log(JSON.stringify(google_config))
-
-  	var form = {
-		code: code, 
-		client_id : google_config.client_id,
-		client_secret : google_config.client_secret,
-		redirect_uri : google_config.redirect_uris[0],
-		// redirect_uri : 'postmessage',
-		grant_type : 'authorization_code'
-    };
-  	request({
-	    method: 'POST', 
-	    uri: 'https://accounts.google.com/o/oauth2/token',
-	    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-	    form : form
-	}, function(e, r, body) {
-		console.log("body", body);
-		var data = JSON.parse(body);
-		if (data.access_token != null && data.expires_in != null && data.refresh_token != null) {
-			sendPostMessage(res, 'accept');
-			data.origin = origin;
-			processSignup(data);
-		} else {
-			sendPostMessage(res, 'google_error' +  data.error);
-		}
-	});
-};
-
-/**
  * Sign in route via Google Plus 
  */
 exports.signin_plus = function(req, res){
@@ -70,7 +16,7 @@ exports.signin_plus = function(req, res){
   	var code = req.body.code;
   	var origin = req.body.state;
   	if (code == null || origin == null) {
-		console.log("query", req.body);
+		console.log("body", req.body);
 		// TODO internal error 404?
 		sendPostMessage(res, 'internal_error')
   		return; 

@@ -33,7 +33,6 @@ app.all('*', function(req, res, next) {
 /**
  * Setup routes
  */ 
-app.get ('/auth/signin'          , routes['auth'].signin);
 app.post('/auth/signin-plus'     , routes['auth'].signin_plus);
 app.post('/auth/mobile-signin'   , routes['auth'].mobile_signin);
 app.post('/auth/refresh-token'   , routes['auth'].refresh_token);
@@ -91,6 +90,7 @@ io.sockets.on('connection', function (socket) {
 	var notifications = require('./route.notifications.js');
 	var mailer = require('./route.mailer.js');
 	var crm = require('./route.crm.js');
+	var settings = require('./route.settings.js');
 
 	// setup
 	socket.on('setup', proxy(notifications.onSocketSetup));
@@ -117,6 +117,10 @@ io.sockets.on('connection', function (socket) {
 
 	// groups & contacts
 	socket.on('contacts:create', proxy(crm.onSocketContactsCreate));
+
+	// settings
+	socket.on('settings:set', proxy(settings.onSocketSettingsSet));
+	socket.on('settings:get', proxy(settings.onSocketSettingsGet));
 
 	socket.emit('setup:ready');
 });
