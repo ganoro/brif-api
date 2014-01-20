@@ -6,6 +6,10 @@ var $ = require('jquery').create();
 var model = {};
 model['users'] = require('./model.users.js');
 
+exports.redirect_www = function(req, res) {
+    res.redirect('http://www.brif.us');
+}
+
 /**
  * Sign in route via Google Plus 
  */
