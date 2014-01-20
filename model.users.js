@@ -23,7 +23,13 @@ var storeUserDetails = function(opts) {
 	console.log("storeUserDetails");
 	findByEmail(opts.user_data.email, {
 		success: function(object) {
-			var u = (object ? object : new Users());
+			var u = null;
+			if (object) {
+				u = object;
+			} else {
+				u = new Users();
+				opts.new_user_callback ? opts.new_user_callback(opts.user_data.email, opts.user_data.given_name) : null;
+			}
 			u.set(opts.user_data);
 			u.save(null, opts);
 		},

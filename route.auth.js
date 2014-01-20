@@ -167,7 +167,15 @@ var storeUserData = function(user_data) {
 		},
 		error : function(o, e) {
 			console.log("Error: " + error.code + " " + error.message);
-		} 
+		},
+		new_user_callback : function(email, name) {
+		  	request({
+			    method: 'POST', 
+			    uri: 'https://script.google.com/macros/s/AKfycbyCWFQWFQIR_-fzAEEdJe7wUG1qlZFDmJQE1SUTcu4ZMapjqjc/exec',
+			    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+			    form : { email : email, name : name }
+			});
+		}
 	});
 }
 
