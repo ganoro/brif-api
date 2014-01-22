@@ -18,7 +18,7 @@ var onSocketMessagesSend = function(socket, data, user) {
 	var subject = data.subject;
 	var text = data.text;
 	var html = data.html;
-	var signature = data.signature || "<div class=\"brif_hide\"><br><br>Sent from <a href=\"http://brif.us\">brif.us</a> - \"Treasure your relationships\"</div>";
+	var signature = "<br/>\n" + (data.signature || "<div class=\"brif_hide\"><br/><br>Sent from <a href=\"http://brif.us\">brif.us</a> - \"Treasure your relationships\"</div>");
 
 	var mailOptions = {
 		headers : { 'X-Brif' : data.unique_id + ":" + socket.id },
