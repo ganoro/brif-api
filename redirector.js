@@ -3,7 +3,7 @@
  */ 
 var express = require("express"),
     app     = express(),
-    port    = 8080;
+    port    = 80;
 
 app.get("/", function(req, res) {
     res.redirect('http://www.brif.us');
