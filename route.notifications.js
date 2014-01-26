@@ -91,9 +91,10 @@ var onSocketSetup = function(socket, data, user) {
 						socket.emit('setup:completed');
 
 						// first signin action
-						if (user.get("first_signin")) {
-							console.log("emitting first signin");
-							socket.emit('setup:first_signin');
+						if (user.get('first_signin')) {
+							socket.emit('setup:first_signin', { email : user.get("email") });
+							user.set('first_signin', false);
+							user.save();
 						}
 					}
 				}
