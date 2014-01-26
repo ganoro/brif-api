@@ -28,6 +28,6 @@ var redirect_www = function(req, res) {
 }
 
 app.get('/' , redirect_www);
-app.listen(80)
+app.listen(8080)
 
 console.log('Listening on port ' + config.port);
