@@ -1,4 +1,4 @@
-exports.port = 80;
+exports.port = 443;
 
 exports.parse_app_id = 'mMS3oCiZOHC15v8OGTidsRgHI0idYut39QKrIhIH';
 exports.parse_javascript_api_key = '93nPWcPsKnnoxQqVxmMHt0PlV1oelkbdI7D20QY8';
