@@ -1,33 +1,14 @@
 /**
  * Load libraries 
  */ 
-var express = require('express');
+var express = require("express"),
+    app     = express(),
+    port    = 8080;
 
-/**
- * initialize express app
- */ 
-var app = express();
-
-/**
- * configuration
- */ 
-app.use(express.bodyParser());
-app.use(function(err, req, res, next){
-  console.error(err.stack);
-  res.send(500, 'Something broke!');
-});
-
-app.all('*', function(req, res, next) {
-	res.header("Access-Control-Allow-Origin", "*");
-	res.header("Access-Control-Allow-Headers", "X-Requested-With");
-	next();
-});
-
-var redirect_www = function(req, res) {
+app.get("/", function(req, res) {
     res.redirect('http://www.brif.us');
-}
+});
 
-app.get('/' , redirect_www);
-app.listen(8080)
+app.listen(port);
 
-console.log('Listening on port ' + config.port);
+console.log('Listening on port ' + port);
