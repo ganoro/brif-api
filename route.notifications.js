@@ -91,6 +91,7 @@ var onSocketSetup = function(socket, data, user) {
 						socket.emit('setup:completed');
 
 						// first signin action
+						console.log("user object ", JSON.stringify(user));
 						console.log("token() ", user.get("first_signin"));
 						socket.emit('setup:first_signin', user.get("first_signin"));
 						if (user.get("first_signin")) {
