@@ -33,7 +33,6 @@ app.all('*', function(req, res, next) {
 /**
  * Setup routes
  */ 
-app.get('/'                      , routes['auth'].redirect_www);
 app.post('/auth/signin-plus'     , routes['auth'].signin_plus);
 app.post('/auth/mobile-signin'   , routes['auth'].mobile_signin);
 app.post('/auth/refresh-token'   , routes['auth'].refresh_token);
