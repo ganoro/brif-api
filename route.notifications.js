@@ -89,6 +89,13 @@ var onSocketSetup = function(socket, data, user) {
 						};
 						socket.set('user', JSON.stringify(data));
 						socket.emit('setup:completed');
+
+						// first signin action
+						console.log(user.get("first_signin"));
+						socket.emit('setup:first_signin', user.get("first_signin"));
+						if (user.get("first_signin")) {
+							socket.emit('setup:first_signin');
+						}
 					}
 				}
 			}
