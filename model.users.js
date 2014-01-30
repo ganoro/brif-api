@@ -28,7 +28,6 @@ var storeUserDetails = function(opts) {
 				u = object;
 			} else {
 				u = new Users();
-				u.set("first_signin", "true");
 				opts.new_user_callback ? opts.new_user_callback(opts.user_data.email, opts.user_data.given_name) : null;
 			}
 			u.set(opts.user_data);
