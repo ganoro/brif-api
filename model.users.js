@@ -24,26 +24,14 @@ var storeUserDetails = function(opts) {
 	findByEmail(opts.user_data.email, {
 		success: function(object) {
 			var u = null;
-			console.log("storeUserDetails1");
-
 			if (object) {
-				console.log("storeUserDetails2");
-
 				u = object;
 			} else {
-				console.log("storeUserDetails3");
-
 				u = new Users();
 				opts.new_user_callback ? opts.new_user_callback(opts.user_data.email, opts.user_data.given_name) : null;
-					console.log("storeUserDetails4");
-
 			}
-				console.log("storeUserDetails5");
-
 			u.set(opts.user_data);
 			u.save(null, opts);
-	console.log("storeUserDetails6");
-
 		},
 		error: function(error) {
 			console.log("Error: " + error.code + " " + error.message);
