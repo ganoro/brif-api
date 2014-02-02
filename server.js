@@ -88,7 +88,6 @@ io.sockets.on('connection', function (socket) {
 					var d = { email : user.email, post_event : function(updated_user) {
 						callback(socket, data, updated_user);
 					} };
-					console.log(d)
 					notifications.onSocketSetup(socket, d, user);
 				}
 				

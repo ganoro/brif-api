@@ -91,7 +91,6 @@ var onSocketSetup = function(socket, data, user) {
 						};
 						socket.set('user', JSON.stringify(user_data));
 
-						console.log(data.post_event)
 						if (data.post_event != null) {
 							return data.post_event(user_data);
 						}
