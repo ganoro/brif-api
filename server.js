@@ -77,12 +77,21 @@ io.set('log level', 1); // reduce logging
 io.sockets.on('connection', function (socket) {
 	console.log("connected to: " + socket.id);
 	
-	// proxy, enables socket and user details as parameters
+	// proxy, enables socket and user details as parameters as well as refresh token 
 	var proxy = function(callback) {
 		return function(data) {
 			socket.get('user', function(err, result) {
 				var user = JSON.parse(result);
-				callback(socket, data, user);
+				if (user == null || parseInt(user.timeout) > Date.now()) {
+					callback(socket, data, user);
+				} else {
+					var d = { email : user.email, post_event : function(updated_user) {
+						callback(socket, data, updated_user);
+					} };
+					console.log(d)
+					notifications.onSocketSetup(socket, d, user);
+				}
+				
 			});
 		}
 	}

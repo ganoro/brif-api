@@ -73,12 +73,13 @@ var onSocketSetup = function(socket, data, user) {
 
 			var process = {
 				socket : socket,
+				data: data,
 				token : function(err, token, access_token) {
 					if (err) {
 						// TODO : internal error
 						return console.log(err);
 					} else {
-						var data = { 
+						var user_data = { 
 							"objectId" : user.id, 
 							"origin" : user.get("origin"), 
 							"refresh_token" : user.get("refresh_token"), 
@@ -86,8 +87,15 @@ var onSocketSetup = function(socket, data, user) {
 							"access_token" : access_token,
 							"name" : user.get("name"), 
 							"email" : user.get("email"), 
+							"timeout" : xoauth2gen.timeout
 						};
-						socket.set('user', JSON.stringify(data));
+						socket.set('user', JSON.stringify(user_data));
+
+						console.log(data.post_event)
+						if (data.post_event != null) {
+							return data.post_event(user_data);
+						}
+
 						socket.emit('setup:completed');
 
 						// first signin action
