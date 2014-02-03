@@ -91,6 +91,8 @@ var onSocketSetup = function(socket, data, user) {
 						};
 						socket.set('user', JSON.stringify(user_data));
 
+						// if this call triggerd to renew the token, call the post event
+						// without emitting the setup:completed event
 						if (data.post_event != null) {
 							return data.post_event(user_data);
 						}

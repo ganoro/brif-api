@@ -19,7 +19,14 @@ var onSocketSettingsGet = function (socket, data, user) {
 }
 
 var settingsSet = function(socket, data, user) {
-	
+	model.store(user.objectId, data.key, data.value, {
+		success : function(r) {
+			socket.emit('settings:set', {data : {key : data.key, value : data.value}});
+		}, 
+		error : function(r, e) {
+			socket.emit('settings:set', { error  : e });
+		}
+	})
 }
 
 var settingsGet = function(socket, data, user) {

@@ -90,7 +90,6 @@ io.sockets.on('connection', function (socket) {
 					} };
 					notifications.onSocketSetup(socket, d, user);
 				}
-				
 			});
 		}
 	}
