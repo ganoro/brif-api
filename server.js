@@ -74,9 +74,7 @@ app.use(function(err, req, res, next){
 var io = require('socket.io').listen(app.listen(config.port));
 io.set('log level', 1); // reduce logging
 
-io.sockets.on('connection', function (socket) {
-	console.log("connected to: " + socket.id);
-	
+io.sockets.on('connection', function (socket) {	
 	// proxy, enables socket and user details as parameters as well as refresh token 
 	var proxy = function(callback) {
 		return function(data) {
@@ -104,23 +102,20 @@ io.sockets.on('connection', function (socket) {
 	socket.on('disconnect', proxy(notifications.onSocketDisconnect));
 
 	// messages
-	socket.on('messages:subscribe', proxy(notifications.onSocketSubscribeMessagesListener));
-	socket.on('messages:unsubscribe', proxy(notifications.onSocketUnsubscribeMessagesListener));
 	socket.on('messages:fetch', proxy(notifications.onSocketMessagesFetch));
 	socket.on('messages:fetch_timeline', proxy(notifications.onSocketMessagesFetchTimeline));
-	socket.on('messages:fetch_unread', proxy(notifications.onSocketMessagesFetchUnread));
 	socket.on('messages:fetch_thread', proxy(notifications.onSocketMessagesFetchThread));
-	socket.on('messages:fetch_unread_imap', proxy(mailer.onSocketMessagesUnread));
-
-	// mailer
-	socket.on('messages:send', proxy(mailer.onSocketMessagesSend));
-	socket.on('messages:markas', proxy(mailer.onSocketMessagesMarkAs));
-	socket.on('messages:search', proxy(mailer.onSocketMessagesSearch));
 
 	// channels
 	socket.on('channels:subscribe', proxy(notifications.onSocketSubscribeChannelsListener));
 	socket.on('channels:unsubscribe', proxy(notifications.onSocketUnsubscribeChannelsListener));
 	socket.on('channels:send', proxy(notifications.onSocketChannelsSend));
+
+	// mailer
+	socket.on('messages:send', proxy(mailer.onSocketMessagesSend));
+	socket.on('messages:markas', proxy(mailer.onSocketMessagesMarkAs));
+	socket.on('messages:search', proxy(mailer.onSocketMessagesSearch));
+	socket.on('messages:fetch_unread_imap', proxy(mailer.onSocketMessagesUnread));
 
 	// groups & contacts
 	socket.on('contacts:create', proxy(crm.onSocketContactsCreate));
@@ -129,7 +124,6 @@ io.sockets.on('connection', function (socket) {
 	socket.on('settings:set', proxy(settings.onSocketSettingsSet));
 	socket.on('settings:get', proxy(settings.onSocketSettingsGet));
 
-	console.log('emit() setup:ready');
 	socket.emit('setup:ready');
 });
 

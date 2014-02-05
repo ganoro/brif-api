@@ -17,6 +17,9 @@ var findByKey = function(user_id, key, opts) {
 	query.first(opts);
 }
 
+/**
+ * Set a pair (key value) in storage
+ */
 var store = function(user_id, key, value, opts) {
 	console.log("storeByKeyValue()");
 
@@ -36,8 +39,17 @@ var store = function(user_id, key, value, opts) {
 	});
 }
 
+var getAllSettings = function(user_id, opts) {
+	console.log("getAllSettings()");
+
+  	var query = new model.parse.Query(Settings);
+  	query.equalTo("user_id", user_id);
+	query.find(opts);
+}
+
 // exports public functions
 module.exports = {
   findByKey : findByKey,
-  store : store
+  store : store,
+  getAllSettings : getAllSettings
 }

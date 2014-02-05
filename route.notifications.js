@@ -12,34 +12,34 @@ var channel_event_handlers = {};
 var model = {};
 model['users'] = require('./model.users.js');
 model['messages'] = require('./model.messages.js');
+model['settings'] = require('./model.settings.js');
 
 /**
  * @api POST /notification/notify 
  * Enables Nix to notify sockets about change events 
  */
 var notify = function(req, res){
+	res.send("sending..."); // TODO send before execute?
+
 	// notification params
 	var data = req.body.data;
 	var email = req.body.email;
 	var entity = req.body.entity;
 	var type = req.body.type;	
+
+	// validation
 	if (entity == null || email == null) {
-		sendUnsupportedOperation(res, "missing entity and email fields");
+		var msg = "missing entity and email fields";
+		res.status(400).send(JSON.stringify({ error: "Unsupported operation", message : msg}));	
 		return;
 	}
 
-	res.send("sending..."); // TODO send before execute?
-
 	if (entity == "messages") {
-		notifyMessagesListsners(email, data);
+		notifyMessagesListsners('messages:event', email, data);
 	}
 };
 
-var sendUnsupportedOperation = function(res, msg) {
-	res.status(400).send(JSON.stringify({ error: "Unsupported operation", message : msg}));		
-}
-
-var notifyMessagesListsners = function(email, data) {
+var notifyMessagesListsners = function(message_type, email, data) {
 	console.log("notifyMessagesListsners");
 
 	if (typeof user_event_handlers[email] === "undefined") {
@@ -48,7 +48,7 @@ var notifyMessagesListsners = function(email, data) {
 
 	for (var client_id in user_event_handlers[email].sockets) {
 		var topic = messagesTopicName(client_id, email);
-		minpubsub.publish(topic, [ data ]);
+		minpubsub.publish(topic, [ message_type, data ]);
 	}
 }
 
@@ -56,8 +56,8 @@ var notifyMessagesListsners = function(email, data) {
  * On Socket messages
  */
 var onSocketSetup = function(socket, data, user) {
-	console.log("connected to : ", socket.id, ", with email : ", data.email);
-	setupClient(socket.id, data.email);
+	console.log("onSocketSetup");
+	
 	var opts = {
 		socket : socket,
 		success : function(user) {
@@ -97,7 +97,11 @@ var onSocketSetup = function(socket, data, user) {
 							return data.post_event(user_data);
 						}
 
+						// announce on setup completed
 						socket.emit('setup:completed');
+
+						// setup the messages liseneter
+						subscribeMessagesListener(socket, user);
 
 						// first signin action
 						if (user.get('first_signin')) {
@@ -105,6 +109,22 @@ var onSocketSetup = function(socket, data, user) {
 							user.set('first_signin', false);
 							user.save();
 						}
+
+						// announce the settings
+						model['settings'].getAllSettings(user.id, {
+							success : function(r) {
+								if (r) {
+									var result = [];
+									r.forEach(function(elem, index) {
+										result.push({ key : elem.get('key'), value : elem.get('value')})
+									})
+									socket.emit('settings:all', { data : result });	
+								}
+							},
+							error: function () {
+								socket.emit('settings:all', {error : arguments});
+							}
+						})
 					}
 				}
 			}
@@ -116,18 +136,6 @@ var onSocketSetup = function(socket, data, user) {
 
 var onSocketDisconnect = function(socket) {
 	unsubscribeAllTopicsToClient(socket.id);
-}
-
-var onSocketSubscribeMessagesListener = function(socket, data, user) {
-	console.log("onSocketSubscribeMessagesListener")
-  	subscribeMessagesListener(socket.id, user.email, function(message) {
-		socket.emit('messages:event', message);
-	});
-}
-
-var onSocketUnsubscribeMessagesListener = function(socket, data, user) {
-	console.log("onSocketUnsubscribeMessagesListener")
-  	unsubscribeMessagesListener(socket.id, user.email);
 }
 
 var onSocketSubscribeChannelsListener = function(socket, data, user) {
@@ -154,11 +162,6 @@ var onSocketMessagesFetchTimeline = function(socket, data, user) {
 var onSocketMessagesFetchThread = function(socket, data, user) {
 	console.log("onSocketMessagesFetchThread()");
 	messagesFetchThread(socket, data, user);
-}
-
-var onSocketMessagesFetchUnread = function(socket, data, user) {
-	console.log("onSocketMessagesFetchUnread()");
-	messagesFetchUnread(socket, data, user);
 }
 
 var onSocketMessagesFetch = function(socket, data, user) {
@@ -218,27 +221,24 @@ var unregisterSocket = function(channel_id, client_id) {
 	}
 }
 
-var setupClient = function(client_id, email) {
-	console.log("setting up ", client_id, " with ", email);
+var subscribeMessagesListener = function(socket, user) {
+	console.log('subscribeMessagesListener')
+
+	var client_id = socket.id;
+	var email = user.get("email");
+
+	// setup client
+	console.log("setting up handlers for client ", client_id, " with email: ", email);
 	user_event_handlers[email] = user_event_handlers[email] || { sockets : {} };
 	user_event_handlers[email].sockets[client_id] = user_event_handlers[email].sockets[client_id] || { topics : [], disposers: [] };
-}
 
-var subscribeMessagesListener = function(client_id, email, callback) {	
+	// register handler
 	var topic = messagesTopicName(client_id, email);
-	var handler = minpubsub.subscribe(topic, function(msg){
-		callback(msg);
+	var handler = minpubsub.subscribe(topic, function( type, message ) {
+		socket.emit(type, message)
 	});
 	registerHandler(email, client_id, topic, handler);
 }
-
-var unsubscribeMessagesListener = function(client_id, email) {
-	var topic = messagesTopicName(client_id, email);
-	var handler = resolveHandler(client_id, email, topic);
-	if (handler) {
-		minpubsub.unsubscribe(handler);	
-	}
-};
 
 var subscribeChannelListener = function(client_id, email, channel_id, socket) {	
 	registerSocket(channel_id, client_id, socket);
@@ -315,55 +315,6 @@ var messagesFetchThread = function(socket, data, user) {
 	model['messages'].findByGoogleTrdId(opt);
 }
 
-/**
- * fetch all unread messages as array
- */
-var messagesFetchUnread = function(socket, data, user) {
-	console.log("messagesFetchUnread()")
-
-	var process = {
-		socket : socket,
-		messages : function(error, result) {
-			var google_msg_id = [];
-			if (result.feed.entry != null) {
-				for (var i = 0; i < result.feed.entry.length; i++) {
-					var entry = result.feed.entry[i].id[0];
-					var last = entry.lastIndexOf(":") + 1;
-					google_msg_id.push(entry.substring(last));
-				};
-			}
-			console.log("emitting messages");
-
-			model['messages'].findByGoogleMsgId({ 
-				google_msg_id : google_msg_id,
-				user_id : user.objectId,
-				success : function(unread) {
-					result = [];
-				  	for (var i = unread.length - 1; i >= 0; i--) {
-				    	result.push( { 
-				    		recipients_id : unread[i].get("recipients_id"), 
-				    		message_id : unread[i].get("message_id") 
-				    	}); 
-				  	};
-				  	process.socket.emit('messages:fetch_unread', { data : result });
-				}, 
-				error : function(e) {
-					process.socket.emit('messages:fetch_unread', { error : e });
-				}
-			});
-		},
-		parse : function(e, r, body) {
-			var messages = process.messages;
-			if (e) {
-				// TODO : internal error
-				return console.log(e);
-			}
-			xml2js(body, messages);
-		}
-	};
-	var url = 'https://mail.google.com/mail/feed/atom';
-	request.get(url, { headers : { "Authorization" : "Bearer " + user.access_token }}, process.parse);	
-}
 
 var unsubscribeAllTopicsToClient = function(email, client_id) {
 	if (!user_event_handlers[email] || !user_event_handlers[email].sockets) {
@@ -385,13 +336,11 @@ var unsubscribeAllTopicsToClient = function(email, client_id) {
 // exports public functions
 module.exports = {
 	notify : notify,
+	notifyMessagesListsners : notifyMessagesListsners,
 	onSocketSetup : onSocketSetup,
 	onSocketDisconnect : onSocketDisconnect,
-	onSocketSubscribeMessagesListener : onSocketSubscribeMessagesListener,
-	onSocketUnsubscribeMessagesListener : onSocketUnsubscribeMessagesListener,
 	onSocketMessagesFetch : onSocketMessagesFetch,
 	onSocketMessagesFetchTimeline : onSocketMessagesFetchTimeline,
-	onSocketMessagesFetchUnread : onSocketMessagesFetchUnread,
 	onSocketMessagesFetchThread : onSocketMessagesFetchThread,
 	onSocketSubscribeChannelsListener : onSocketSubscribeChannelsListener,
 	onSocketUnsubscribeChannelsListener : onSocketUnsubscribeChannelsListener,

@@ -1,6 +1,7 @@
 var config = require('./config.js');
 var $ = require('jquery').create();
 var model = require('./model.settings.js');
+var notifications = require('./route.notifications.js');
 
 var onSocketSettingsSet = function (socket, data, user) {
 	console.log("onSocketSettingsSet");
@@ -21,7 +22,8 @@ var onSocketSettingsGet = function (socket, data, user) {
 var settingsSet = function(socket, data, user) {
 	model.store(user.objectId, data.key, data.value, {
 		success : function(r) {
-			socket.emit('settings:set', {data : {key : data.key, value : data.value}});
+			var msg = {data : {key : data.key, value : data.value}};
+			notifications.notifyMessagesListsners('settings:event', user.email, msg)
 		}, 
 		error : function(r, e) {
 			socket.emit('settings:set', { error  : e });
