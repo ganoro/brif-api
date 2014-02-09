@@ -6,14 +6,14 @@ var model = require('./model.base.js');
 var Settings = model.parse.Object.extend("Settings");
 
 /**
- * Get by user_id
+ * Get by user_id & key
  * success and errors should be supplied in opts
  */ 
-var findByKey = function(user_id, key, opts) {
-	console.log("findByKey()");
+var find = function(user_id, key, opts) {
+	console.log("find()");
 
   	var query = new model.parse.Query(Settings);
-  	query.equalTo("user_id", user_id).equalTo("key", key);
+  	query.equalTo("user_id", user_id).equalTo("key", key)  	
 	query.first(opts);
 }
 
@@ -21,9 +21,9 @@ var findByKey = function(user_id, key, opts) {
  * Set a pair (key value) in storage
  */
 var store = function(user_id, key, value, opts) {
-	console.log("storeByKeyValue()");
+	console.log("store()");
 
-	findByKey(user_id, key, {
+	find(user_id, key, {
 		success : function(r) {
 			if (r == null) {
 				r = new Settings();
@@ -39,6 +39,30 @@ var store = function(user_id, key, value, opts) {
 	});
 }
 
+/**
+ * Set a pair (key value) in storage
+ */
+var clear = function(user_id, opts) {
+	console.log("clear()");
+
+	getAllSettings(user_id, {
+		success : function(r) {
+			console.log(r)
+			if (r != null) {
+				for (var i = r.length - 1; i >= 0; i--) {
+					console.log(r[i]);
+					r[i].destroy();
+				};
+			}
+			opts.success ? opts.success() : null;
+		},
+		error : function(r, e) {
+			opts.error ? opts.error(e) : null;
+		}
+	});
+}
+
+
 var getAllSettings = function(user_id, opts) {
 	console.log("getAllSettings()");
 
@@ -49,7 +73,8 @@ var getAllSettings = function(user_id, opts) {
 
 // exports public functions
 module.exports = {
-  findByKey : findByKey,
+  find : find,
   store : store,
+  clear : clear,  
   getAllSettings : getAllSettings
 }

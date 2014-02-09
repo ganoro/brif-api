@@ -19,6 +19,11 @@ var onSocketSettingsGet = function (socket, data, user) {
 	settingsGet(socket, data, user);
 }
 
+var onSocketSettingsClear = function (socket, data, user) {
+	console.log("onSocketSettingsClear");
+	settingsClear(socket, data, user);
+}
+
 var settingsSet = function(socket, data, user) {
 	model.store(user.objectId, data.key, data.value, {
 		success : function(r) {
@@ -31,8 +36,19 @@ var settingsSet = function(socket, data, user) {
 	})
 }
 
+var settingsClear = function(socket, data, user) {
+	model.clear(user.objectId, {
+		success : function(r) {
+			socket.emit('settings:clear', { data  : {} });
+		}, 
+		error : function(r, e) {
+			socket.emit('settings:clear', { error  : e });
+		}
+	})
+}
+
 var settingsGet = function(socket, data, user) {
-	model.findByKey(user.objectId, data.key, {
+	model.find(user.objectId, data.key, {
 		success : function(r) {
 			var v = r ? r.get("value") : data.default ? data.default : null;
 			socket.emit('settings:get', {data : {key : data.key, value : v}});		
@@ -46,5 +62,6 @@ var settingsGet = function(socket, data, user) {
 // exports public functions
 module.exports = {
 	onSocketSettingsSet : onSocketSettingsSet,
-	onSocketSettingsGet : onSocketSettingsGet
+	onSocketSettingsGet : onSocketSettingsGet,
+	onSocketSettingsClear : onSocketSettingsClear	
 };

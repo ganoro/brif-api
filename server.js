@@ -123,6 +123,7 @@ io.sockets.on('connection', function (socket) {
 	// settings
 	socket.on('settings:set', proxy(settings.onSocketSettingsSet));
 	socket.on('settings:get', proxy(settings.onSocketSettingsGet));
+	socket.on('settings:clear', proxy(settings.onSocketSettingsClear));
 
 	socket.emit('setup:ready');
 });
