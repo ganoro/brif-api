@@ -66,7 +66,7 @@ var onSocketMessagesSearch = function(socket, data, user) {
 	console.log("onSocketMessagesSearch()");
 	var mailOptions = {
 		email: user.email, 
-		raw_text : data.raw_text,
+		query : data.query,
 		callback : getSearch,
 		emit : function(results) {
 			model['messages'].findByGoogleMsgId({
@@ -238,7 +238,7 @@ var getSearch = function(connection, mailOptions) {
 
 	connection.openBox('INBOX', false, function(err, box) {
 		if (err) return;
-		connection.search([[ 'X-GM-RAW', mailOptions.raw_text]] , function(err, results) {
+		connection.search([[ 'X-GM-RAW', mailOptions.query]] , function(err, results) {
 			if (err) return;
 			if (results == null || results.length ==0) {
 				connection.end();				
