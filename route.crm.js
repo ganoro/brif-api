@@ -5,12 +5,37 @@ var xml2js = require('xml2js').parseString;
 var $ = require('jquery').create();
 var templates = require('./templates.js');
 
+var model = {};
+model['messages'] = require('./model.messages.js');
+
 var onSocketContactsCreate = function (socket, data, user) {
 	console.log("onSocketContactsCreate");
 	if (data.name == null || data.email == null || data.email.length == 0) {
 		// TODO internal error
 	}
 	contactsManage(socket, data, user);
+}
+
+var onSocketContactsLatest = function(socket, data, user) {
+	console.log("onSocketContactsCreate");
+	if (data.contact == null) {
+		// TODO internal error
+	}
+
+	contactsLatest(data.contact, user.objectId, function(result) {
+		var contacts = [];
+		var latest = [];
+		for (var i = 0; i < result.length; i++) {
+			var r = result[i].get('recipients');
+			if (contacts.indexOf(r) == -1) {
+				contacts.push(r);
+				latest.push(result[i].attributes)
+			}
+		};
+		socket.emit('contacts:latest', { data : latest });
+	}, function() {
+		socket.emit('contacts:latest', { error: arguments })
+	});
 }
 
 var contactsManage = function(socket, data, user) {
@@ -57,6 +82,16 @@ var contactsManage = function(socket, data, user) {
 			}, errorCallback);
 		}, errorCallback);
 	};
+}
+
+var contactsLatest = function(contact, user_id, success, error) {
+	model['messages'].findLatest({
+		contact : contact, 
+		user_id : user_id, 
+		limit : 10,
+		success : success, 
+		error : error 
+	})
 }
 
 var removeDuplicates = function(emails) {
@@ -440,5 +475,6 @@ var json2xml = function(json, root, cb){
 
 // exports public functions
 module.exports = {
-	onSocketContactsCreate : onSocketContactsCreate
+	onSocketContactsCreate : onSocketContactsCreate,
+	onSocketContactsLatest : onSocketContactsLatest
 };

@@ -54,11 +54,6 @@ var findByGoogleMsgId = function(opts) {
  */ 
 var findByGoogleTrdId = function(opt) {
   console.log("findByGoogleTrdId()");
-  console.log(opt.google_trd_id);
-  console.log(opt.recipients_id);
-  console.log(opt.per_page);
-  console.log(opt.page);
-  console.log(opt.user_id);
 
   var Messages = model.parse.Object.extend("Messages_" + opt.user_id);
   var query = new model.parse.Query(Messages);
@@ -69,6 +64,19 @@ var findByGoogleTrdId = function(opt) {
     .skip(opt.page*opt.per_page);
 
   query.find(opt);    
+}
+
+var findLatest = function(opts) {
+  console.log("findLatest()");
+  console.log(opts.user_id);
+
+  // search latests messages in list
+  var Messages = model.parse.Object.extend("Messages_" + opts.user_id);
+  var query = new model.parse.Query(Messages);
+  query.contains('recipients', opts.contact);
+   
+  query.limit(opts.limit).descending("sent_date");
+  query.find(opts)
 }
 
 /**
@@ -119,5 +127,6 @@ module.exports = {
   fetchAll : fetchAll,
   findByGoogleMsgId : findByGoogleMsgId,
   findByGoogleTrdId : findByGoogleTrdId,
+  findLatest : findLatest,
   findByRecipientsId : findByRecipientsId
 }

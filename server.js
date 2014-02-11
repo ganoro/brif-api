@@ -119,6 +119,7 @@ io.sockets.on('connection', function (socket) {
 
 	// groups & contacts
 	socket.on('contacts:create', proxy(crm.onSocketContactsCreate));
+	socket.on('contacts:latest', proxy(crm.onSocketContactsLatest));
 
 	// settings
 	socket.on('settings:set', proxy(settings.onSocketSettingsSet));
