@@ -69,7 +69,16 @@ var onSocketMessagesSearch = function(socket, data, user) {
 		raw_text : data.raw_text,
 		callback : getSearch,
 		emit : function(results) {
-			socket.emit('messages:search', { data : results});
+			model['messages'].findByGoogleMsgId({
+				google_msg_id : results,
+				user_id : user.objectId,
+				success : function(results) {
+					socket.emit('messages:search', { data : results });
+				},
+				error : function() {
+					socket.emit('messages:search', { error : arguments });
+				}
+			})
 		}
 	}
 	executeMailOptions(user, mailOptions);
@@ -160,12 +169,10 @@ var getUnread = function(connection, mailOptions) {
 					});
 					stream.once('end', function() {
 						data[seqno]['h'] = imap.parseHeader(buffer);
-						// console.log("end: ", imap.parseHeader(buffer))
 					});
 				});
 				msg.once('attributes', function(attrs) {
 					data[seqno]['a'] = attrs["x-gm-msgid"];
-					// console.log("attr", attrs);
 				});
 			});
 			f.once('error', function(err) {
@@ -173,8 +180,8 @@ var getUnread = function(connection, mailOptions) {
 			});
 			f.once('end', function() {
 				mailOptions.emit(data);
-				console.log('Done fetching all messages!');
 				connection.end();
+				console.log('Done fetching all messages!');
 			});
       	});
 	});	
@@ -237,28 +244,12 @@ var getSearch = function(connection, mailOptions) {
 				connection.end();				
 				return mailOptions.emit(results);
 			}
-			var l = results.length;
-			results = results.slice(- 5);
-
-		    var f = connection.fetch(results, { 
-				bodies: 'HEADER.FIELDS (FROM TO CC DATE)',
-		    });
-		    var data = {};
+			results = results.slice(-20);
+		    var f = connection.fetch(results, { });
+		    var data = [];
 			f.on('message', function(msg, seqno) {
-				data[seqno] = {};
-				msg.on('body', function(stream, info) {
-					var buffer = '';
-					stream.on('data', function(chunk) {
-						buffer += chunk.toString('utf8');
-					});
-					stream.once('end', function() {
-						data[seqno]['h'] = imap.parseHeader(buffer);
-						// console.log("end: ", imap.parseHeader(buffer))
-					});
-				});
 				msg.once('attributes', function(attrs) {
-					data[seqno]['a'] = attrs["x-gm-msgid"];
-					// console.log("attr", attrs);
+					data.push(attrs["x-gm-msgid"]);
 				});
 			});
 			f.once('error', function(err) {
@@ -266,8 +257,8 @@ var getSearch = function(connection, mailOptions) {
 			});
 			f.once('end', function() {
 				mailOptions.emit(data);
-				console.log('Done fetching all messages!');
 				connection.end();
+				console.log('Done fetching all messages!');
 			});
       	});
 	});	

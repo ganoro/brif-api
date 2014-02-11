@@ -7,7 +7,7 @@ var $ = require('jquery').create();
  * paremetrs required - recipients_id, user_id
  */ 
 var findByRecipientsId = function(opts) {
-	console.log("findByRecipientsId()");
+  console.log("findByRecipientsId()");
   console.log("recipients ", opts.recipients_id);
 
   var Messages = model.parse.Object.extend("Messages" + "_" + opts.user_id);
