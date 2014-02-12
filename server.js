@@ -105,6 +105,7 @@ io.sockets.on('connection', function (socket) {
 	socket.on('messages:fetch', proxy(notifications.onSocketMessagesFetch));
 	socket.on('messages:fetch_timeline', proxy(notifications.onSocketMessagesFetchTimeline));
 	socket.on('messages:fetch_thread', proxy(notifications.onSocketMessagesFetchThread));
+	socket.on('messages:near', proxy(notifications.onSocketMessagesNear));
 
 	// channels
 	socket.on('channels:subscribe', proxy(notifications.onSocketSubscribeChannelsListener));
