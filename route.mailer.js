@@ -126,6 +126,7 @@ var markAs = function(connection, mailOptions) {
 		function endConnection() {
 			console.log("closing imap connection");
 			connection.end();
+			connection.destroy();
 		}
 
 		for (var i = mailOptions.messages_id.length - 1; i >= 0 ; i--) {
@@ -153,7 +154,8 @@ var getUnread = function(connection, mailOptions) {
 		connection.search([ 'UNSEEN'], function(err, results) {
 			if (err) return;
 			if (results == null || results.length ==0) {
-				connection.end();				
+				connection.end();
+				connection.destroy();
 				return mailOptions.emit(results);
 			}
 		    var f = connection.fetch(results, { 
@@ -181,6 +183,8 @@ var getUnread = function(connection, mailOptions) {
 			f.once('end', function() {
 				mailOptions.emit(data);
 				connection.end();
+				connection.destroy();
+		connection.destroy();
 				console.log('Done fetching all messages!');
 			});
       	});
@@ -241,7 +245,8 @@ var getSearch = function(connection, mailOptions) {
 		connection.search([[ 'X-GM-RAW', mailOptions.query]] , function(err, results) {
 			if (err) return;
 			if (results == null || results.length ==0) {
-				connection.end();				
+				connection.end();
+				connection.destroy();
 				return mailOptions.emit(results);
 			}
 			results = results.slice(-20);
@@ -258,6 +263,7 @@ var getSearch = function(connection, mailOptions) {
 			f.once('end', function() {
 				mailOptions.emit(data);
 				connection.end();
+				connection.destroy();
 				console.log('Done fetching all messages!');
 			});
       	});
