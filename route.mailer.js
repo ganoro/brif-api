@@ -240,7 +240,7 @@ var messagesSend = function(user, mailOptions) {
 var getSearch = function(connection, mailOptions) {
 	console.log("getSearch()");
 
-	connection.openBox('INBOX', false, function(err, box) {
+	connection.openBox('[Gmail]/All Mail', false, function(err, box) {
 		if (err) return;
 		connection.search([[ 'X-GM-RAW', mailOptions.query]] , function(err, results) {
 			if (err) return;
