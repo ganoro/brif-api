@@ -339,8 +339,6 @@ var contactExists = function(headers, email, existsCallback, missingCallback, er
     		if (error || response.statusCode != 200) {
 				return errorCallback(error);
 			}
-			console.log(body);
-
 			xml2js(body, process.emit);
 		} 
 	}
