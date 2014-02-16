@@ -249,6 +249,7 @@ var getSearch = function(connection, mailOptions) {
 				connection.destroy();
 				return mailOptions.emit(results);
 			}
+			console.log('results length is ', results.length);
 			results = results.slice(-20);
 		    var f = connection.fetch(results, { });
 		    var data = [];
