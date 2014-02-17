@@ -3,6 +3,7 @@ var config = require('./config.js');
 var imap = require('imap');
 var xoauth2 = require("xoauth2");
 var fs = require('fs');
+var $ = require('jquery').create();
 
 var model = {};
 model['users'] = require('./model.users.js');
@@ -41,7 +42,8 @@ var onSocketMessagesSend = function(socket, data, user) {
 var onSocketMessagesMarkAs = function(socket, data, user) {
 	console.log("onSocketMessagesMarkAs()");
 	var mailOptions = {
-		email: user.email, 
+		email: user.email,
+		resolve_all : true,
 		messages_id : data.messages_id,
 		seen : data.seen,
 		callback : markAs
@@ -53,6 +55,7 @@ var onSocketMessagesUnread = function(socket, data, user) {
 	console.log("onSocketMessagesUnread()");
 	var mailOptions = {
 		email: user.email, 
+		resolve_all : false,		
 		callback : getUnread,
 		emit : function(results) {
 			// console.log(results);
@@ -66,6 +69,7 @@ var onSocketMessagesSearch = function(socket, data, user) {
 	console.log("onSocketMessagesSearch()");
 	var mailOptions = {
 		email: user.email, 
+		resolve_all : true,		
 		query : data.query,
 		callback : getSearch,
 		emit : function(results) {
@@ -106,7 +110,24 @@ var connect = function(token, user, mailOptions) {
 	});
 	connection.on('ready', function() {
 		console.log('ready');
-		mailOptions.callback(connection, mailOptions);
+		if (mailOptions.resolve_all) {
+			// resolve all mail folder 
+			connection.getBoxes("[Gmail]", function(err, boxes) {
+				var c = boxes['[Gmail]'].children;
+				if (c) {
+					for (var key in c) {
+						var obj = c[key];
+						var attribs = obj['attribs'];
+						if (attribs && $.inArray('\\All', attribs) > -1) {						
+							mailOptions.all_folder = '[Gmail]/' + key;
+							return mailOptions.callback(connection, mailOptions);
+						}
+					}
+				}
+			});
+		} else {
+			return mailOptions.callback(connection, mailOptions);	
+		}
 	});
 	connection.on('error', function(err) {
 		console.log(err);
@@ -122,7 +143,7 @@ var connect = function(token, user, mailOptions) {
 
 var markAs = function(connection, mailOptions) {
 	console.log("markAs()");
-	connection.openBox('[Gmail]/All Mail', false, function(err, box) {
+	connection.openBox(mailOptions.all_folder, false, function(err, box) {
 		function endConnection() {
 			console.log("closing imap connection");
 			connection.end();
@@ -184,7 +205,6 @@ var getUnread = function(connection, mailOptions) {
 				mailOptions.emit(data);
 				connection.end();
 				connection.destroy();
-		connection.destroy();
 				console.log('Done fetching all messages!');
 			});
       	});
@@ -240,7 +260,7 @@ var messagesSend = function(user, mailOptions) {
 var getSearch = function(connection, mailOptions) {
 	console.log("getSearch()");
 
-	connection.openBox('[Gmail]/All Mail', false, function(err, box) {
+	connection.openBox(mailOptions.all_folder, false, function(err, box) {
 		if (err) return;
 		connection.search([[ 'X-GM-RAW', mailOptions.query]] , function(err, results) {
 			if (err) return;
