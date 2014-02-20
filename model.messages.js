@@ -108,9 +108,16 @@ var findLatest = function(opts) {
   // search latests messages in list
   var Messages = model.parse.Object.extend("Messages_" + opts.user_id);
   var query = new model.parse.Query(Messages);
-  query.contains('recipients', opts.contact);
-   
-  query.limit(opts.limit).descending("sent_date");
+
+  // latest week
+  var now = new Date();
+  var weekAgo = new Date(now.setDate(now.getDate() - 7));
+  query.greaterThan('sent_date', {"__type":"Date", "iso": weekAgo.toISOString()})
+
+  // containing contacts
+  var pattern = '.*(' + opts.contacts.join('|').replace(/\@/g, '\\@').replace(/\./g, '\\.') + ').*';
+  query.matches('recipients', '.*' + pattern + '.*');   
+  query.descending("sent_date").limit(opts.limit);
   query.find(opts)
 }
 

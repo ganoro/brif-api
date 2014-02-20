@@ -22,11 +22,11 @@ var onSocketContactsLatest = function(socket, data, user) {
 		// TODO internal error
 	}
 
-	contactsLatest(data.contact, user.objectId, function(result) {
+	contactsLatest(data.contacts, user.objectId, function(result) {
 		var contacts = [];
 		var latest = [];
 		for (var i = 0; i < result.length; i++) {
-			var r = result[i].get('recipients');
+			var r = result[i].get('recipients_id');
 			if (contacts.indexOf(r) == -1) {
 				contacts.push(r);
 				latest.push(result[i].attributes)
@@ -84,11 +84,11 @@ var contactsManage = function(socket, data, user) {
 	};
 }
 
-var contactsLatest = function(contact, user_id, success, error) {
+var contactsLatest = function(contacts, user_id, success, error) {
 	model['messages'].findLatest({
-		contact : contact, 
+		contacts : contacts, 
 		user_id : user_id, 
-		limit : 10,
+		limit : 20,
 		success : success, 
 		error : error 
 	})
