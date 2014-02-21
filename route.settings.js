@@ -27,8 +27,9 @@ var onSocketSettingsClear = function (socket, data, user) {
 var settingsSet = function(socket, data, user) {
 	model.store(user.objectId, data.key, data.value, {
 		success : function(r) {
-			var msg = {data : {key : data.key, value : data.value}};
-			notifications.notifyMessagesListsners('settings:event', user.email, msg)
+			var event = {};
+			event[data.key] = data.value;
+			notifications.notifyMessagesListsners('settings:event', user.email, { data : event })
 		}, 
 		error : function(r, e) {
 			socket.emit('settings:set', { error  : e });
