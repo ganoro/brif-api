@@ -109,7 +109,9 @@ var findLatest = function(opts) {
   var query = new model.parse.Query(Messages);
 
   // latest week
+  console.log('now');
   var now = new Date();
+  console.log(now);
   var weekAgo = new Date(now.setDate(now.getDate() - 7));
   console.log(weekAgo);
   query.greaterThan('sent_date', {"__type":"Date", "iso": weekAgo.toISOString()})
