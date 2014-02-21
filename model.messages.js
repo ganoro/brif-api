@@ -103,7 +103,6 @@ var findNear = function(opt) {
 
 var findLatest = function(opts) {
   console.log("findLatest()");
-  console.log(opts.user_id);
 
   // search latests messages in list
   var Messages = model.parse.Object.extend("Messages_" + opts.user_id);
@@ -112,10 +111,12 @@ var findLatest = function(opts) {
   // latest week
   var now = new Date();
   var weekAgo = new Date(now.setDate(now.getDate() - 7));
+  console.log(weekAgo);
   query.greaterThan('sent_date', {"__type":"Date", "iso": weekAgo.toISOString()})
 
   // containing contacts
   var pattern = '.*(' + opts.contacts.join('|').replace(/\@/g, '\\@').replace(/\./g, '\\.') + ').*';
+  console.log(pattern);
   query.matches('recipients', '.*' + pattern + '.*');   
   query.descending("sent_date").limit(opts.limit);
   query.find(opts)
