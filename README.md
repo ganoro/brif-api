@@ -1,4 +1,4 @@
 brif-api
 ========
 
-The API and Socket.IO project for Brif
+API and Socket services for the www.brif.us site

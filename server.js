@@ -95,6 +95,7 @@ io.sockets.on('connection', function (socket) {
 	var notifications = require('./route.notifications.js');
 	var mailer = require('./route.mailer.js');
 	var crm = require('./route.crm.js');
+	var tasks = require('./route.tasks.js');	
 	var settings = require('./route.settings.js');
 
 	// setup
@@ -121,6 +122,11 @@ io.sockets.on('connection', function (socket) {
 	// groups & contacts
 	socket.on('contacts:create', proxy(crm.onSocketContactsCreate));
 	socket.on('contacts:latest', proxy(crm.onSocketContactsLatest));
+
+	// tasks
+	socket.on('tasks:list', proxy(tasks.onSocketTasksList));
+	socket.on('tasks:create', proxy(tasks.onSocketTasksCreate));
+	socket.on('tasks:remove', proxy(tasks.onSocketTasksRemove));
 
 	// settings
 	socket.on('settings:set', proxy(settings.onSocketSettingsSet));
