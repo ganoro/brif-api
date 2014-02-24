@@ -78,12 +78,14 @@ var findNear = function(opt) {
   var Messages = model.parse.Object.extend("Messages_" + opt.user_id);
   var query = new model.parse.Query(Messages);
   query.greaterThanOrEqualTo("google_msg_id", opt.google_msg_id)
+    .ascending("google_msg_id")
     .equalTo("recipients_id", opt.recipients_id)
     .limit(opt.limit);
   query.find({
     success : function(resultGreater) {
       var query = new model.parse.Query(Messages);
       query.lessThan("google_msg_id", opt.google_msg_id)
+        .descending("google_msg_id")
         .equalTo("recipients_id", opt.recipients_id)
         .limit(opt.limit);
         query.find({
