@@ -73,7 +73,6 @@ var findByGoogleTrdId = function(opt) {
  */ 
 var findNear = function(opt) {
   console.log("findNear()");
-  console.log(opt)
 
   var Messages = model.parse.Object.extend("Messages_" + opt.user_id);
   var query = new model.parse.Query(Messages);

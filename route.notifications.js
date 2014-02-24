@@ -325,7 +325,6 @@ var messagesFetchThread = function(socket, data, user) {
 
 var messagesNear = function(socket, data, user) {
 	console.log("messagesNear()")
-	console.log(data)
 	var opt = {
 		socket : socket,
 		google_msg_id : data.google_msg_id,
