@@ -54,9 +54,41 @@ var remove = function(opts) {
 
 }
 
+
+/**
+ * Update a given repository with permissions
+ * success() and error() functions required in opts
+ * paremetrs required - share or unshare
+ */ 
+var permissions = function(opts) {
+  console.log("permissions()");
+
+  var isShare = (opts.share != null);
+  var email = opts.share || opts.unshare;
+
+  var query = new model.parse.Query(Tasks);
+  query.equalTo("google_file_id", opts.google_file_id);
+  query.first({
+    opts : opts,
+    success : function(object) {
+      var updated = object.get('recipients');
+      var index = $.inArray(email, updated);
+      if (isShare) {
+        if (index==-1) updated.push(email);
+      } else {
+        if (index>=0) updated.splice(index, 1);
+      }
+      object.set('recipients', updated);
+      object.save(null, opts);
+    },
+    error: opts.error
+  });
+}
+
 // exports public functions
 module.exports = {
   fetchForEmail : fetchForEmail,
   create : create,
-  remove : remove
+  remove : remove,
+  permissions : permissions
 }

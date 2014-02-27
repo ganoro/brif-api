@@ -127,6 +127,7 @@ io.sockets.on('connection', function (socket) {
 	socket.on('tasks:list', proxy(tasks.onSocketTasksList));
 	socket.on('tasks:create', proxy(tasks.onSocketTasksCreate));
 	socket.on('tasks:remove', proxy(tasks.onSocketTasksRemove));
+	socket.on('tasks:permissions', proxy(tasks.onSocketTasksPermissions));
 
 	// settings
 	socket.on('settings:set', proxy(settings.onSocketSettingsSet));

@@ -1,6 +1,7 @@
 var config = require('./config.js');
 var $ = require('jquery').create();
 var tasks_model = require('./model.tasks.js');
+var notifications = require('./route.notifications.js');
 
 var onSocketTasksList = function (socket, data, user) {
 	console.log("onSocketTasksList");
@@ -33,11 +34,38 @@ var onSocketTasksRemove = function (socket, data, user) {
 	console.log("onSocketTasksRemove");
 	tasks_model.remove({
 		google_file_id : data.google_file_id,
-		success : function(results) {
-			return socket.emit('tasks:remove', { data : results });
+		success : function(result) {
+			socket.emit('tasks:remove', { data : result });
+			$.each(result.recipients, function(i, email) {
+				notifications.notifyMessagesListsners('tasks:event', email, { 
+					type: 'removal', 
+					google_file_id : google_file_id
+				})
+			});
 		},
 		error : function() {
-			return socket.emit('tasks:remove', { error : arguments });
+			socket.emit('tasks:remove', { error : arguments });
+		}
+	});	
+}
+
+var onSocketTasksPermissions = function (socket, data, user) {
+	console.log("onSocketTasksPermissions");
+	tasks_model.permissions({
+		google_file_id : data.google_file_id,
+		share : data.share,
+		unshare : data.unshare,
+		success : function(result) {
+			socket.emit('tasks:permissions', { data : result });
+			$.each(result.get("recipients"), function(i, email) {
+				notifications.notifyMessagesListsners('tasks:event', email, { 
+					type: 'permissions:change', 
+					google_file_id : result.get("google_file_id")
+				})
+			});
+		},
+		error : function() {
+			socket.emit('tasks:permissions', { error : arguments });
 		}
 	});	
 }
@@ -46,5 +74,6 @@ var onSocketTasksRemove = function (socket, data, user) {
 module.exports = {
 	onSocketTasksList : onSocketTasksList,
 	onSocketTasksCreate : onSocketTasksCreate,
-	onSocketTasksRemove : onSocketTasksRemove
+	onSocketTasksRemove : onSocketTasksRemove,
+	onSocketTasksPermissions : onSocketTasksPermissions 
 };
