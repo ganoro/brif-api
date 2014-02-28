@@ -8,10 +8,10 @@ var onSocketTasksList = function (socket, data, user) {
 	tasks_model.fetchForEmail({
 		email : user.email,
 		success : function(results) {
-			return socket.emit('tasks:list', { data : results });
+			return socket.emit('repositories:list', { data : results });
 		},
 		error : function() {
-			return socket.emit('tasks:list', { error : arguments });
+			return socket.emit('repositories:list', { error : arguments });
 		}
 	});
 }
@@ -22,10 +22,10 @@ var onSocketTasksCreate = function (socket, data, user) {
 		recipients : data.recipients,
 		google_file_id : data.google_file_id,
 		success : function(results) {
-			return socket.emit('tasks:create', { data : results });
+			return socket.emit('repositories:create', { data : results });
 		},
 		error : function() {
-			return socket.emit('tasks:create', { error : arguments });
+			return socket.emit('repositories:create', { error : arguments });
 		}
 	});	
 }
@@ -35,16 +35,16 @@ var onSocketTasksRemove = function (socket, data, user) {
 	tasks_model.remove({
 		google_file_id : data.google_file_id,
 		success : function(result) {
-			socket.emit('tasks:remove', { data : result });
+			socket.emit('repositories:remove', { data : result });
 			$.each(result.recipients, function(i, email) {
-				notifications.notifyMessagesListsners('tasks:event', email, { 
+				notifications.notifyMessagesListsners('repositories:event', email, { 
 					type: 'removal', 
 					google_file_id : google_file_id
 				})
 			});
 		},
 		error : function() {
-			socket.emit('tasks:remove', { error : arguments });
+			socket.emit('repositories:remove', { error : arguments });
 		}
 	});	
 }
@@ -56,16 +56,16 @@ var onSocketTasksPermissions = function (socket, data, user) {
 		share : data.share,
 		unshare : data.unshare,
 		success : function(result) {
-			socket.emit('tasks:permissions', { data : result });
+			socket.emit('repositories:permissions', { data : result });
 			$.each(result.get("recipients"), function(i, email) {
-				notifications.notifyMessagesListsners('tasks:event', email, { 
+				notifications.notifyMessagesListsners('repositories:event', email, { 
 					type: 'permissions:change', 
 					google_file_id : result.get("google_file_id")
 				})
 			});
 		},
 		error : function() {
-			socket.emit('tasks:permissions', { error : arguments });
+			socket.emit('repositories:permissions', { error : arguments });
 		}
 	});	
 }
