@@ -104,7 +104,10 @@ var onSocketSetup = function(socket, data, user) {
 						subscribeMessagesListener(socket, user);
 
 						// first signin action
-						if (user.get('first_signin')) {
+						console.log("first_signin: ", user.get('first_signin'));
+						console.log("type of first_signin is true? ", typeof (user.get('first_signin')));
+
+						if (user.get('first_signin') || typeof (user.get('first_signin')) === "undefined") {
 							socket.emit('setup:first_signin', { email : user.get("email") });
 							user.set('first_signin', false);
 							user.save();
