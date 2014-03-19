@@ -12,8 +12,13 @@ var findByRecipientsId = function(opts) {
 
   var Messages = model.parse.Object.extend("Messages" + "_" + opts.user_id);
   var query = new model.parse.Query(Messages);
-  query.equalTo("recipients_id", opts.recipients_id)
-    .descending("sent_date")
+  if (opts.recipients_id = "0") {
+    query.exists("unsubscribe");
+  } else {
+    query.equalTo("recipients_id", opts.recipients_id);  
+  }
+  
+  query.descending("sent_date")
     .limit(opts.per_page)
     .skip(opts.page*opts.per_page);
 
