@@ -137,7 +137,7 @@ var fetchAll = function(opts) {
   var Messages = model.parse.Object.extend("Messages_" + opts.user_id);
   var query = new model.parse.Query(Messages);
    
-  query.limit(40)
+  query.limit(40).doesNotExist("unsubscribe")
     .descending("sent_date");
   query.find({
     success: function(results) {
@@ -147,10 +147,9 @@ var fetchAll = function(opts) {
       for (var i = 0; i < results.length && subset.length < 12; i++) {
         var m = results[i];
         var rid = m.get("recipients_id");
-        var unsubscribe = m.get("unsubscribe");
         var idx = $.inArray(rid, recipients_ids)
 
-        if (unsubscribe == null && idx == -1) {
+        if (idx == -1) {
           recipients_ids.push(rid);
           subset.push({ 
             'recipients_id' : rid, 
