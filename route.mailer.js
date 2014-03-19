@@ -55,10 +55,10 @@ var onSocketMessagesUnread = function(socket, data, user) {
 	console.log("onSocketMessagesUnread()");
 	var mailOptions = {
 		email: user.email, 
+		user_id : user.objectId,
 		resolve_all : false,		
 		callback : getUnread,
 		emit : function(results) {
-			// console.log(results);
 			socket.emit('messages:fetch_unread_imap', { data : results});
 		}
 	}
@@ -202,10 +202,36 @@ var getUnread = function(connection, mailOptions) {
 				console.log('Fetch error: ' + err);
 			});
 			f.once('end', function() {
-				mailOptions.emit(data);
+				// message id
+				var google_message_ids = [];
+				$.each(data, function(i, v) {
+					google_message_ids.push (v['a']);
+				});
+				model['messages'].findByGoogleMsgId({
+					google_msg_id : google_message_ids,
+					user_id : mailOptions.user_id,
+					is_only_promotions : true,
+					is_select_unsubscribe : true,
+					success : function(result) {
+						// add the unsubscribe info
+						if (result != null && result.length > 0) {
+							var map = {};
+							$.each(result, function(i, v) {
+								map[v.get("google_msg_id")] = v.get("unsubscribe");
+							}) 
+							$.each(data, function(i, v) {
+								var u = map[v['a']];
+								if (u != null) {
+									v['u'] = u;
+								}
+							});
+						}
+						mailOptions.emit(data);
+						console.log('Done fetching all messages!');
+					}
+				});
 				connection.end();
 				connection.destroy();
-				console.log('Done fetching all messages!');
 			});
       	});
 	});	
