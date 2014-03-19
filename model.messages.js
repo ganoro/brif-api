@@ -115,18 +115,18 @@ var findLatest = function(opts) {
 
   // latest week
   var now = new Date();
-  var weekAgo = new Date(now.setDate(now.getDate() - 7));
-  query.greaterThan('sent_date', {"__type":"Date", "iso": weekAgo.toISOString()})
+  var weeksAgo = new Date(now.setDate(now.getDate() - 14));
+  query.greaterThan('sent_date', {"__type":"Date", "iso": weeksAgo.toISOString()})
 
   // containing contacts
   var pattern = '.*(' + opts.contacts.join('|').replace(/\@/g, '\\@').replace(/\./g, '\\.') + ').*';
-  query.matches('recipients', '.*' + pattern + '.*');   
-  query.descending("sent_date").limit(opts.limit);
+  query.matches('recipients', '.*' + pattern + '.*');
+  query.descending('sent_date').limit(opts.limit);
   query.find(opts)
 }
 
 /**
- * Fetch all messages by user id 
+ * Fetch all messages by user id, omit all promotional messages 
  * success(), error(), unseen_length, seen_length, google_msg_id[] required in opts
  */ 
 var fetchAll = function(opts) {
@@ -147,9 +147,10 @@ var fetchAll = function(opts) {
       for (var i = 0; i < results.length && subset.length < 12; i++) {
         var m = results[i];
         var rid = m.get("recipients_id");
+        var unsubscribe = m.get("unsubscribe");
         var idx = $.inArray(rid, recipients_ids)
 
-        if (idx == -1) {
+        if (unsubscribe == null && idx == -1) {
           recipients_ids.push(rid);
           subset.push({ 
             'recipients_id' : rid, 
