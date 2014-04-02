@@ -127,7 +127,7 @@ var findLatest = function(opts) {
 
   // latest week
   var now = new Date();
-  var weeksAgo = new Date(now.setDate(now.getDate() - 14));
+  var weeksAgo = new Date(now.setDate(now.getDate() - 60));
   query.greaterThan('sent_date', {"__type":"Date", "iso": weeksAgo.toISOString()})
 
   // containing contacts

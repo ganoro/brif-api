@@ -46,7 +46,10 @@ var onSocketMessagesMarkAs = function(socket, data, user) {
 		resolve_all : true,
 		messages_id : data.messages_id,
 		seen : data.seen,
-		callback : markAs
+		callback : markAs,
+		emit : function(results) {
+			socket.emit('messages:markas', { data : results});
+		}
 	}
 	executeMailOptions(user, mailOptions);
 }
@@ -145,6 +148,7 @@ var markAs = function(connection, mailOptions) {
 	console.log("markAs()");
 	connection.openBox(mailOptions.all_folder, false, function(err, box) {
 		function endConnection() {
+			mailOptions.emit(mailOptions.messages_id);
 			console.log("closing imap connection");
 			connection.end();
 			connection.destroy();
