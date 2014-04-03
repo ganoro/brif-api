@@ -172,6 +172,14 @@ var onSocketMessagesFetch = function(socket, data, user) {
 	messagesFetch(socket, user.objectId, data);
 }
 
+var onSocketMessagesFetchByGoogleId = function(socket, data, user) {
+	console.log("onSocketMessagesFetchByGoogleId");
+	if (data.google_msg_id == null || data.recipients_id == null) {
+		// TODO internal error
+	}
+	messagesFetchByGoogleMsgId(socket, data, user);
+}
+
 var onSocketMessagesNear = function(socket, data, user) {
 	console.log("onSocketMessagesNear");
 	if (data.limit == null || data.google_msg_id == null || data.recipients_id == null) {
@@ -262,24 +270,19 @@ var unsubscribeChannelListener = function(channel_id, client_id, socket) {
 	unregisterSocket(channel_id, client_id, socket); 
 };
 
-var messagesFetch = function(socket, user_id, data) {
-	var opts = {
-		per_page : data.per_page, 
-		page : data.page, 
-		recipients_id : data.recipients_id, 
-		only_attachments : data.only_attachments,
-		user_id : user_id, 
-		success : function(data) {
-			console.log('messages:fetch:' + opts.recipients_id);
-			socket.emit('messages:fetch:' + opts.recipients_id , { data : data });
+var messagesFetchByGoogleMsgId = function(socket, data, user) {
+	var ops = {
+		google_msg_id : data.google_msg_id,
+		user_id : user.objectId,
+		success : function(results) {
+			socket.emit('messages:fetch_google_msg_id', { data : results });
 		},
-	    error: function() {
-	    	socket.emit('messages:fetch:' + opts.recipients_id , { error : "error fetching messages" });	
-	    }
+		error : function() {
+			socket.emit('messages:fetch_google_msg_id', { error : arguments });
+		}
 	};
-	model['messages'].findByRecipientsId(opts);
+	model['messages'].findByGoogleMsgId(ops);
 }
-
 
 /**
  * fetch all (read + unread)
@@ -366,6 +369,7 @@ module.exports = {
 	onSocketDisconnect : onSocketDisconnect,
 	onSocketMessagesFetch : onSocketMessagesFetch,
 	onSocketMessagesFetchTimeline : onSocketMessagesFetchTimeline,
+	messagesFetchByGoogleMsgId : messagesFetchByGoogleMsgId,
 	onSocketMessagesFetchThread : onSocketMessagesFetchThread,
 	onSocketMessagesNear : onSocketMessagesNear,
 	onSocketSubscribeChannelsListener : onSocketSubscribeChannelsListener,
