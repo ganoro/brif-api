@@ -112,27 +112,23 @@ var connect = function(token, user, mailOptions) {
 		keepalive : false
 	});
 	connection.on('ready', function() {
-		try {
-			if (mailOptions.resolve_all) {
-				// resolve all mail folder 
-				connection.getBoxes("[Gmail]", function(err, boxes) {
-					var c = boxes['[Gmail]'].children;
-					if (c) {
-						for (var key in c) {
-							var obj = c[key];
-							var attribs = obj['attribs'];
-							if (attribs && $.inArray('\\All', attribs) > -1) {						
-								mailOptions.all_folder = '[Gmail]/' + key;
-								return mailOptions.callback(connection, mailOptions);
-							}
+		if (mailOptions.resolve_all) {
+			// resolve all mail folder 
+			connection.getBoxes("[Gmail]", function(err, boxes) {
+				var c = boxes['[Gmail]'].children;
+				if (c) {
+					for (var key in c) {
+						var obj = c[key];
+						var attribs = obj['attribs'];
+						if (attribs && $.inArray('\\All', attribs) > -1) {						
+							mailOptions.all_folder = '[Gmail]/' + key;
+							return mailOptions.callback(connection, mailOptions);
 						}
 					}
-				});
-			} else {
-				return mailOptions.callback(connection, mailOptions);	
-			}
-		} finally {
-			connection.end();
+				}
+			});
+		} else {
+			return mailOptions.callback(connection, mailOptions);	
 		}
 	});
 	connection.on('error', function(err) {
