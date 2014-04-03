@@ -270,6 +270,24 @@ var unsubscribeChannelListener = function(channel_id, client_id, socket) {
 	unregisterSocket(channel_id, client_id, socket); 
 };
 
+var messagesFetch = function(socket, user_id, data) {
+	var opts = {
+		per_page : data.per_page, 
+		page : data.page, 
+		recipients_id : data.recipients_id, 
+		only_attachments : data.only_attachments,
+		user_id : user_id, 
+		success : function(data) {
+			console.log('messages:fetch:' + opts.recipients_id);
+			socket.emit('messages:fetch:' + opts.recipients_id , { data : data });
+		},
+	    error: function() {
+	    	socket.emit('messages:fetch:' + opts.recipients_id , { error : "error fetching messages" });	
+	    }
+	};
+	model['messages'].findByRecipientsId(opts);
+}
+
 var messagesFetchByGoogleMsgId = function(socket, data, user) {
 	var ops = {
 		google_msg_id : data.google_msg_id,
