@@ -54,7 +54,7 @@ var findByGoogleMsgId = function(opts) {
   var agg = model.parse.Query.or.apply(null, queries);
   // select only required fields
   if (opts.is_select_unsubscribe) {
-    agg.select("unsubscribe", "google_msg_id");
+    agg.select("unsubscribe", "google_msg_id", "recipients", "recipients_names", "recipients_id");
   }
   agg.find(opts);    
 }

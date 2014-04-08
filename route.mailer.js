@@ -51,11 +51,16 @@ var onSocketMessagesMarkAs = function(socket, data, user) {
 			socket.emit('messages:markas', { data : results});
 		}
 	}
+	if (typeof mailOptions.messages_id === "undefined" || mailOptions.messages_id.length == 0) {
+		return mailOptions.emit([]);
+	}
+	
 	executeMailOptions(user, mailOptions);
 }
 
 var onSocketMessagesUnread = function(socket, data, user) {
 	console.log("onSocketMessagesUnread()");
+	if 
 	var mailOptions = {
 		email: user.email, 
 		user_id : user.objectId,
