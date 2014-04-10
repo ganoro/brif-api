@@ -332,4 +332,3 @@ module.exports = {
 	onSocketMessagesSearch :onSocketMessagesSearch,
 	onSocketMessagesMarkAs : onSocketMessagesMarkAs
 };
-
