@@ -181,12 +181,13 @@ var getUnread = function(connection, mailOptions) {
 	connection.openBox('INBOX', false, function(err, box) {
 		if (err) return;
 		connection.search([ 'UNSEEN'], function(err, results) {
-			if (err) return;
-			if (results == null || results.length ==0) {
+			if (err || results == null || results.length ==0) {
+				mailOptions.emit([]);
 				connection.end();
 				connection.destroy();
-				return mailOptions.emit(results);
+				return
 			}
+			console.log("unread: ", results.length);
 		    var f = connection.fetch(results, { 
 				bodies: 'HEADER.FIELDS (FROM TO CC DATE)',
 		    });
