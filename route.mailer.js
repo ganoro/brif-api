@@ -202,7 +202,6 @@ var getUnread = function(connection, mailOptions) {
 			});
 			f.once('end', function() {
 				// fetch metadata from db
-				console.log(google_message_ids);
 				model['messages'].findByGoogleMsgId({
 					google_msg_id : google_message_ids,
 					user_id : mailOptions.user_id,
