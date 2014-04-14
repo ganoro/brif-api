@@ -213,9 +213,7 @@ var getUnread = function(connection, mailOptions) {
 					is_only_promotions : true,
 					is_select_special : true,
 					success : function(result) {
-						console.log(result)
-
-						mailOptions.emit({ data : result });
+						mailOptions.emit(result);
 						console.log('Done fetching all messages! found: ', result.length);
 					}
 				});
