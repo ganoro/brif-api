@@ -191,26 +191,21 @@ var getUnread = function(connection, mailOptions) {
 		    var f = connection.fetch(results, { 
 				bodies: 'HEADER.FIELDS (FROM TO CC DATE)',
 		    });
-		    var data = {};
+		    var google_message_ids = [];
 			f.on('message', function(msg, seqno) {
-				data[seqno] = {};
 				msg.once('attributes', function(attrs) {
-					data[seqno]['a'] = attrs["x-gm-msgid"];
+					google_message_ids.push(attrs["x-gm-msgid"]);
 				});
 			});
 			f.once('error', function(err) {
 				console.log('Fetch error: ' + err);
 			});
 			f.once('end', function() {
-				// message id
-				var google_message_ids = [];
-				$.each(data, function(i, v) {
-					google_message_ids.push (v['a']);
-				});
+				// fetch metadata from db
+				console.log(google_message_ids);
 				model['messages'].findByGoogleMsgId({
 					google_msg_id : google_message_ids,
 					user_id : mailOptions.user_id,
-					is_only_promotions : true,
 					is_select_special : true,
 					success : function(result) {
 						mailOptions.emit(result);
