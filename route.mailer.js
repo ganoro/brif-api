@@ -194,15 +194,6 @@ var getUnread = function(connection, mailOptions) {
 		    var data = {};
 			f.on('message', function(msg, seqno) {
 				data[seqno] = {};
-				msg.on('body', function(stream, info) {
-					var buffer = '';
-					stream.on('data', function(chunk) {
-						buffer += chunk.toString('utf8');
-					});
-					stream.once('end', function() {
-						data[seqno]['h'] = imap.parseHeader(buffer);
-					});
-				});
 				msg.once('attributes', function(attrs) {
 					data[seqno]['a'] = attrs["x-gm-msgid"];
 				});
@@ -220,23 +211,12 @@ var getUnread = function(connection, mailOptions) {
 					google_msg_id : google_message_ids,
 					user_id : mailOptions.user_id,
 					is_only_promotions : true,
-					is_select_unsubscribe : true,
+					is_select_special : true,
 					success : function(result) {
-						// add the unsubscribe info
-						if (result != null && result.length > 0) {
-							var map = {};
-							$.each(result, function(i, v) {
-								map[v.get("google_msg_id")] = v.get("unsubscribe");
-							}) 
-							$.each(data, function(i, v) {
-								var u = map[v['a']];
-								if (u != null) {
-									v['u'] = u;
-								}
-							});
-						}
-						mailOptions.emit(data);
-						console.log('Done fetching all messages!');
+						console.log(result)
+
+						mailOptions.emit({ data : result });
+						console.log('Done fetching all messages! found: ', result.length);
 					}
 				});
 				connection.end();

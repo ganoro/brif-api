@@ -48,13 +48,15 @@ var findByGoogleMsgId = function(opts) {
     if (opts.is_only_promotions) {
       query.exists("unsubscribe");
     }
+    if (opts.is_select_special) {
+      query.select("unsubscribe", "google_msg_id", "recipients", "recipients_names", "recipients_id", "message_id");
+    }
   	query.equalTo("google_msg_id", opts.google_msg_id[i]);
   	queries.push(query);
   };
   var agg = model.parse.Query.or.apply(null, queries);
-  // select only required fields
-  if (opts.is_select_unsubscribe) {
-    agg.select("unsubscribe", "google_msg_id", "recipients", "recipients_names", "recipients_id");
+  if (opts.is_select_special) {
+    agg.select("unsubscribe", "google_msg_id", "recipients", "recipients_names", "recipients_id", "message_id");
   }
   agg.find(opts);    
 }
