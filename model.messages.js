@@ -151,14 +151,14 @@ var fetchAll = function(opts) {
   var Messages = model.parse.Object.extend("Messages_" + opts.user_id);
   var query = new model.parse.Query(Messages);
    
-  query.limit(40).doesNotExist("unsubscribe")
-    .descending("sent_date");
+  query.limit(60).doesNotExist("unsubscribe")
+    .descending("sent_date").select('recipients_id', 'recipients', 'recipients_names', 'sent_date');
   query.find({
     success: function(results) {
       var recipients_ids = [];
       var subset = [];
 
-      for (var i = 0; i < results.length && subset.length < 12; i++) {
+      for (var i = 0; i < results.length && recipients_ids.length < 20; i++) {
         var m = results[i];
         var rid = m.get("recipients_id");
         var idx = $.inArray(rid, recipients_ids)
