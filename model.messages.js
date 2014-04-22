@@ -165,12 +165,7 @@ var fetchAll = function(opts) {
 
         if (idx == -1) {
           recipients_ids.push(rid);
-          subset.push({ 
-            'recipients_id' : rid, 
-            'recipients' : m.get("recipients"), 
-            'recipients_names' : m.get("recipients_names"), 
-            'sent_date' : m.get("sent_date")
-          });
+          subset.push(m);
         }
       };
       opts.success(subset);
