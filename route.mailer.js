@@ -188,8 +188,15 @@ var getUnread = function(connection, mailOptions) {
 				return
 			}
 			console.log("unread: ", results.length);
+			console.log("last:", results.slice(-20, -1));
+
+			if (results.length > 20) {
+				results = results.slice(0,20);
+				console.log("first: ", results);
+			}
+
 		    var f = connection.fetch(results, { 
-				bodies: 'HEADER.FIELDS (FROM TO CC DATE)',
+				bodies: 'HEADER.FIELDS (FROM)',
 		    });
 		    var google_message_ids = [];
 			f.on('message', function(msg, seqno) {
@@ -201,10 +208,6 @@ var getUnread = function(connection, mailOptions) {
 				console.log('Fetch error: ' + err);
 			});
 			f.once('end', function() {
-				if (google_message_ids.length > 20) {
-					google_message_ids = google_message_ids.slice(0,20);
-				}
-
 				// fetch metadata from db
 				model['messages'].findByGoogleMsgId({
 					google_msg_id : google_message_ids,
