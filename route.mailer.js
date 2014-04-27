@@ -188,11 +188,9 @@ var getUnread = function(connection, mailOptions) {
 				return
 			}
 			console.log("unread: ", results.length);
-			console.log("last:", results.slice(-20, -1));
 
 			if (results.length > 20) {
-				results = results.slice(0,20);
-				console.log("first: ", results);
+				results = results.slice(-20);
 			}
 
 		    var f = connection.fetch(results, { 
