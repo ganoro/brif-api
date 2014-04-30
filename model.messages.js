@@ -51,7 +51,7 @@ var findByGoogleMsgId = function(opts) {
     if (opts.is_select_special) {
       query.select("unsubscribe", "google_msg_id", "recipients", "recipients_names", "recipients_id", "message_id", "sent_date");
     }
-  	query.equalTo("google_msg_id", opts.google_msg_id[i]);
+  	query.equalTo("google_msg_id", opts.google_msg_id[i].toString());
   	queries.push(query);
   };
   var agg = model.parse.Query.or.apply(null, queries);
