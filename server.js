@@ -95,7 +95,8 @@ io.sockets.on('connection', function (socket) {
 	var notifications = require('./route.notifications.js');
 	var mailer = require('./route.mailer.js');
 	var crm = require('./route.crm.js');
-	var tasks = require('./route.tasks.js');	
+	var tasks = require('./route.tasks.js');
+	var ice = require('./route.ice.js');	
 	var settings = require('./route.settings.js');
 
 	// setup
@@ -129,6 +130,9 @@ io.sockets.on('connection', function (socket) {
 	socket.on('repositories:create', proxy(tasks.onSocketTasksCreate));
 	socket.on('repositories:remove', proxy(tasks.onSocketTasksRemove));
 	socket.on('repositories:permissions', proxy(tasks.onSocketTasksPermissions));
+
+	// task repositories
+	socket.on('ice:room', proxy(ice.onSocketCreateRoom));
 
 	// settings
 	socket.on('settings:set', proxy(settings.onSocketSettingsSet));

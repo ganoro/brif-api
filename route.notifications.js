@@ -1,7 +1,6 @@
 var config = require('./config.js');
 var xoauth2 = require("xoauth2");
 var minpubsub = require('minpubsub/minpubsub');
-var request = require('request');
 var xml2js = require('xml2js').parseString;
 var $ = require('jquery').create();
 var templates = require('./templates.js');
