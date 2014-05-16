@@ -136,6 +136,7 @@ var connect = function(token, user, mailOptions) {
 		}
 	});
 	connection.on('error', function(err) {
+		mailOptions.emit([]);
 		console.log(err);
 		connection.end();
 	});
