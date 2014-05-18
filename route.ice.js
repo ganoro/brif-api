@@ -8,7 +8,7 @@ var onSocketCreateRoom = function (socket, data, user) {
   	var form =  {
 		ident: "roybrif",
 		secret: "e8231a53-e1b7-406e-81fa-367d46da6778",
-		domain: data.host,
+		domain: data.domain,
 		application: "default",
 		room: data.room,
 		secure: 1
