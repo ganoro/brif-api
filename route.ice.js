@@ -4,11 +4,13 @@ var request = require('request');
 
 
 var onSocketCreateRoom = function (socket, data, user) {
+	console.log("socket", socket);
+
 	console.log("onSocketCreateRoom");
   	var form =  {
 		ident: "roybrif",
 		secret: "e8231a53-e1b7-406e-81fa-367d46da6778",
-		domain: "staging.brif.us",
+		domain: data.host,
 		application: "default",
 		room: data.room,
 		secure: 1

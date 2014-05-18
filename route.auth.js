@@ -46,7 +46,7 @@ exports.signin_plus = function(req, res){
 			data.origin = origin;
 			processSignup(data);
 		} else {
-			sendPostMessage(res, 'google_error' +  data.error);
+			sendPostMessage(res, 'google_error', data);
 		}
 	});
 };
@@ -123,8 +123,8 @@ exports.refresh_token = function(req, res) {
 /**
  * post message to opener
  */
-var sendPostMessage = function(res, message) {
-	res.send("<script>window.opener.postMessage('" + message + "', '*');window.close();</script>"); 
+var sendPostMessage = function(res, message, parameters) {
+	res.send(JSON.stringify({ status: message , parameters : parameters})); 
 }
 
 /**
