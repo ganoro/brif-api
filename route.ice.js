@@ -20,7 +20,8 @@ var onSocketCreateRoom = function (socket, data, user) {
 		form : form
 	}, function(e, r, body) {
 		var data = JSON.parse(body);
-		console.log(data.d);
+		console.log("data", data.d);
+		console.log("form", form)
 		socket.emit('ice:room', { data : data.d })
 	});
 }
