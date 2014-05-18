@@ -4,8 +4,6 @@ var request = require('request');
 
 
 var onSocketCreateRoom = function (socket, data, user) {
-	console.log("socket", socket);
-
 	console.log("onSocketCreateRoom");
   	var form =  {
 		ident: "roybrif",
@@ -22,6 +20,7 @@ var onSocketCreateRoom = function (socket, data, user) {
 		form : form
 	}, function(e, r, body) {
 		var data = JSON.parse(body);
+		console.log(data.d);
 		socket.emit('ice:room', { data : data.d })
 	});
 }
