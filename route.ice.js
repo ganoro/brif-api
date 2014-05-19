@@ -23,17 +23,17 @@ var onSocketCreateRoom = function (socket, data, user) {
 		if (e) {
 			return socket.emit('ice:room', { error : e })
 		}
-		var data = JSON.parse(body);
-		if (data.s == 201 || data.s == 409) {
+		var result = JSON.parse(body);
+		if (result.s == 201 || result.s == 409) {
 			request({
 				method: 'POST', 
 				uri: 'https://api.xirsys.com/getIceServers',
 				headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
 				form : form
 			}, function(e, r, body) {
-				var data = JSON.parse(body);
-				console.log("data", data);
-				socket.emit('ice:room', { data : data.d })
+				var result = JSON.parse(body);
+				console.log("result - ", data.domain, data.room, result.d);
+				socket.emit('ice:room', { data : result.d })
 			});
 		}
 	});
