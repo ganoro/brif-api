@@ -36,7 +36,7 @@ var onSocketTasksRemove = function (socket, data, user) {
 		google_file_id : data.google_file_id,
 		success : function(result) {
 			socket.emit('repositories:remove', { data : result });
-			$.each(result.recipients, function(i, email) {
+			$.each(result.get("recipients"), function(i, email) {
 				console.log(result.get("google_file_id"))
 				notifications.notifyMessagesListsners('repositories:event', email, { 
 					type: 'removal', 
