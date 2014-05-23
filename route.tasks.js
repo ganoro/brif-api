@@ -40,7 +40,7 @@ var onSocketTasksRemove = function (socket, data, user) {
 			$.each(result.recipients, function(i, email) {
 				notifications.notifyMessagesListsners('repositories:event', email, { 
 					type: 'removal', 
-					google_file_id : google_file_id
+					google_file_id : result.get("google_file_id")
 				})
 			});
 		},
