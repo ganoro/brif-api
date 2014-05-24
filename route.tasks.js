@@ -38,7 +38,7 @@ var onSocketTasksRemove = function (socket, data, user) {
 			socket.emit('repositories:remove', { data : result });
 			$.each(result.get("recipients"), function(i, email) {
 				notifications.notifyMessagesListsners('repositories:event', email, { 
-					type: 'removal', 
+					type: 'remove', 
 					google_file_id : result.get("google_file_id")
 				})
 			});
@@ -57,7 +57,7 @@ var onSocketTasksPermissions = function (socket, data, user) {
 		unshare : data.unshare,
 		success : function(result) {
 			socket.emit('repositories:permissions', { data : result });
-			$.each(result.get("recipients"), function(i, email) {
+			$.each($.merge(result.get("recipients"), [ data.share || data.unshare ]) , function(i, email) {
 				notifications.notifyMessagesListsners('repositories:event', email, { 
 					type: 'permissions:change', 
 					google_file_id : result.get("google_file_id")
