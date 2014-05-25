@@ -13,6 +13,7 @@ var $ = require('jquery').create();
 var routes = {}; 
 routes['auth'] = require('./route.auth.js');
 routes['notifications'] = require('./route.notifications.js');
+routes['ice'] = require('./route.ice.js');
 
 /**
  * initialize express app
@@ -37,6 +38,8 @@ app.post('/auth/signin-plus'     , routes['auth'].signin_plus);
 app.post('/auth/mobile-signin'   , routes['auth'].mobile_signin);
 app.post('/auth/refresh-token'   , routes['auth'].refresh_token);
 app.post('/notifications/trigger', routes['notifications'].notify); 
+app.post('/meeting/joinRoom'	 , routes['ice'].postJoinRoom); 
+
 
 // TBD Upload, very generic
 app.post('/attachments/upload', function(req, res) {

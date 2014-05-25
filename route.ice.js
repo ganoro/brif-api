@@ -2,11 +2,38 @@ var config = require('./config.js');
 var $ = require('jquery').create();
 var request = require('request');
 
-
+// socket based
 var onSocketCreateRoom = function (socket, data, user) {
-	console.log("onSocketCreateRoom");
+	console.log("onSocketCreateRoom()");
 
-  	var form =  {
+	joinRoom(data, function(result) {
+		return socket.emit('ice:room', result);
+	}, function(e) {
+		return socket.emit('ice:room', e);
+	});
+}
+
+// rest based
+var postJoinRoom = function(req, res){
+	console.log("onSocketCreateRoom()");
+
+	var data = req.body; 
+	joinRoom(data, function(result) {
+		return res.send(JSON.stringify(result)); 
+	}, function(e) {
+		res.status(400).send(JSON.stringify(e));	
+		return;
+	});
+};
+
+var joinRoom = function(data, success, failure) {
+	console.log("joinRoom()");
+
+	if (!data || data.domain == null || data.room == null) {
+		return failure({ error : "Illegal argument call, data is: " + data });
+	}
+
+	var form =  {
 		ident: "roybrif",
 		secret: "e8231a53-e1b7-406e-81fa-367d46da6778",
 		domain: data.domain,
@@ -21,7 +48,7 @@ var onSocketCreateRoom = function (socket, data, user) {
 		form : form
 	}, function(e, r, body) {
 		if (e) {
-			return socket.emit('ice:room', { error : e })
+			return failure({ error : e }); 
 		}
 		var result = JSON.parse(body);
 		if (result.s == 201 || result.s == 409) {
@@ -33,7 +60,7 @@ var onSocketCreateRoom = function (socket, data, user) {
 			}, function(e, r, body) {
 				var result = JSON.parse(body);
 				console.log("result - ", data.domain, data.room, result.d);
-				socket.emit('ice:room', { data : result.d })
+				success({ data : result.d });
 			});
 		}
 	});
@@ -41,5 +68,6 @@ var onSocketCreateRoom = function (socket, data, user) {
 
 // exports public functions
 module.exports = {
-	onSocketCreateRoom : onSocketCreateRoom
+	onSocketCreateRoom : onSocketCreateRoom,
+	postJoinRoom : postJoinRoom
 };
