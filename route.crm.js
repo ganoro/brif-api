@@ -52,6 +52,11 @@ var contactsManage = function(socket, data, user) {
 	// remove email duplicates
 	data.email = removeDuplicates(data.email);
 
+	// verify arguments vaidation
+	if (data.email.length == 0) {
+		return errorCallback("empty list of emails provided");
+	}
+
 	// conatct managment (one contact details)
 	if (data.email.length == 1) {
 
