@@ -53,7 +53,7 @@ var onSocketTasksPermissions = function (socket, data, user) {
 	console.log("onSocketTasksPermissions");
 	tasks_model.permissions({
 		google_file_id : data.google_file_id,
-		email : data.email
+		email : data.email,
 		share : data.share,
 		unshare : data.unshare,
 		success : function(result) {
