@@ -27,11 +27,13 @@ var fetchForEmail = function(opts) {
 var create = function(opts) {
   console.log("create()");
   var task = new Tasks();
-  task.set({
+  var attributes = {
     google_recipients_ids : opts.google_recipients_ids,
     recipients : opts.recipients,
     google_file_id : opts.google_file_id
-  });
+  };
+  console.log(attributes);
+  task.set(attributes);
   task.save(null, opts);
 }
 
