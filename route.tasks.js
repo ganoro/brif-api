@@ -18,6 +18,7 @@ var onSocketTasksList = function (socket, data, user) {
 
 var onSocketTasksCreate = function (socket, data, user) {
 	console.log("onSocketTasksCreate");
+	console.log(data);
 	tasks_model.create({
 		google_recipients_ids : data.google_recipients_ids,
 		recipients : data.recipients,
