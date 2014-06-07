@@ -32,7 +32,6 @@ var create = function(opts) {
     recipients : opts.recipients,
     google_file_id : opts.google_file_id
   };
-  console.log(attributes);
   task.set(attributes);
   task.save(null, opts);
 }
@@ -68,7 +67,7 @@ var permissions = function(opts) {
 
   var isShare = (opts.share != null);
   var id = opts.share || opts.unshare;
-  var email = opt.email;
+  var email = opts.email;
 
   var query = new model.parse.Query(Tasks);
   query.equalTo("google_file_id", opts.google_file_id);
@@ -77,6 +76,8 @@ var permissions = function(opts) {
     success : function(object) {
       var updated = object.get('recipients');
       var updated_ids = object.get('google_recipients_ids');
+
+
       var index = $.inArray(email, updated);
       if (isShare) {
         if (index==-1) {
