@@ -66,13 +66,11 @@ var onSocketMessagesUnread = function(socket, data, user) {
 		resolve_all : false,		
 		callback : getUnread,
 		emit : function(google_message_ids) {
-			// fetch metadata from db
 			model['messages'].findByGoogleMsgId({
 				google_msg_id : google_message_ids,
 				user_id : mailOptions.user_id,
-				is_select_special : true,
+				is_select_special : false,
 				success : function(result) {
-					console.log("socket is an object? ", socket != null)
 					socket.emit('messages:fetch_unread_imap', { data : result});
 					console.log('Done fetching all messages! found: ', result.length);
 				}
