@@ -62,6 +62,23 @@ var findByGoogleMsgId = function(opts) {
 }
 
 /**
+ * Fetch messages by user id and given message id. Returns the latest messages
+ * success() and error() functions required in opts
+ * paremetrs required - google_msg_id
+ */ 
+var fetchAfterMsgId = function(opts) {
+  console.log("fetchAfterMsgId()");
+  if (!opts.message_id) {
+    return opts.success([]);
+  }
+  
+  var Messages = model.parse.Object.extend("Messages_" + opts.user_id);
+  var query = new model.parse.Query(Messages);
+  query.greaterThan("message_id", opts.message_id);
+  query.find(opts);    
+}
+
+/**
  * Find messages by user id and thread id
  * success() and error() functions required in opts
  * paremetrs required - google_trd_id 
@@ -184,5 +201,6 @@ module.exports = {
   findByGoogleTrdId : findByGoogleTrdId,
   findLatest : findLatest,
   findNear : findNear,
-  findByRecipientsId : findByRecipientsId
+  findByRecipientsId : findByRecipientsId,
+  fetchAfterMsgId : fetchAfterMsgId
 }
