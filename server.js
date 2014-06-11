@@ -123,6 +123,7 @@ io.sockets.on('connection', function (socket) {
 	socket.on('messages:markas', proxy(mailer.onSocketMessagesMarkAs));
 	socket.on('messages:search', proxy(mailer.onSocketMessagesSearch));
 	socket.on('messages:fetch_unread_imap', proxy(mailer.onSocketMessagesUnread));
+	socket.on('messages:next_of', proxy(mailer.onSocketMessagesNextOf));
 
 	// groups & contacts
 	socket.on('contacts:create', proxy(crm.onSocketContactsCreate));
