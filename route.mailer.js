@@ -65,11 +65,59 @@ var onSocketMessagesUnread = function(socket, data, user) {
 		user_id : user.objectId,
 		resolve_all : false,		
 		callback : getUnread,
-		emit : function(results) {
-			socket.emit('messages:fetch_unread_imap', { data : results});
+		emit : function(google_message_ids) {
+			// fetch metadata from db
+			model['messages'].findByGoogleMsgId({
+				google_msg_id : google_message_ids,
+				user_id : mailOptions.user_id,
+				is_select_special : true,
+				success : function(result) {
+					console.log("socket is an object? ", socket != null)
+					socket.emit('messages:fetch_unread_imap', { data : result});
+					console.log('Done fetching all messages! found: ', result.length);
+				}
+			});
 		}
 	}
 	executeMailOptions(user, mailOptions);
+}
+
+/**
+ * Search for new messages after a given google_message_id
+ **/
+var onSocketMessagesNextOf = function(socket, data, user) {
+	var opts = {
+		message_id : data.message_id,
+		user_id : user.objectId,
+		success : function(results) {
+			if (results.length == 0) {
+				return socket.emit('messages:next_of', { data : [] });
+			}
+			var mailOptions = {
+				email: user.email, 
+				user_id : user.objectId,
+				resolve_all : false,		
+				callback : getUnread,
+				emit : function(google_message_ids) {
+					var next = [];
+					for (var i = results.length - 1; i >= 0; i--) {
+						results[i].unseen = google_message_ids.indexOf(results[i].google_message_id) != -1;
+						if (results[i].unseen || !results[i].unsubscribe) {
+							next.push(results[i]);
+						}
+					};
+					console.log(next.length)
+					socket.emit('messages:next_of', { data : next });
+				}
+			}
+			executeMailOptions(user, mailOptions);
+		},
+		error : function() {
+			socket.emit('messages:next_of', { error : arguments });
+		}
+	}
+
+	model['messages'].fetchAfterMsgId(opts);
 }
 
 var onSocketMessagesSearch = function(socket, data, user) {
@@ -207,16 +255,7 @@ var getUnread = function(connection, mailOptions) {
 				console.log('Fetch error: ' + err);
 			});
 			f.once('end', function() {
-				// fetch metadata from db
-				model['messages'].findByGoogleMsgId({
-					google_msg_id : google_message_ids,
-					user_id : mailOptions.user_id,
-					is_select_special : true,
-					success : function(result) {
-						mailOptions.emit(result);
-						console.log('Done fetching all messages! found: ', result.length);
-					}
-				});
+				mailOptions.emit(google_message_ids);
 				connection.end();
 				connection.destroy();
 			});
@@ -308,5 +347,6 @@ module.exports = {
 	onSocketMessagesSend : onSocketMessagesSend,
 	onSocketMessagesUnread :onSocketMessagesUnread,
 	onSocketMessagesSearch :onSocketMessagesSearch,
-	onSocketMessagesMarkAs : onSocketMessagesMarkAs
+	onSocketMessagesMarkAs : onSocketMessagesMarkAs,
+	onSocketMessagesNextOf : onSocketMessagesNextOf
 };
