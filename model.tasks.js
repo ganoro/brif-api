@@ -77,14 +77,14 @@ var permissions = function(opts) {
       var updated = object.get('recipients');
       var updated_ids = object.get('google_recipients_ids');
 
-
-      var index = $.inArray(email, updated);
       if (isShare) {
+        var index = $.inArray(email, updated);
         if (index==-1) {
           updated.push(email);
           updated_ids.push(id);
         }
       } else {
+        var index = $.inArray(email, updated_ids);
         if (index>=0) {
           updated.splice(index, 1);
           updated_ids.splice(index, 1);
