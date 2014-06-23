@@ -336,7 +336,7 @@ var messagesFetchThread = function(socket, data, user) {
 				count : messages.length,
 				data : messages.slice(0, Math.min(messages.length, data.per_page))
 			}
-			opt.socket.emit('messages:fetch_thread', result);
+			opt.socket.emit('messages:fetch_thread:' + data.google_trd_id, result);
 		},
 		error : function(e) {
 			// TODO : handle errors
