@@ -333,14 +333,22 @@ var messagesFetchThread = function(socket, data, user) {
 		per_page : data.per_page,
 		page : data.page,
 		success : function(messages) {
-			console.log("emitting messages");
-			opt.socket.emit('messages:fetch_thread', { data : messages });
+			var result = {
+				count : messages.length,
+				data : messages.slice(0, Math.min(messages.length, data.per_page))
+			}
+			opt.socket.emit('messages:fetch_thread', result);
 		},
 		error : function(e) {
 			// TODO : handle errors
 		}
 	}
-	model['messages'].findByGoogleTrdId(opt);
+	if (data.page == 0) {
+		model['messages'].findFirstPageByGoogleTrdId(opt)
+	} else {
+		model['messages'].findByGoogleTrdId(opt);
+	}
+	
 }
 
 var messagesNear = function(socket, data, user) {
