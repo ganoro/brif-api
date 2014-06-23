@@ -310,7 +310,6 @@ var messagesFetchTimeline = function(socket, data, user) {
 	var opt = {
 		user_id : user.objectId,
 		success : function(messages) {
-			console.log("emitting messages");
 			socket.emit('messages:fetch_timeline', { data : messages });
 		},
 		error : function(e) {
