@@ -116,6 +116,25 @@ var findFirstPageByGoogleTrdId = function(opt) {
   query.find(opt);    
 }
 
+
+/**
+ * Find messages of the first page by user id and thread id
+ * success() and error() functions required in opts
+ * paremetrs required - google_trd_id 
+ */ 
+var findPreviousThreads = function(opt) {
+  console.log("findPreviousThreads()");
+
+  var Messages = model.parse.Object.extend("Messages_" + opt.user_id);
+  var query = new model.parse.Query(Messages);
+  query.lessThan("google_msg_id", opt.google_msg_id)
+    .equalTo("recipients_id", opt.recipients_id)
+    .descending("sent_date")
+    .select('google_trd_id', 'recipients_id', 'recipients', 'recipients_names', 'sent_date', 'intro', 'subject')
+    .limit(20);
+  query.find(opt);    
+}
+
 /**
  * Find messages near a given google message id
  * success() and error() functions required in opts
@@ -222,5 +241,6 @@ module.exports = {
   findLatest : findLatest,
   findNear : findNear,
   findByRecipientsId : findByRecipientsId,
-  fetchAfterMsgId : fetchAfterMsgId
+  fetchAfterMsgId : fetchAfterMsgId,
+  findPreviousThreads : findPreviousThreads
 }

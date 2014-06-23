@@ -163,6 +163,11 @@ var onSocketMessagesFetchThread = function(socket, data, user) {
 	messagesFetchThread(socket, data, user);
 }
 
+var onSocketMessagesFetchPreviousThreads = function(socket, data, user) {
+	console.log("onSocketMessagesFetchPreviousThreads()");
+	messagesLoadPreviousThreads(socket, data, user);
+}
+
 var onSocketMessagesFetch = function(socket, data, user) {
 	console.log("onSocketMessagesFetch");
 	if (data.per_page == null || data.page == null || data.recipients_id == null) {
@@ -347,7 +352,34 @@ var messagesFetchThread = function(socket, data, user) {
 	} else {
 		model['messages'].findByGoogleTrdId(opt);
 	}
-	
+}
+
+var messagesLoadPreviousThreads = function(socket, data, user) {
+	console.log("messagesFetchThread()")
+	var opt = {
+		socket : socket,
+		google_trd_id : data.google_trd_id,
+		google_msg_id : data.google_msg_id,
+		recipients_id : data.recipients_id,
+		user_id : user.objectId,
+		success : function(messages) {
+      		var result = [];
+      		var result_trd_id = [ data.google_trd_id ];
+			for (var i = 0; i < messages.length; i++) {
+				var m = messages[i];
+				var trd_id = m.get("google_trd_id");
+				if ($.inArray(trd_id, result_trd_id) == -1) {
+					result.push(m);
+					result_trd_id.push(trd_id);
+				}
+			};
+			opt.socket.emit('messages:fetch_previous_threads', result);
+		},
+		error : function(e) {
+			// TODO : handle errors
+		}
+	}
+	model['messages'].findPreviousThreads(opt);
 }
 
 var messagesNear = function(socket, data, user) {
@@ -395,6 +427,7 @@ module.exports = {
 	onSocketMessagesFetchTimeline : onSocketMessagesFetchTimeline,
 	messagesFetchByGoogleMsgId : messagesFetchByGoogleMsgId,
 	onSocketMessagesFetchThread : onSocketMessagesFetchThread,
+	onSocketMessagesFetchPreviousThreads : onSocketMessagesFetchPreviousThreads,
 	onSocketMessagesNear : onSocketMessagesNear,
 	onSocketSubscribeChannelsListener : onSocketSubscribeChannelsListener,
 	onSocketUnsubscribeChannelsListener : onSocketUnsubscribeChannelsListener,

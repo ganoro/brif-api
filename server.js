@@ -110,6 +110,7 @@ io.sockets.on('connection', function (socket) {
 	socket.on('messages:fetch', proxy(notifications.onSocketMessagesFetch));
 	socket.on('messages:fetch_timeline', proxy(notifications.onSocketMessagesFetchTimeline));
 	socket.on('messages:fetch_thread', proxy(notifications.onSocketMessagesFetchThread));
+	socket.on('messages:fetch_previous_threads', proxy(notifications.onSocketMessagesFetchPreviousThreads));
 	socket.on('messages:fetch_google_msg_id', proxy(notifications.messagesFetchByGoogleMsgId));
 	socket.on('messages:near', proxy(notifications.onSocketMessagesNear));
 
