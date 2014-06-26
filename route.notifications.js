@@ -337,7 +337,6 @@ var messagesFetchThread = function(socket, data, user) {
 		per_page : data.per_page,
 		page : data.page,
 		success : function(messages) {
-			console.log(messages.length)
 			var result = {
 				count : messages.length,
 				data : messages.slice(0, Math.min(messages.length, data.per_page))
