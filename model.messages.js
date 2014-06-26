@@ -92,7 +92,7 @@ var findByGoogleTrdId = function(opt) {
     .equalTo("recipients_id", opt.recipients_id)
     .descending("sent_date")
     .limit(opt.per_page)
-    .select("google_msg_id", "message_id", "sent_date", "content", "attachments", "sender_name", "recipients_names")
+    .select("google_msg_id", "message_id", "sent_date", "content", "intro", "attachments", "sender_name", "recipients_names")
     .skip(opt.page*opt.per_page);
 
   query.find(opt);    
@@ -112,7 +112,7 @@ var findFirstPageByGoogleTrdId = function(opt) {
     .equalTo("recipients_id", opt.recipients_id)
     .descending("sent_date")
     .limit(20)
-    .select("google_msg_id", "message_id", "sent_date", "content", "attachments", "sender_name", "recipients_names");
+    .select("google_msg_id", "message_id", "sent_date", "content", "intro", "attachments", "sender_name", "recipients_names");
   query.find(opt);    
 }
 
