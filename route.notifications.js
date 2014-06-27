@@ -336,15 +336,17 @@ var messagesFetchThread = function(socket, data, user) {
 		user_id : user.objectId,
 		per_page : data.per_page,
 		page : data.page,
+		id : data.google_trd_id.toString() + data.recipients_id.toString(),
 		success : function(messages) {
+			console.log(opt.id)
 			var result = {
 				count : messages.length,
 				data : messages.slice(0, Math.min(messages.length, data.per_page))
 			}
-			opt.socket.emit('messages:fetch_thread:' + data.google_trd_id + data.recipients_id, result);
+			opt.socket.emit('messages:fetch_thread:' + opt.id, result);
 		},
 		error : function(e) {
-			opt.socket.emit('messages:fetch_thread:' + data.google_trd_id + data.recipients_id, arguments);
+			opt.socket.emit('messages:fetch_thread:' + opt.id, arguments);
 		}
 	}
 	if (data.page == 0) {
