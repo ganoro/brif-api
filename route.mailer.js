@@ -97,12 +97,11 @@ var onSocketMessagesNextOf = function(socket, data, user) {
 					var next = [];
 					for (var i = results.length - 1; i >= 0; i--) {
 						var index = google_message_ids.indexOf(results[i].google_message_id);
-						if (index != -1) {
-							results[i].unseen = true;
-							google_message_ids.splice(index, 1);							
-							if (!results[i].unsubscribe) {
-								next.push(results[i]);	
-							}
+						results[i].unseen = index != -1;
+
+						// add all except for seen promotional messages
+						if (results[i].unseen || !results[i].unsubscribe) {
+							next.push(results[i]);	
 						}
 					};
 					socket.emit('messages:next_of', { data : next, unreads : google_message_ids });
