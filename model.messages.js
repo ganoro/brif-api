@@ -207,7 +207,7 @@ var fetchAll = function(opts) {
   var query = new model.parse.Query(Messages);
    
   query.limit(60).doesNotExist("unsubscribe")
-    .descending("sent_date").select('google_trd_id', 'recipients_id', 'recipients', 'recipients_names', 'sent_date', 'intro', 'subject');
+    .descending("sent_date").select('google_trd_id', 'recipients_id', 'recipients', 'recipients_names', 'sent_date', 'intro', 'subject', 'message_id');
   query.find({
     success: function(results) {
       var recipients_ids = [];
