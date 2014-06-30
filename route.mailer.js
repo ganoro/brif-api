@@ -88,9 +88,6 @@ var onSocketMessagesNextOf = function(socket, data, user) {
 		message_id : data.message_id,
 		user_id : user.objectId,
 		success : function(results) {
-			if (results.length == 0) {
-				return socket.emit('messages:next_of', { data : [] });
-			}
 			var mailOptions = {
 				email: user.email, 
 				user_id : user.objectId,
@@ -104,8 +101,7 @@ var onSocketMessagesNextOf = function(socket, data, user) {
 							next.push(results[i]);
 						}
 					};
-					console.log(next.length)
-					socket.emit('messages:next_of', { data : next });
+					socket.emit('messages:next_of', { data : next, unreads : google_message_ids });
 				}
 			}
 			executeMailOptions(user, mailOptions);
