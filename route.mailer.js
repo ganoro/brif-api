@@ -96,9 +96,13 @@ var onSocketMessagesNextOf = function(socket, data, user) {
 				emit : function(google_message_ids) {
 					var next = [];
 					for (var i = results.length - 1; i >= 0; i--) {
-						results[i].unseen = google_message_ids.indexOf(results[i].google_message_id) != -1;
-						if (results[i].unseen || !results[i].unsubscribe) {
-							next.push(results[i]);
+						var index = google_message_ids.indexOf(results[i].google_message_id);
+						if (index != -1) {
+							results[i].unseen = true;
+							google_message_ids.splice(index, 1);							
+							if (!results[i].unsubscribe) {
+								next.push(results[i]);	
+							}
 						}
 					};
 					socket.emit('messages:next_of', { data : next, unreads : google_message_ids });
