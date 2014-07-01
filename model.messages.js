@@ -43,7 +43,6 @@ var findByGoogleMsgId = function(opts) {
   
   var queries = [];
   for (var i = 0; i < opts.google_msg_id.length; i++) {
-    console.log(opts.user_id);
     var Messages = model.parse.Object.extend("Messages_" + opts.user_id);
     var query = new model.parse.Query(Messages);
     if (opts.is_only_promotions) {

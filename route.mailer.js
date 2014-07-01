@@ -129,7 +129,6 @@ var onSocketMessagesNextOf = function(socket, data, user) {
 						user_id : user.objectId,
 						google_msg_id : google_message_ids,
 						success: function(results) {
-							console.log("results: ", results)
 							socket.emit('messages:next_of', { data : next, unreads: results, reads : data.unreads });
 						},
 						error: opts.error
