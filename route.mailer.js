@@ -84,6 +84,12 @@ var onSocketMessagesUnread = function(socket, data, user) {
  * Search for new messages after a given google_message_id
  **/
 var onSocketMessagesNextOf = function(socket, data, user) {
+
+	// TODO - validation
+	if (!data.unreads || !data.message_id) {
+		return;
+	}
+
 	var opts = {
 		message_id : data.message_id,
 		user_id : user.objectId,
@@ -121,12 +127,12 @@ var onSocketMessagesNextOf = function(socket, data, user) {
 					};
 					var find_opts = {
 						success: function(results) {
-							console.log("5");	
 							socket.emit('messages:next_of', { data : next, unreads: results, reads : data.unreads });
 						},
 						error: opts.error,
 						google_msg_id : google_message_ids
 					}
+					console.log("google_message_ids: ", google_message_ids)
 					model['messages'].findByGoogleMsgId(find_opts);
 				}
 			}
