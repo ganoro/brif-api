@@ -110,16 +110,18 @@ var onSocketMessagesNextOf = function(socket, data, user) {
 					};
 
 					// keep only unknown old unread messages - and fetch
-					for (var i = 0; i < data.unreads.length; i++) {
+					// build the list of read emails that previously were unread (i.e. another client)
+					for (var i = data.unreads.length - 1; i >= 0; i--) {
 						var id = data.unreads[i];
 						var index = google_message_ids.indexOf(id);
 						if (index != -1) {
 							google_message_ids.splice(index, 1);
+							data.unreads.splice(i, 1);
 						}
 					};
 					var find_opts = {
 						success: function(results) {
-							socket.emit('messages:next_of', { data : next, unreads: results });
+							socket.emit('messages:next_of', { data : next, unreads: results, reads : data.unreads });
 						},
 						error: opts.error,
 						google_msg_id : google_message_ids
