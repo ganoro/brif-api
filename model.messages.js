@@ -37,6 +37,8 @@ var findByRecipientsId = function(opts) {
 var findByGoogleMsgId = function(opts) {
   console.log("findByGoogleMsgId()");
 
+  console.log("opts.google_msg_id ", opts.google_msg_id);
+
   if (opts.google_msg_id.length == 0) {
     return opts.success([]);
   }
