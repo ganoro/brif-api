@@ -56,11 +56,15 @@ var findByGoogleMsgId = function(opts) {
   	query.equalTo("google_msg_id", opts.google_msg_id[i].toString());
   	queries.push(query);
   };
-  var agg = model.parse.Query.or.apply(null, queries);
-  if (opts.is_select_special) {
-    agg.select("unsubscribe", "google_msg_id", "recipients", "recipients_names", "recipients_id", "message_id", "sent_date");
+  if (queries.length == 1) {
+    queries[0].find(opts);
+  } else {
+    var agg = model.parse.Query.or.apply(null, queries);
+    if (opts.is_select_special) {
+      agg.select("unsubscribe", "google_msg_id", "recipients", "recipients_names", "recipients_id", "message_id", "sent_date");
+    }
+    agg.find(opts);       
   }
-  agg.find(opts);    
 }
 
 /**
