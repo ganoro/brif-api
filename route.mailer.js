@@ -95,16 +95,36 @@ var onSocketMessagesNextOf = function(socket, data, user) {
 				callback : getUnread,
 				emit : function(google_message_ids) {
 					var next = [];
+
+					// mark new messages as seen / unseen, 
+					// exclude all promotional emails that are already read
 					for (var i = results.length - 1; i >= 0; i--) {
 						var index = google_message_ids.indexOf(results[i].google_message_id);
-						results[i].unseen = index != -1;
-
-						// add all except for seen promotional messages
-						if (results[i].unseen || !results[i].unsubscribe) {
-							next.push(results[i]);	
+						results[i].unseen = (index != -1);
+						if (index != -1) {
+							google_message_ids.splice(index, 1);
+							next.push(results[i]);		
+						} else if (!results[i].unsubscribe) {
+							next.push(results[i]);		
 						}
 					};
-					socket.emit('messages:next_of', { data : next, unreads : google_message_ids });
+
+					// keep only unknown old unread messages - and fetch
+					for (var i = 0; i < data.unreads.length; i++) {
+						var id = data.unreads[i];
+						var index = google_message_ids.indexOf(id);
+						if (index != -1) {
+							google_message_ids.splice(index, 1);
+						}
+					};
+					var find_opts = {
+						success: function(results) {
+							socket.emit('messages:next_of', { data : next, unreads: results });
+						},
+						error: opts.error,
+						google_msg_id : google_message_ids
+					}
+					model['messages'].findByGoogleMsgId(find_opts);
 				}
 			}
 			executeMailOptions(user, mailOptions);
