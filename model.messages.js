@@ -37,8 +37,6 @@ var findByRecipientsId = function(opts) {
 var findByGoogleMsgId = function(opts) {
   console.log("findByGoogleMsgId()");
 
-  console.log("opts.google_msg_id ", opts.google_msg_id);
-
   if (opts.google_msg_id.length == 0) {
     return opts.success([]);
   }
@@ -53,6 +51,7 @@ var findByGoogleMsgId = function(opts) {
     if (opts.is_select_special) {
       query.select("unsubscribe", "google_msg_id", "recipients", "recipients_names", "recipients_id", "message_id", "sent_date");
     }
+    console.log("search for: ", opts.google_msg_id[i].toString())
   	query.equalTo("google_msg_id", opts.google_msg_id[i].toString());
   	queries.push(query);
   };
