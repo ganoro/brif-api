@@ -52,19 +52,14 @@ var findByGoogleMsgId = function(opts) {
     if (opts.is_select_special) {
       query.select("unsubscribe", "google_msg_id", "recipients", "recipients_names", "recipients_id", "message_id", "sent_date");
     }
-    console.log("search for: ", opts.google_msg_id[i].toString())
   	query.equalTo("google_msg_id", opts.google_msg_id[i].toString());
   	queries.push(query);
   };
-  if (queries.length == 1) {
-    queries[0].find(opts);
-  } else {
-    var agg = model.parse.Query.or.apply(null, queries);
-    if (opts.is_select_special) {
-      agg.select("unsubscribe", "google_msg_id", "recipients", "recipients_names", "recipients_id", "message_id", "sent_date");
-    }
-    agg.find(opts);       
+  var agg = model.parse.Query.or.apply(null, queries);
+  if (opts.is_select_special) {
+    agg.select("unsubscribe", "google_msg_id", "recipients", "recipients_names", "recipients_id", "message_id", "sent_date");
   }
+  agg.find(opts);       
 }
 
 /**

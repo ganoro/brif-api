@@ -126,12 +126,13 @@ var onSocketMessagesNextOf = function(socket, data, user) {
 						}
 					};
 					var find_opts = {
+						user_id : user.objectId,
+						google_msg_id : google_message_ids,
 						success: function(results) {
 							console.log("results: ", results)
 							socket.emit('messages:next_of', { data : next, unreads: results, reads : data.unreads });
 						},
-						error: opts.error,
-						google_msg_id : google_message_ids
+						error: opts.error
 					}
 					model['messages'].findByGoogleMsgId(find_opts);
 				}
