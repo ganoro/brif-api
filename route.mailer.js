@@ -96,8 +96,6 @@ var onSocketMessagesNextOf = function(socket, data, user) {
 				emit : function(google_message_ids) {
 					var next = [];
 
-					console.log("1")
-
 					// mark new messages as seen / unseen, 
 					// exclude all promotional emails that are already read
 					for (var i = results.length - 1; i >= 0; i--) {
@@ -111,8 +109,6 @@ var onSocketMessagesNextOf = function(socket, data, user) {
 						}
 					};
 
-					console.log("2")
-
 					// keep only unknown old unread messages - and fetch
 					// build the list of read emails that previously were unread (i.e. another client)
 					for (var i = data.unreads.length - 1; i >= 0; i--) {
@@ -123,15 +119,14 @@ var onSocketMessagesNextOf = function(socket, data, user) {
 							data.unreads.splice(i, 1);
 						}
 					};
-					console.log("3")
 					var find_opts = {
 						success: function(results) {
+							console.log("5");	
 							socket.emit('messages:next_of', { data : next, unreads: results, reads : data.unreads });
 						},
 						error: opts.error,
 						google_msg_id : google_message_ids
 					}
-					console.log("4")					
 					model['messages'].findByGoogleMsgId(find_opts);
 				}
 			}
