@@ -101,6 +101,8 @@ var onSocketMessagesNextOf = function(socket, data, user) {
 				callback : getUnread,
 				emit : function(google_message_ids) {
 					var next = [];
+					console.log("before- google_message_ids: ", google_message_ids)
+
 
 					// mark new messages as seen / unseen, 
 					// exclude all promotional emails that are already read
