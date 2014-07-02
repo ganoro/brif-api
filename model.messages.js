@@ -200,11 +200,13 @@ var findLatest = function(opts) {
  */ 
 var fetchAll = function(opts) {
   console.log("fetchAll()");
-  console.log(opts.user_id);
 
   // search latests messages in list
   var Messages = model.parse.Object.extend("Messages_" + opts.user_id);
   var query = new model.parse.Query(Messages);
+  if (opts.sooner_than) {
+    query.lessThan("message_id", opts.sooner_than);
+  }
    
   query.limit(60).doesNotExist("unsubscribe")
     .descending("sent_date").select('google_trd_id', 'recipients_id', 'recipients', 'recipients_names', 'sent_date', 'intro', 'subject', 'message_id');

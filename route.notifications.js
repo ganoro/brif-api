@@ -321,6 +321,9 @@ var messagesFetchTimeline = function(socket, data, user) {
 			// TODO : handle errors
 		}
 	}
+	if (data.sooner_than) {
+		opt.sooner_than = data.sooner_than;
+	}
 	model['messages'].fetchAll(opt);
 }
 
