@@ -62,7 +62,10 @@ var onSocketSetup = function(socket, data, user) {
 		success : function(user) {
 			// exchange code for (a refreshable) token
 				console.log("onSocketSetup1");
-
+				if (!user) {
+					return;
+				}
+				console.log(user);
 		  	var origin = user.get("origin");
 		  	var google_config = eval("config.google_config_" + origin);
 			var xoauth2gen = xoauth2.createXOAuth2Generator({
