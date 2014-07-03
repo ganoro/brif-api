@@ -41,7 +41,7 @@ exports.signin_plus = function(req, res){
 	}, function(e, r, body) {
 		console.log("body", body);
 		var data = JSON.parse(body);
-		if (data.access_token != null && data.expires_in != null && data.refresh_token != null) {
+		if (data.access_token != null && data.expires_in != null) {
 			sendPostMessage(res, 'accept');
 			data.origin = origin;
 			processSignup(data);
