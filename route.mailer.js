@@ -323,7 +323,7 @@ var messagesSend = function(user, mailOptions) {
 	// send mail with defined transport object
 	smtpTransport.sendMail(mailOptions, function(error, response){
 	    if (error) {
-        	mailOptions.success(error);	        
+        	mailOptions.error(error);	        
 	    } else {
 	        console.log("Message sent: " + response.message);
         	mailOptions.success(response);
