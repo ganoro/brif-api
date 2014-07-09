@@ -98,25 +98,26 @@ var onSocketMessagesNextOf = function(socket, data, user) {
 	var opts = {
 		message_id : data.message_id,
 		user_id : user.objectId,
-		success : function(results) {
+		success : function(next) {
 			var mailOptions = {
 				email: user.email, 
 				user_id : user.objectId,
 				resolve_all : false,		
 				callback : getUnread,
 				emit : function(google_message_ids) {
-					var next = results;
-
 					// mark new messages as seen / unseen, 
 					// exclude all promotional emails that are already read
 					for (var i = next.length - 1; i >= 0; i--) {
-						var index = google_message_ids.indexOf(next[i].google_msg_id);
-						next[i].unseen = index != -1;
-						if (next[i].unseen) {
+						var m = next[i];
+						var index = google_message_ids.indexOf(m.get("google_msg_id"));
+						var is_unseen = index != -1;
+
+						m.set("unseen", is_unseen);
+						if (is_unseen) {
 							google_message_ids.splice(index, 1);
 						} 
 						// if promotion and seen - don't show it 
-						if (!next[i].unseen && next[i].unsubscribe) {
+						if (!is_unseen && m.get("unsubscribe")) {
 							next.splice(i, 1);
 						}
 					};
