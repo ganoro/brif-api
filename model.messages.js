@@ -213,7 +213,7 @@ var fetchAll = function(opts) {
   query.find({
     success: function(results) {
       var recipients_ids = [];
-      var subset = [];
+      var subset = opts.aggreagated;
 
       for (var i = 0; i < results.length && recipients_ids.length < 15; i++) {
         var m = results[i];
@@ -225,7 +225,8 @@ var fetchAll = function(opts) {
           subset.push(m);
         }
       };
-      opts.success(subset);
+      var oldest_id = results[results.length - 1].get("message_id");
+      opts.success(subset, oldest_id);
     },
 
     error: function(error) {
