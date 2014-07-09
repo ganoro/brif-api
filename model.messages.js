@@ -214,6 +214,9 @@ var fetchAll = function(opts) {
     success: function(results) {
       var recipients_ids = [];
       var subset = opts.aggreagated;
+      for (var i = subset.length - 1; i >= 0; i--) {
+        recipients_ids.push(subset[i].get("recipients_id"));
+      };
 
       for (var i = 0; i < results.length && recipients_ids.length < 15; i++) {
         var m = results[i];
