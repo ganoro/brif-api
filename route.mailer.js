@@ -109,14 +109,14 @@ var onSocketMessagesNextOf = function(socket, data, user) {
 
 					// mark new messages as seen / unseen, 
 					// exclude all promotional emails that are already read
-					for (var i = results.length - 1; i >= 0; i--) {
-						var index = google_message_ids.indexOf(results[i].google_msg_id);
-						results[i].unseen = index != -1;
-						if (results[i].unseen) {
+					for (var i = next.length - 1; i >= 0; i--) {
+						var index = google_message_ids.indexOf(next[i].google_msg_id);
+						next[i].unseen = index != -1;
+						if (next[i].unseen) {
 							google_message_ids.splice(index, 1);
 						} 
 						// if promotion and seen - don't show it 
-						if (!results[i].unseen && results[i].unsubscribe) {
+						if (!next[i].unseen && next[i].unsubscribe) {
 							next.splice(i, 1);
 						}
 					};
