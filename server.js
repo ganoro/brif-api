@@ -75,7 +75,7 @@ app.use(function(err, req, res, next){
  * socket io
  */ 
 var io = require('socket.io').listen(app.listen(config.port));
-// io.set('log level', 1); // reduce logging
+io.set('log level', 1); // reduce logging
 
 io.sockets.on('connection', function (socket) {	
 	// proxy, enables socket and user details as parameters as well as refresh token 
