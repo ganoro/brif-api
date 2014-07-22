@@ -339,7 +339,7 @@ var messagesSend = function(user, mailOptions) {
 	    		if (a.filePath) {
 	    			fs.unlink(a.filePath);	
 	    		}
-	    	};
+	    	}
 	    }
 
 	    // if you don't want to use this transport object anymore, uncomment following line
