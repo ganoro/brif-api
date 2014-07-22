@@ -64,8 +64,10 @@ var onSocketSetup = function(socket, data, user) {
 			if (!user) {
 				return;
 			}
+
 		  	var origin = user.get("origin");
 		  	var google_config = eval("config.google_config_" + origin);
+
 			var xoauth2gen = xoauth2.createXOAuth2Generator({
 			    user: user.get("email"),
 			    clientId : google_config.client_id,
@@ -80,6 +82,7 @@ var onSocketSetup = function(socket, data, user) {
 					if (err) {
 						// TODO : internal error
 						return console.log(err);
+
 					} else {
 						var user_data = { 
 							"objectId" : user.id, 

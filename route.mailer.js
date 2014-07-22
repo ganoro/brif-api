@@ -2,8 +2,10 @@ var nodemailer = require("nodemailer");
 var config = require('./config.js');
 var imap = require('imap');
 var xoauth2 = require("xoauth2");
+var googleapis = require('googleapis');
 var fs = require('fs');
 var $ = require('jquery').create();
+
 
 var model = {};
 model['users'] = require('./model.users.js');
@@ -333,7 +335,10 @@ var messagesSend = function(user, mailOptions) {
 
 	    if (mailOptions.attachments) {
 	    	for (var i = mailOptions.attachments.length - 1; i >= 0; i--) {
-	    		fs.unlink(mailOptions.attachments[i].filePath);
+	    		var a = mailOptions.attachments[i];
+	    		if (a.filePath) {
+	    			fs.unlink(a.filePath);	
+	    		}
 	    	};
 	    }
 
