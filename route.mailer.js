@@ -2,7 +2,6 @@ var nodemailer = require("nodemailer");
 var config = require('./config.js');
 var imap = require('imap');
 var xoauth2 = require("xoauth2");
-var googleapis = require('googleapis');
 var fs = require('fs');
 var $ = require('jquery').create();
 
