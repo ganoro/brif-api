@@ -16,6 +16,15 @@ var findByEmail = function(email, opts) {
 }
 
 /**
+ * Find by id
+ * success() and error() functions required in opts
+ */ 
+var findById = function(id, opts) {
+  	var query = new model.parse.Query(Users);
+	query.get(id, opts);
+}
+
+/**
  * Create new user
  * success() and error() functions required in opts
  */ 
@@ -51,6 +60,7 @@ var getUserDetails = function(opts) {
 }
 
 exports.findByEmail = findByEmail;
+exports.findById = findById;
 exports.storeUserDetails = storeUserDetails;
 exports.getUserDetails = getUserDetails;
 

@@ -29,6 +29,7 @@ var settingsSet = function(socket, data, user) {
 		success : function(r) {
 			var event = {};
 			event[data.key] = data.value;
+			socket.emit('settings:set', { data  : event });
 			notifications.notifyMessagesListsners('settings:event', user.email, { data : event })
 		}, 
 		error : function(r, e) {

@@ -37,8 +37,11 @@ app.all('*', function(req, res, next) {
 app.post('/auth/signin-plus'     , routes['auth'].signin_plus);
 app.post('/auth/mobile-signin'   , routes['auth'].mobile_signin);
 app.post('/auth/refresh-token'   , routes['auth'].refresh_token);
+app.post('/user/unsubscribe'	 , routes['auth'].unsubscribe); 
 app.post('/notifications/trigger', routes['notifications'].notify); 
 app.post('/meeting/joinRoom'	 , routes['ice'].postJoinRoom); 
+
+
 
 
 // TBD Upload, very generic

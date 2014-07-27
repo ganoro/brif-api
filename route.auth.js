@@ -97,6 +97,29 @@ exports.refresh_token = function(req, res) {
 	})
 };
 
+exports.unsubscribe = function(req, res) {
+
+	// validate params
+  	var id = req.body.id;
+  	if (id == null) {
+		return res.send(400, 'missing parameter (id)');
+  	}
+
+  	model['users'].findById(id, {
+  		res : res, 
+		success: function(user) {
+			if (user) {
+				return unsubscribe_user(user, res);
+			} else {
+				this.res.send(400, 'id not found ' + email);
+			}	
+		},
+		error: function() {
+			res.send(400, arguments);
+			console.log("Error: " + arguments);
+		}
+	})
+};
 
 /**
  * post message to opener
@@ -118,6 +141,20 @@ exports.refresh_token = function(req, res) {
 	    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
 	    form : form
 	}).pipe(res);
+}
+
+/**
+ * unsubscribe a given user
+ */
+ var unsubscribe_user = function(user, res) {
+	var unsubscribe = user.get("unsubscribe");
+	if (unsubscribe) {
+		res.send("Thanks, we will keep you posted about any app update.");
+	} else {
+		res.send("Thanks for using Brif, we will not send you any app updates.");
+	}
+	user.set("unsubscribe", !unsubscribe);	
+	user.save(null)
 }
 
 /**
