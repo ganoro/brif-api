@@ -149,9 +149,9 @@ exports.unsubscribe = function(req, res) {
  var unsubscribe_user = function(user, res) {
 	var unsubscribe = user.get("unsubscribe");
 	if (unsubscribe) {
-		res.send("Thanks, we will keep you posted about any app update.");
+		res.send("You have been successfully subscribed, we will keep you posted about any update.");
 	} else {
-		res.send("Thanks for using Brif, we will not send you any app updates.");
+		res.send("You have been successfully unsubscribed from the app updates email list.");
 	}
 	user.set("unsubscribe", !unsubscribe);	
 	user.save(null)
