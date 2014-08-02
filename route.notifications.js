@@ -81,8 +81,8 @@ var onSocketSetup = function(socket, data, user) {
 				token : function(err, token, access_token) {
 					if (err) {
 						// TODO : internal error
+						socket.emit('setup:error');
 						return console.log(err);
-
 					} else {
 						var user_data = { 
 							"objectId" : user.id, 
