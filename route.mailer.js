@@ -90,7 +90,7 @@ var onSocketMessagesUnread = function(socket, data, user) {
  * Search for new messages after a given google_message_id
  **/
 var onSocketMessagesNextOf = function(socket, data, user) {
-
+	console.log("onSocketMessagesNextOf()")
 	// TODO - validation
 	if (!data.unreads || !data.message_id) {
 		return;
@@ -106,6 +106,8 @@ var onSocketMessagesNextOf = function(socket, data, user) {
 				resolve_all : false,		
 				callback : getUnread,
 				emit : function(google_message_ids) {
+					console.log("next: " + next.length);
+					console.log("google_message_ids: " + google_message_ids.length);
 					// mark new messages as seen / unseen, 
 					// exclude all promotional emails that are already read
 					for (var i = next.length - 1; i >= 0; i--) {
