@@ -75,6 +75,7 @@ var fetchAfterMsgId = function(opts) {
   var Messages = model.parse.Object.extend("Messages_" + opts.user_id);
   var query = new model.parse.Query(Messages);
   query.greaterThan("message_id", opts.message_id);
+  query.limit(40);
   query.find(opts);    
 }
 
