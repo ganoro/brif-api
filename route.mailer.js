@@ -10,7 +10,6 @@ var model = {};
 model['users'] = require('./model.users.js');
 model['messages'] = require('./model.messages.js');
 
-
 /**
  * send message handler, gets user info + group info then send the message
  */
@@ -106,8 +105,6 @@ var onSocketMessagesNextOf = function(socket, data, user) {
 				resolve_all : false,		
 				callback : getUnread,
 				emit : function(google_message_ids) {
-					console.log("next: " + next.length);
-					console.log("google_message_ids: " + google_message_ids.length);
 					// mark new messages as seen / unseen, 
 					// exclude all promotional emails that are already read
 					for (var i = next.length - 1; i >= 0; i--) {
@@ -277,8 +274,6 @@ var getUnread = function(connection, mailOptions) {
 			if (results.length > 20) {
 				results = results.slice(-20);
 			}
-
-			console.log("results:", results.length)
 
 		    var f = connection.fetch(results, { 
 				bodies: 'HEADER.FIELDS (FROM)',
