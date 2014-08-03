@@ -278,6 +278,8 @@ var getUnread = function(connection, mailOptions) {
 				results = results.slice(-20);
 			}
 
+			console.log("results:", results.length)
+
 		    var f = connection.fetch(results, { 
 				bodies: 'HEADER.FIELDS (FROM)',
 		    });
