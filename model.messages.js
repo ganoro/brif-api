@@ -231,7 +231,7 @@ var fetchAll = function(opts) {
           if (!subset[idx].get('extra')) {
             subset[idx].set('extra', []);
           }
-          subset[idx].get('extra').push(m);
+          subset[idx].get('extra').push({ google_trd_id: m.get("google_trd_id"), subject: m.get("subject") });
         }
       };
       var oldest_id = results[results.length - 1].get("message_id");
