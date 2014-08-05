@@ -228,10 +228,10 @@ var fetchAll = function(opts) {
           recipients_ids.push(rid);
           subset.push(m);
         } else {
-          if (!subset[idx].extra) {
-            subset[idx].extra = [];
+          if (!subset[idx].get('extra')) {
+            subset[idx].set('extra', []);
           }
-          subset[idx].extra.push(m);
+          subset[idx].get('extra').push(m);
         }
       };
       var oldest_id = results[results.length - 1].get("message_id");
