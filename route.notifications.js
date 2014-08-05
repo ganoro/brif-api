@@ -327,7 +327,6 @@ var messagesFetchTimeline = function(socket, data, user) {
 				opt.sooner_than = oldest_id;
 				model['messages'].fetchAll(opt);
 			} else {
-				console.log(messages)
 				socket.emit('messages:fetch_timeline', { data : messages });	
 			}
 		},
