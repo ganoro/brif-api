@@ -226,12 +226,18 @@ var fetchAll = function(opts) {
 
         if (idx == -1) {
           recipients_ids.push(rid);
+          m.set("threads", [ { google_trd_id : m.get("google_trd_id"), subject : m.get("subject") } ]);
           subset.push(m);
         } else {
-          if (!subset[idx].get('extra')) {
-            subset[idx].set('extra', []);
+          var group = subset[idx];
+          var threads = group.get('threads');
+          var found = false, j = threads.length;
+          while (!found && j > 0){
+            found = threads[--j].google_trd_id == m.get("google_trd_id");
           }
-          subset[idx].get('extra').push({ google_trd_id: m.get("google_trd_id"), subject: m.get("subject") });
+          if (!found) {
+            threads.push({ google_trd_id : m.get("google_trd_id"), subject : m.get("subject") } );
+          }
         }
       };
       var oldest_id = results[results.length - 1].get("message_id");
