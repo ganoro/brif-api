@@ -322,7 +322,7 @@ var messagesFetchTimeline = function(socket, data, user) {
 		user_id : user.objectId,
 		aggreagated : [],
 		success : function(messages, oldest_id) {
-			if (messages.length < 10) {
+			if (messages.length < 14) {
 				opt.aggreagated = messages;
 				opt.sooner_than = oldest_id;
 				model['messages'].fetchAll(opt);
