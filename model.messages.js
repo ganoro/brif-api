@@ -215,7 +215,7 @@ var fetchAll = function(opts) {
     success: function(results) {
       var recipients_ids = [];
       var subset = opts.aggreagated;
-      for (var i = subset.length - 1; i >= 0; i--) {
+      for (var i = 0; i < subset.length; i++) {
         recipients_ids.push(subset[i].get("recipients_id"));
       };
 
