@@ -49,14 +49,14 @@ var findByGoogleMsgId = function(opts) {
       query.exists("unsubscribe");
     }
     if (opts.is_select_special) {
-      query.select("unsubscribe", "google_msg_id", "google_trd_id", "recipients", "recipients_names", "recipients_id", "message_id", "sent_date");
+      query.select("google_msg_id", "google_trd_id", "recipients", "recipients_names", "recipients_id", "message_id", "sent_date");
     }
   	query.equalTo("google_msg_id", opts.google_msg_id[i].toString());
   	queries.push(query);
   };
   var agg = model.parse.Query.or.apply(null, queries);
   if (opts.is_select_special) {
-    agg.select("unsubscribe", "google_msg_id", "google_trd_id", "recipients", "recipients_names", "recipients_id", "message_id", "sent_date");
+    agg.select("google_msg_id", "google_trd_id", "recipients", "recipients_names", "recipients_id", "message_id", "sent_date");
   }
   agg.find(opts);       
 }
@@ -93,7 +93,7 @@ var findByGoogleTrdId = function(opt) {
     .equalTo("recipients_id", opt.recipients_id)
     .descending("sent_date")
     .limit(opt.per_page)
-    .select("google_msg_id", "message_id", "sent_date", "content", "intro", "attachments", "sender_name", "sender_email", "recipients_names")
+    .select("google_msg_id", "message_id", "sent_date", "content", "intro", "attachments", "sender_name", "sender_email", "recipients_names", "unsubscribe")
     .skip(opt.page*opt.per_page);
 
   query.find(opt);    
@@ -113,7 +113,7 @@ var findFirstPageByGoogleTrdId = function(opt) {
     .equalTo("recipients_id", opt.recipients_id)
     .descending("sent_date")
     .limit(20)
-    .select("google_msg_id", "message_id", "sent_date", "content", "intro", "attachments", "sender_name", "sender_email", "recipients_names");
+    .select("google_msg_id", "message_id", "sent_date", "content", "intro", "attachments", "sender_name", "sender_email", "recipients_names", "unsubscribe");
   query.find(opt);    
 }
 
