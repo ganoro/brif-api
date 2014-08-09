@@ -116,6 +116,7 @@ io.sockets.on('connection', function (socket) {
 	socket.on('messages:fetch_previous_threads', proxy(notifications.onSocketMessagesFetchPreviousThreads));
 	socket.on('messages:fetch_google_msg_id', proxy(notifications.messagesFetchByGoogleMsgId));
 	socket.on('messages:near', proxy(notifications.onSocketMessagesNear));
+	socket.on('messages:delete_thread', proxy(notifications.onSocketMessagesDeleteThread));
 
 	// channels
 	socket.on('channels:subscribe', proxy(notifications.onSocketSubscribeChannelsListener));

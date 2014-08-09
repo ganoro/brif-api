@@ -198,6 +198,14 @@ var onSocketMessagesNear = function(socket, data, user) {
 	messagesNear(socket, data, user);
 }
 
+var onSocketMessagesDeleteThread = function(socket, data, user) {
+	console.log("onSocketMessagesDeleteThread");
+	if (data.google_trd_id == null) {
+		return;
+	}
+	deleteThread(data.google_trd_id, user.objectId, socket);
+}
+
 var onSocketChannelsSend = function (socket, data, user) {
 	console.log("onSocketChannelsSend");
 	if (data.channel_id == null || data.message == null) {
@@ -418,6 +426,21 @@ var messagesNear = function(socket, data, user) {
 	model['messages'].findNear(opt);
 }
 
+var deleteThread = function(google_trd_id, userId, socket) {
+	var opt = {
+		socket : socket,
+		google_trd_id : google_trd_id,
+		user_id : userId,
+		success : function(messages) {
+			opt.socket.emit('messages:thread_delete', messages);
+		},
+		error : function(e) {
+			opt.socket.emit('messages:thread_delete', arguments);
+		}
+	}
+	model['messages'].deleteThread(opt);
+}
+
 var unsubscribeAllTopicsToClient = function(email, client_id) {
 	if (!user_event_handlers[email] || !user_event_handlers[email].sockets) {
 		console.log("client is missing in notifications array");
@@ -443,6 +466,7 @@ module.exports = {
 	onSocketDisconnect : onSocketDisconnect,
 	onSocketMessagesFetch : onSocketMessagesFetch,
 	onSocketMessagesFetchTimeline : onSocketMessagesFetchTimeline,
+	onSocketMessagesDeleteThread: onSocketMessagesDeleteThread,
 	messagesFetchByGoogleMsgId : messagesFetchByGoogleMsgId,
 	onSocketMessagesFetchThread : onSocketMessagesFetchThread,
 	onSocketMessagesFetchPreviousThreads : onSocketMessagesFetchPreviousThreads,

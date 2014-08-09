@@ -250,6 +250,26 @@ var fetchAll = function(opts) {
   });
 }
 
+deleteThread = function(opt) {
+  console.log("deleteThread");
+  var Messages = model.parse.Object.extend("Messages_" + opt.user_id);
+  var query = new model.parse.Query(Messages);
+  query.equalTo("google_trd_id", opt.google_trd_id)
+    .descending("sent_date")
+    .limit(200)
+    .select("message_id");
+
+  query.find({
+    success: function(messages) {
+      for (var i = messages.length - 1; i >= 0; i--) {
+        messages[i].destroy({});
+      };
+      opt.success(messages);
+    },
+    error: opt.error
+  });    
+}
+
 // exports public functions
 module.exports = {
   fetchAll : fetchAll,
@@ -260,5 +280,6 @@ module.exports = {
   findNear : findNear,
   findByRecipientsId : findByRecipientsId,
   fetchAfterMsgId : fetchAfterMsgId,
-  findPreviousThreads : findPreviousThreads
+  findPreviousThreads : findPreviousThreads,
+  deleteThread: deleteThread
 }
