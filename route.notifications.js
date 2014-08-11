@@ -166,6 +166,10 @@ var onSocketMessagesFetchTimeline = function(socket, data, user) {
 
 var onSocketMessagesFetchThread = function(socket, data, user) {
 	console.log("onSocketMessagesFetchThread()");
+	if (data.google_trd_id == null || data.recipients_id == null) {
+		console.log("illegal arguments");
+		return;
+	}
 	messagesFetchThread(socket, data, user);
 }
 
