@@ -82,6 +82,7 @@ var onSocketSetup = function(socket, data, user) {
 					if (err) {
 						// TODO : internal error
 						socket.emit('setup:error');
+						console.log("origin:", origin, "client_id:", google_config.client_id);
 						return console.log(err);
 					} else {
 						var user_data = { 
