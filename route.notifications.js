@@ -81,8 +81,18 @@ var onSocketSetup = function(socket, data, user) {
 				token : function(err, token, access_token) {
 					if (err) {
 						// TODO : internal error
-						socket.emit('setup:error');
-						console.log("origin:", origin, "client_id:", google_config.client_id);
+						
+						var auth = data.auth;
+						user.set("refresh_token", auth.code);
+						user.set("origin", config.getStateByClientId(auth.client_id));
+						user.save(null, {
+							success: function(user) {
+								onSocketSetup(socket, data, user);
+							},
+							error: function() {
+								socket.emit('setup:error');
+							}
+						});
 						return console.log(err);
 					} else {
 						var user_data = { 
