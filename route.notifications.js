@@ -74,7 +74,7 @@ var onSocketSetup = function(socket, data, user) {
 			    clientSecret : google_config.client_secret,
 			    refreshToken: user.get("refresh_token")
 			});
-			
+
 			var process = {
 				socket : socket,
 				data: data,
@@ -89,7 +89,7 @@ var onSocketSetup = function(socket, data, user) {
 						user.set("origin", config.getStateByClientId(data.auth.client_id));
 						user.save(null, {
 							success: function(user) {
-								onSocketSetup(socket, data, user);
+								onSocketSetup(socket, { email : data.email } , user);
 							},
 							error: function() {
 								socket.emit('setup:error');
