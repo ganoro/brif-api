@@ -68,18 +68,20 @@ var onSocketSetup = function(socket, data, user) {
 		  	var origin = user.get("origin");
 		  	var google_config = eval("config.google_config_" + origin);
 
-			var xoauth2gen = xoauth2.createXOAuth2Generator({
+		  	var auth = {
 			    user: user.get("email"),
 			    clientId : google_config.client_id,
 			    clientSecret : google_config.client_secret,
 			    refreshToken: user.get("refresh_token")
-			});
+			}
+			var xoauth2gen = xoauth2.createXOAuth2Generator(auth);
 
 			var process = {
 				socket : socket,
 				data: data,
 				token : function(err, token, access_token) {
 					if (err) {
+						console.log(auth);
 						// TODO : internal error
 						console.log(data)
 						if (!data.auth) {
