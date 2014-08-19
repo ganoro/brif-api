@@ -70,7 +70,7 @@ var onSocketSetup = function(socket, data, user) {
 
 		  	var auth = {
 			    user: user.get("email"),
-			    clientId : google_config.client_id,
+			    clientId : google_config.client_email,
 			    clientSecret : google_config.client_secret,
 			    refreshToken: user.get("refresh_token")
 			}
@@ -81,6 +81,7 @@ var onSocketSetup = function(socket, data, user) {
 				data: data,
 				token : function(err, token, access_token) {
 					if (err) {
+						console.log("error")
 						socket.emit('setup:error');
 						return console.log(err);
 					} else {
