@@ -128,7 +128,7 @@ var findPreviousThreads = function(opt) {
 
   var Messages = model.parse.Object.extend("Messages_" + opt.user_id);
   var query = new model.parse.Query(Messages);
-  query.notContainedIn("google_trd_id", google_trd_ids)
+  query.notContainedIn("google_trd_id", opt.google_trd_id)
     .equalTo("recipients_id", opt.recipients_id)
     .descending("sent_date")
     .select('google_trd_id', 'recipients_id', 'recipients', 'recipients_names', 'sent_date', 'intro', 'subject')
