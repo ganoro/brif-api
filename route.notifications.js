@@ -365,9 +365,13 @@ var messagesFetchThread = function(socket, data, user) {
 		user_id : user.objectId,
 		per_page : data.per_page,
 		page : data.page,
+		retry: data.retry,
 		id : data.google_trd_id.toString() + data.recipients_id.toString(),
 		success : function(messages) {
-			console.log(opt.id)
+			if (!messages.length && typeof(data.retry) == "undefined") { // no results - try w/o recipients_id
+				data.retry = false;
+				return messagesFetchThread(socket, data, user);
+			}
 			var result = {
 				count : messages.length,
 				data : messages.slice(0, Math.min(messages.length, data.per_page))

@@ -90,13 +90,14 @@ var findByGoogleTrdId = function(opt) {
   var Messages = model.parse.Object.extend("Messages_" + opt.user_id);
   var query = new model.parse.Query(Messages);
   query.equalTo("google_trd_id", opt.google_trd_id)
-    .equalTo("recipients_id", opt.recipients_id)
     .descending("sent_date")
     .limit(opt.per_page)
     .select("google_msg_id", "message_id", "sent_date", "content", "intro", "attachments", "sender_name", "sender_email", "recipients_names", "unsubscribe")
     .skip(opt.page*opt.per_page);
-
-  query.find(opt);    
+  if (!opt.retry) {
+    query.equalTo("recipients_id", opt.recipients_id);
+  }  
+  query.find(opt);
 }
 
 /**
@@ -110,10 +111,12 @@ var findFirstPageByGoogleTrdId = function(opt) {
   var Messages = model.parse.Object.extend("Messages_" + opt.user_id);
   var query = new model.parse.Query(Messages);
   query.equalTo("google_trd_id", opt.google_trd_id)
-    .equalTo("recipients_id", opt.recipients_id)
     .descending("sent_date")
     .limit(20)
     .select("google_msg_id", "message_id", "sent_date", "content", "intro", "attachments", "sender_name", "sender_email", "recipients_names", "unsubscribe");
+  if (!opt.retry) {
+    query.equalTo("recipients_id", opt.recipients_id);
+  }  
   query.find(opt);    
 }
 
