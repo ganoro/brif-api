@@ -61,6 +61,10 @@ var findByGoogleMsgId = function(opts) {
   if (opts.is_select_special) {
     agg.select("google_msg_id", "google_trd_id", "recipients", "recipients_names", "recipients_id", "message_id", "sent_date");
   }
+  if (opts.is_select_timeline) {
+    agg.select('google_trd_id', 'recipients_id', 'recipients', 'recipients_names', 'sent_date', 'intro', 'subject', 'message_id');
+  }
+  
   agg.find(opts);       
 }
 
