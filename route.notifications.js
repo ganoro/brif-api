@@ -315,6 +315,7 @@ var messagesFetchByGoogleMsgId = function(socket, data, user) {
 	var ops = {
 		google_msg_id : data.google_msg_id,
 		user_id : user.objectId,
+		is_select_timeline : data.is_select_timeline,
 		success : function(results) {
 			socket.emit('messages:fetch_google_msg_id', { data : results });
 		},

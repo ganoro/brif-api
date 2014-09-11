@@ -51,6 +51,9 @@ var findByGoogleMsgId = function(opts) {
     if (opts.is_select_special) {
       query.select("google_msg_id", "google_trd_id", "recipients", "recipients_names", "recipients_id", "message_id", "sent_date");
     }
+    if (opts.is_select_timeline) {
+      query.select('google_trd_id', 'recipients_id', 'recipients', 'recipients_names', 'sent_date', 'intro', 'subject', 'message_id');
+    }
   	query.equalTo("google_msg_id", opts.google_msg_id[i].toString());
   	queries.push(query);
   };
