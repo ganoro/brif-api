@@ -312,15 +312,16 @@ var messagesFetch = function(socket, user_id, data) {
 }
 
 var messagesFetchByGoogleMsgId = function(socket, data, user) {
+	var flag = 'messages:fetch_google_msg_id' + (data.id ? ":" + data.id : "");
 	var ops = {
 		google_msg_id : data.google_msg_id,
 		user_id : user.objectId,
 		is_select_timeline : data.is_select_timeline,
 		success : function(results) {
-			socket.emit('messages:fetch_google_msg_id', { data : results });
+			socket.emit(flag, { data : results });
 		},
 		error : function() {
-			socket.emit('messages:fetch_google_msg_id', { error : arguments });
+			socket.emit(flag, { error : arguments });
 		}
 	};
 	model['messages'].findByGoogleMsgId(ops);
