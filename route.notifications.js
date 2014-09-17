@@ -165,6 +165,11 @@ var onSocketMessagesFetchTimeline = function(socket, data, user) {
 	messagesFetchTimeline(socket, data, user);
 }
 
+var onSocketMessagesFetchLast = function(socket, data, user) {
+	console.log("onSocketMessagesFetchLast()");
+	messagesFetchLast(socket, user.objectId, user);
+}
+
 var onSocketMessagesFetchThread = function(socket, data, user) {
 	console.log("onSocketMessagesFetchThread()");
 	if (data.google_trd_id == null || data.recipients_id == null) {
@@ -309,6 +314,19 @@ var messagesFetch = function(socket, user_id, data) {
 	    }
 	};
 	model['messages'].findByRecipientsId(opts);
+}
+
+var messagesFetchLast = function(socket, user_id, data) {
+	var opts = {
+		user_id : user_id, 
+		success : function(data) {
+			socket.emit('messages:fetch_last', { data : data });
+		},
+	    error: function() {
+	    	socket.emit('messages:fetch_last', { error : arguments });	
+	    }
+	};
+	model['messages'].findLast(opts);
 }
 
 var messagesFetchByGoogleMsgId = function(socket, data, user) {
@@ -466,6 +484,7 @@ module.exports = {
 	onSocketDisconnect : onSocketDisconnect,
 	onSocketMessagesFetch : onSocketMessagesFetch,
 	onSocketMessagesFetchTimeline : onSocketMessagesFetchTimeline,
+	onSocketMessagesFetchLast: onSocketMessagesFetchLast,
 	onSocketMessagesDeleteThread: onSocketMessagesDeleteThread,
 	messagesFetchByGoogleMsgId : messagesFetchByGoogleMsgId,
 	onSocketMessagesFetchThread : onSocketMessagesFetchThread,

@@ -86,7 +86,7 @@ var onSocketMessagesUnread = function(socket, data, user) {
 }
 
 /**
- * Search for new messages after a given google_message_id
+ * Search for new messages after a given message_id
  **/
 var onSocketMessagesNextOf = function(socket, data, user) {
 	console.log("onSocketMessagesNextOf()")
@@ -152,6 +152,31 @@ var onSocketMessagesNextOf = function(socket, data, user) {
 
 	model['messages'].fetchAfterMsgId(opts);
 }
+
+/**
+ * Search for new messages after a given message_id
+ **/
+var onSocketMessagesNextOfVer2 = function(socket, data, user) {
+	console.log("onSocketMessagesNextOfVer2()")
+	if (!data.message_id) {
+		// TODO - validation
+		return;
+	}
+
+	var opts = {
+		message_id : data.message_id,
+		user_id : user.objectId,
+		success : function(next) {
+			socket.emit('messages:next_of_ver_2', { data : next });			
+		},
+		error : function() {
+			socket.emit('messages:next_of_ver_2', { error : arguments });
+		}
+	}
+
+	model['messages'].fetchAfterMsgId(opts);
+}
+
 
 var onSocketMessagesSearch = function(socket, data, user) {
 	console.log("onSocketMessagesSearch()");
@@ -384,5 +409,6 @@ module.exports = {
 	onSocketMessagesUnread :onSocketMessagesUnread,
 	onSocketMessagesSearch :onSocketMessagesSearch,
 	onSocketMessagesMarkAs : onSocketMessagesMarkAs,
-	onSocketMessagesNextOf : onSocketMessagesNextOf
+	onSocketMessagesNextOf : onSocketMessagesNextOf,
+	onSocketMessagesNextOfVer2: onSocketMessagesNextOfVer2
 };

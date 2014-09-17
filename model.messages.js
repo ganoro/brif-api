@@ -87,6 +87,18 @@ var fetchAfterMsgId = function(opts) {
 }
 
 /**
+ * Fetch last message id
+ */ 
+var findLast = function(opts) {
+  console.log("findLast()");
+  var Messages = model.parse.Object.extend("Messages_" + opts.user_id);
+  var query = new model.parse.Query(Messages);
+  query.ascending('message_id');
+  query.select(['message_id']);
+  query.first(opts);
+}
+
+/**
  * Find messages by user id and thread id
  * success() and error() functions required in opts
  * paremetrs required - google_trd_id 
@@ -288,6 +300,7 @@ module.exports = {
   findFirstPageByGoogleTrdId : findFirstPageByGoogleTrdId,
   findLatest : findLatest,
   findNear : findNear,
+  findLast: findLast,
   findByRecipientsId : findByRecipientsId,
   fetchAfterMsgId : fetchAfterMsgId,
   findPreviousThreads : findPreviousThreads,
