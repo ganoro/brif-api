@@ -11,7 +11,7 @@ var onSocketPersonDetails = function (socket, data, user) {
 			'user': '4f1a1b34110a67ded40a4667bd679d23:'
 		}		
 	}, function(error, result, body) {
-		socket.emit('clearbit:person', result)
+		socket.emit('clearbit:person', $.parseJSON(body) )
 	});	
 }
 
@@ -24,7 +24,7 @@ var onSocketCompanyDetails = function (socket, data, user) {
 			'user': '4f1a1b34110a67ded40a4667bd679d23:'
 		}		
 	}, function(error, result, body) {
-		socket.emit('clearbit:company', result)
+		socket.emit('clearbit:company', $.parseJSON(body))
 	});	
 }
 
