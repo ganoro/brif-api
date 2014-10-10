@@ -104,6 +104,7 @@ io.sockets.on('connection', function (socket) {
 	var tasks = require('./route.tasks.js');
 	var ice = require('./route.ice.js');	
 	var settings = require('./route.settings.js');
+	var clearbit = require('./route.clearbit.js');
 
 	// setup
 	socket.on('setup', proxy(notifications.onSocketSetup));
@@ -150,6 +151,11 @@ io.sockets.on('connection', function (socket) {
 	socket.on('settings:get', proxy(settings.onSocketSettingsGet));
 	socket.on('settings:clear', proxy(settings.onSocketSettingsClear));
 
+	// clearbit service
+	socket.on('clearbit:person', proxy(clearbit.onSocketPersonDetails));
+	socket.on('clearbit:company', proxy(clearbit.onSocketCompanyDetails));
+
+	// setup 
 	socket.emit('setup:ready');
 });
 
