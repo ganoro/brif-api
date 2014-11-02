@@ -265,6 +265,10 @@ var markAs = function(connection, mailOptions) {
 			connection.destroy();
 		}
 
+		if (!mailOptions.messages_id) {
+			return endConnection();
+		}
+		
 		for (var i = mailOptions.messages_id.length - 1; i >= 0 ; i--) {
 			var uid = mailOptions.messages_id[i];
 			console.log(uid);
