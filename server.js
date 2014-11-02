@@ -116,6 +116,7 @@ io.sockets.on('connection', function (socket) {
 	socket.on('messages:fetch_thread', proxy(notifications.onSocketMessagesFetchThread));
 	socket.on('messages:fetch_previous_threads', proxy(notifications.onSocketMessagesFetchPreviousThreads));
 	socket.on('messages:fetch_google_msg_id', proxy(notifications.messagesFetchByGoogleMsgId));
+	socket.on('messages:near', proxy(notifications.onSocketMessagesNear));
 	socket.on('messages:delete_thread', proxy(notifications.onSocketMessagesDeleteThread));
 	socket.on('messages:fetch_last', proxy(notifications.onSocketMessagesFetchLast));
 
@@ -127,6 +128,7 @@ io.sockets.on('connection', function (socket) {
 	// mailer
 	socket.on('messages:send', proxy(mailer.onSocketMessagesSend));
 	socket.on('messages:markas', proxy(mailer.onSocketMessagesMarkAs));
+	socket.on('messages:search', proxy(mailer.onSocketMessagesSearch));
 	socket.on('messages:fetch_unread_imap', proxy(mailer.onSocketMessagesUnread));
 	socket.on('messages:next_of', proxy(mailer.onSocketMessagesNextOf));
 	socket.on('messages:next_of_ver_2', proxy(mailer.onSocketMessagesNextOfVer2));

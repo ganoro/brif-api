@@ -200,6 +200,14 @@ var onSocketMessagesFetchByGoogleId = function(socket, data, user) {
 	messagesFetchByGoogleMsgId(socket, data, user);
 }
 
+var onSocketMessagesNear = function(socket, data, user) {
+	console.log("onSocketMessagesNear");
+	if (data.limit == null || data.google_msg_id == null || data.recipients_id == null) {
+		// TODO internal error
+	}
+	messagesNear(socket, data, user);
+}
+
 var onSocketMessagesDeleteThread = function(socket, data, user) {
 	console.log("onSocketMessagesDeleteThread");
 	if (data.google_trd_id == null) {
@@ -418,6 +426,24 @@ var messagesLoadPreviousThreads = function(socket, data, user) {
 	model['messages'].findPreviousThreads(opt);
 }
 
+var messagesNear = function(socket, data, user) {
+	console.log("messagesNear()")
+	var opt = {
+		socket : socket,
+		google_msg_id : data.google_msg_id,
+		recipients_id : data.recipients_id,
+		user_id : user.objectId,
+		limit : data.limit,
+		success : function(messages) {
+			opt.socket.emit('messages:near', { data : messages });
+		},
+		error : function() {
+			opt.socket.emit('messages:near', { error : arguments });
+		}
+	}
+	model['messages'].findNear(opt);
+}
+
 var deleteThread = function(google_trd_id, userId, socket) {
 	var opt = {
 		socket : socket,
@@ -463,6 +489,7 @@ module.exports = {
 	messagesFetchByGoogleMsgId : messagesFetchByGoogleMsgId,
 	onSocketMessagesFetchThread : onSocketMessagesFetchThread,
 	onSocketMessagesFetchPreviousThreads : onSocketMessagesFetchPreviousThreads,
+	onSocketMessagesNear : onSocketMessagesNear,
 	onSocketSubscribeChannelsListener : onSocketSubscribeChannelsListener,
 	onSocketUnsubscribeChannelsListener : onSocketUnsubscribeChannelsListener,
 	onSocketChannelsSend : onSocketChannelsSend
