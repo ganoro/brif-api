@@ -268,7 +268,7 @@ var markAs = function(connection, mailOptions) {
 		for (var i = mailOptions.messages_id.length - 1; i >= 0 ; i--) {
 			var uid = mailOptions.messages_id[i];
 			console.log(uid);
-			if (!uid) {
+			if (!uid || isNaN(uid)) {
 				return endConnection();
 			}
 			var ec = (i == 0 ? endConnection : undefined);
