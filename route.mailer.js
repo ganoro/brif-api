@@ -177,30 +177,6 @@ var onSocketMessagesNextOfVer2 = function(socket, data, user) {
 	model['messages'].fetchAfterMsgId(opts);
 }
 
-
-var onSocketMessagesSearch = function(socket, data, user) {
-	console.log("onSocketMessagesSearch()");
-	var mailOptions = {
-		email: user.email, 
-		resolve_all : true,		
-		query : data.query,
-		callback : getSearch,
-		emit : function(results) {
-			model['messages'].findByGoogleMsgId({
-				google_msg_id : results,
-				user_id : user.objectId,
-				success : function(results) {
-					socket.emit('messages:search', { data : results });
-				},
-				error : function() {
-					socket.emit('messages:search', { error : arguments });
-				}
-			})
-		}
-	}
-	executeMailOptions(user, mailOptions);
-}
-
 /**
  * sends the message with the provided mail options 
  */
@@ -265,6 +241,10 @@ var markAs = function(connection, mailOptions) {
 			connection.destroy();
 		}
 
+		if (!mailOptions.messages_id) {
+			return endConnection();
+		}
+		
 		for (var i = mailOptions.messages_id.length - 1; i >= 0 ; i--) {
 			var uid = mailOptions.messages_id[i];
 			console.log(uid);
@@ -370,44 +350,9 @@ var messagesSend = function(user, mailOptions) {
 	});
 }
 
-var getSearch = function(connection, mailOptions) {
-	console.log("getSearch()");
-
-	connection.openBox(mailOptions.all_folder, false, function(err, box) {
-		if (err) return;
-		connection.search([[ 'X-GM-RAW', mailOptions.query]] , function(err, results) {
-			if (err) return;
-			if (results == null || results.length ==0) {
-				connection.end();
-				connection.destroy();
-				return mailOptions.emit(results);
-			}
-			console.log('results length is ', results.length);
-			results = results.slice(-20);
-		    var f = connection.fetch(results, { });
-		    var data = [];
-			f.on('message', function(msg, seqno) {
-				msg.once('attributes', function(attrs) {
-					data.push(attrs["x-gm-msgid"]);
-				});
-			});
-			f.once('error', function(err) {
-				console.log('Fetch error: ' + err);
-			});
-			f.once('end', function() {
-				mailOptions.emit(data);
-				connection.end();
-				connection.destroy();
-				console.log('Done fetching all messages!');
-			});
-      	});
-	});	
-}
-
 module.exports = {
 	onSocketMessagesSend : onSocketMessagesSend,
 	onSocketMessagesUnread :onSocketMessagesUnread,
-	onSocketMessagesSearch :onSocketMessagesSearch,
 	onSocketMessagesMarkAs : onSocketMessagesMarkAs,
 	onSocketMessagesNextOf : onSocketMessagesNextOf,
 	onSocketMessagesNextOfVer2: onSocketMessagesNextOfVer2

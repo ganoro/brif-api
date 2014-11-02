@@ -158,42 +158,6 @@ var findPreviousThreads = function(opt) {
   query.find(opt);    
 }
 
-/**
- * Find messages near a given google message id
- * success() and error() functions required in opts
- * paremetrs required - google_msg_id  and limit
- */ 
-var findNear = function(opt) {
-  console.log("findNear()");
-
-  var Messages = model.parse.Object.extend("Messages_" + opt.user_id);
-  var query = new model.parse.Query(Messages);
-  query.greaterThanOrEqualTo("google_msg_id", opt.google_msg_id)
-    .ascending("google_msg_id")
-    .equalTo("recipients_id", opt.recipients_id)
-    .limit(opt.limit);
-  query.find({
-    success : function(resultGreater) {
-      var query = new model.parse.Query(Messages);
-      query.lessThan("google_msg_id", opt.google_msg_id)
-        .descending("google_msg_id")
-        .equalTo("recipients_id", opt.recipients_id)
-        .limit(opt.limit);
-        query.find({
-          success : function(resultLess) {
-            opt.success ? opt.success(resultLess.concat(resultGreater)) : null;
-          }, 
-          error : function() {
-            opt.error ? opt.error(arguments) : null;
-          }
-        });
-    },
-    error : function() {
-      opt.error ? opt.error(arguments) : null;
-    }
-  });    
-}
-
 var findLatest = function(opts) {
   console.log("findLatest()");
   console.log('opts.contacts: ', opts.contacts);
