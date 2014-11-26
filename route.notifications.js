@@ -331,18 +331,34 @@ var messagesFetchLast = function(socket, user_id, data) {
 
 var messagesFetchByGoogleMsgId = function(socket, data, user) {
 	var flag = 'messages:fetch_google_msg_id' + (data.id ? ":" + data.id : "");
-	var ops = {
-		google_msg_id : data.google_msg_id,
-		user_id : user.objectId,
-		is_select_timeline : data.is_select_timeline,
-		success : function(results) {
-			socket.emit(flag, { data : results });
-		},
-		error : function() {
-			socket.emit(flag, { error : arguments });
-		}
-	};
-	model['messages'].findByGoogleMsgId(ops);
+    
+    if (!data.google_msg_id) {
+        data.google_msg_id = [];
+    }
+    
+    var iteration = function(google_msg_id, results) {
+        console.log("messagesFetchByGoogleMsgId:iteration", google_msg_id.length);
+        if (google_msg_id.length == 0) {
+            console.log("socket emit", flag);
+            return socket.emit(flag, { data : results });
+        }
+        
+        var current = google_msg_id.splice(0,9);
+        var ops = {
+            google_msg_id : current,
+            user_id : user.objectId,
+            is_select_timeline : data.is_select_timeline,
+            success : function(r) {
+                results = results.concat(r);
+                return iteration(google_msg_id, results);
+            },
+            error : function() {
+                return socket.emit(flag, { error : arguments });
+            }
+        };
+        model['messages'].findByGoogleMsgId(ops);
+    }
+    iteration(data.google_msg_id, []);
 }
 
 /**

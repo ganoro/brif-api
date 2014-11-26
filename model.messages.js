@@ -111,7 +111,7 @@ var findByGoogleTrdId = function(opt) {
   query.equalTo("google_trd_id", opt.google_trd_id)
     .descending("sent_date")
     .limit(opt.per_page)
-    .select("google_msg_id", "message_id", "sent_date", "content", "intro", "attachments", "sender_name", "sender_email", "recipients_names", "unsubscribe")
+    .select("google_msg_id", "message_id", "sent_date", "content", "intro", "attachments", "sender_name", "sender_email", "recipients_names", "unsubscribe", "unique_id")
     .skip(opt.page*opt.per_page);
   if (!opt.retry) {
     query.equalTo("recipients_id", opt.recipients_id);
