@@ -11,7 +11,9 @@ var onSocketPersonDetails = function (socket, data, user) {
 			'user': '4f1a1b34110a67ded40a4667bd679d23:'
 		}		
 	}, function(error, result, body) {
-		socket.emit('clearbit:person', $.parseJSON(body) )
+		body = $.parseJSON(body);
+		body = _.extend(body,{email:data.email});
+		socket.emit('clearbit:person', body );
 	});	
 }
 
