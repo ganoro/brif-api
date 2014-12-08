@@ -1,4 +1,4 @@
-var port = 443;
+var port = 500;
 
 var parse_app_id = 'mMS3oCiZOHC15v8OGTidsRgHI0idYut39QKrIhIH';
 var parse_javascript_api_key = '93nPWcPsKnnoxQqVxmMHt0PlV1oelkbdI7D20QY8';

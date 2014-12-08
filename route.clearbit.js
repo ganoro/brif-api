@@ -11,22 +11,22 @@ var onSocketPersonDetails = function (socket, data, user) {
 			'user': '4f1a1b34110a67ded40a4667bd679d23:'
 		}		
 	}, function(error, result, body) {
-		body = $.parseJSON(body);
-		body = _.extend(body,{email:data.email});
-		socket.emit('clearbit:person', body );
+		socket.emit('clearbit:person', $.parseJSON(body) )
 	});	
 }
 
 var onSocketCompanyDetails = function (socket, data, user) {
 	console.log("onSocketCompanyDetails");
 	// curl 'https:/company.clearbit.co/v1/companies/domain/uber.com' -u 4f1a1b34110a67ded40a4667bd679d23:
-	var url = "https://company.clearbit.co/v1/companies/domain/" + data.domain;
+	var domain = data.email.substr(data.email.indexOf("@") + 1);
+	var url = "https://company.clearbit.co/v1/companies/domain/" + domain;
 	request.get(url, { 
 		'auth': {
 			'user': '4f1a1b34110a67ded40a4667bd679d23:'
 		}		
 	}, function(error, result, body) {
-		socket.emit('clearbit:company', $.parseJSON(body))
+		body = _.extend($.parseJSON(body), {email:data.email});
+		socket.emit('clearbit:company', body);
 	});	
 }
 
