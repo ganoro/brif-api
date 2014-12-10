@@ -26,7 +26,7 @@ var onSocketCompanyDetails = function (socket, data, user) {
 		}		
 	}, function(error, result, body) {
 		body = $.parseJSON(body);
-		body.email = data.email; // make sure to return the email as well
+		if(body) {body.email = data.email;} // make sure to return the email as well
 		socket.emit('clearbit:company', body);
 	});	
 }
